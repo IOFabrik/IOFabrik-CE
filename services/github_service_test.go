@@ -340,20 +340,21 @@ func TestFormatInt(t *testing.T) {
 }
 
 func TestGitHubService_AuthLogout(t *testing.T) {
-	svc := NewGitHubService()
-	if !svc.IsGHInstalled() {
-		t.Skip("gh CLI not installed")
-	}
-
-	// Test logout - should succeed even if not logged in
-	// (the fix handles the "not logged in" case gracefully)
-	result := svc.AuthLogout()
-	t.Logf("Logout result - Success: %v, Message: %s, Error: %s",
-		result.Success, result.Message, result.Error)
-
-	// Verify the result is successful (either logged out or already logged out)
-	if !result.Success {
-		t.Errorf("AuthLogout failed unexpectedly: %s", result.Error)
+	// Never run logout against the developer's real GitHub CLI or config.
+	t.Setenv("GH_CONFIG_DIR", t.TempDir())
+	for _, test := range []struct {
+		name, script, message string
+	}{
+		{"logged in", "#!/bin/sh\nread confirmation\n[ \"$confirmation\" = y ] || exit 2\nexit 0\n", "Logged out successfully"},
+		{"already logged out", "#!/bin/sh\nprintf '%s\\n' 'not logged in' >&2\nexit 1\n", "Already logged out"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			installFakeGh(t, test.script)
+			result := NewGitHubService().AuthLogout()
+			if !result.Success || result.Message != test.message {
+				t.Fatalf("unexpected logout result: %+v", result)
+			}
+		})
 	}
 }
 
