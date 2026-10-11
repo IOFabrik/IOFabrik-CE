@@ -102,6 +102,22 @@ describe('AuthContext', () => {
     expect(mockSaveSession).toHaveBeenCalledWith('serialized-session');
   });
 
+  it.each(['load', 'save'])('preserves stored credentials when keychain %s fails', async (operation) => {
+    if (operation === 'load') {
+      mockLoadSession.mockRejectedValue(new Error('keychain migration failed'));
+    } else {
+      mockLoadSession.mockResolvedValue('stored-session');
+      mockHydrateSession.mockResolvedValue({ success: true, session: mockSession, error: null });
+      mockSerialiseSession.mockReturnValue('serialized-session');
+      mockSaveSession.mockRejectedValue(new Error('keychain write failed'));
+    }
+
+    render(<AuthProvider><TestState /></AuthProvider>);
+    await waitFor(() => expect(screen.getByTestId('loading')).toHaveTextContent('false'));
+    expect(screen.getByTestId('guest')).toHaveTextContent('true');
+    expect(mockClearSession).not.toHaveBeenCalled();
+  });
+
   it('clears session when hydration fails', async () => {
     mockLoadSession.mockResolvedValue('stored-session');
     mockHydrateSession.mockResolvedValue({ success: false, session: null, error: 'expired' });

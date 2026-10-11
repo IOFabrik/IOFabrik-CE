@@ -61,7 +61,8 @@ a missing entry is a no-op. Generated NSIS metadata uses
 Wails derives that final key component by joining the configured company name
 and product name. Both values are `IOFabrik`, so the repeated name is the
 expected generated key. Version synchronization also checks the legacy
-`ControlZebraControlZebra` key for copies updated in place. Running the new
+`ControlZebraControlZebra` key for copies updated in place. Only the entry whose
+`DisplayIcon` matches the running executable receives the new version. Running the new
 installer retires previous shortcuts and registered installs at the known
 ControlZebra default locations; custom install locations remain intact.
 

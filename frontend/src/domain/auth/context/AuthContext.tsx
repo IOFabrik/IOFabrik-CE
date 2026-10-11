@@ -85,7 +85,8 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
       }
     } catch (err) {
       console.error('Failed to hydrate auth session:', err);
-      await ClearSession().catch(() => {});
+      // A keychain or storage failure does not invalidate the saved credential.
+      // Keep it available for a later retry; only rejected sessions are cleared.
       setSession(null);
       setAuthError('Failed to load stored session. Continuing in guest mode.');
     } finally {
