@@ -94,7 +94,7 @@ describe('ReviewsView', () => {
     repoState.selectedChangeRequest = {
       number: 12,
       title: 'Adjust motor configuration',
-      url: 'https://github.com/controlzebra/plant-project/pull/12',
+      url: 'https://github.com/iofabrik/plant-project/pull/12',
       author: { login: 'current-user' },
     } as GitHubChangeRequest;
     repoState.changeRequestFiles = [{ path: 'logic/Mixer.L5X', status: 'modified', additions: 12, deletions: 4 }];
@@ -108,7 +108,7 @@ describe('ReviewsView', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Open on GitHub' }));
 
-    expect(openExternalUrl).toHaveBeenCalledWith('https://github.com/controlzebra/plant-project/pull/12');
+    expect(openExternalUrl).toHaveBeenCalledWith('https://github.com/iofabrik/plant-project/pull/12');
   });
 
   it('explains a failed file load with recovery copy instead of raw backend text', () => {

@@ -112,7 +112,7 @@ func prepare(arch, output string, offline bool) error {
 			return err
 		}
 	}
-	if err := os.WriteFile(filepath.Join(stage, "bundle.nsh"), []byte(fmt.Sprintf("!define CZ_TOOLS_ARCH %q\n", arch)), 0644); err != nil {
+	if err := os.WriteFile(filepath.Join(stage, "bundle.nsh"), []byte(fmt.Sprintf("!define IOFABRIK_TOOLS_ARCH %q\n", arch)), 0644); err != nil {
 		return err
 	}
 	// Keep the archive hashes and source URLs with the installed tools for diagnostics.

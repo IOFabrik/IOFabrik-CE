@@ -1,23 +1,23 @@
-# Contributing to ControlZebra
+# Contributing to IOFabrik
 
 Bug reports, documentation improvements, and focused code changes are welcome. Please follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Before you start
 
-- Search [existing issues](https://github.com/ControlZebra/controlzebra-oss/issues) before opening a new one.
+- Search [existing issues](https://github.com/IOFabrik/IOFabrik-CE/issues) before opening a new one.
 - For bugs, include your app version, operating system, steps to reproduce, and expected and actual results. Remove confidential information from examples and screenshots.
 - Discuss larger changes in an issue before implementing them.
 - Report security vulnerabilities privately using the [security policy](SECURITY.md).
 
 ## Licensing and contributor agreement
 
-The public edition is licensed under [AGPL-3.0](License.md). ControlZebra's intended dual-licensing model also allows the project owner to offer separate commercial licenses where it holds the necessary rights.
+The public edition is licensed under [AGPL-3.0](License.md). IOFabrik's intended dual-licensing model also allows the project owner to offer separate commercial licenses where it holds the necessary rights.
 
 To support this model, contributions will require a contributor license agreement (CLA) before they can be accepted. Contributors retain copyright; the intended CLA grants the project owner permission to use, modify, distribute, sublicense, and relicense contributions under other terms, **including proprietary and commercial licenses**. Contributions included in the public edition remain available under AGPL-3.0.
 
-The [draft CLA](CLA.md) names ControlZebra as the recipient and uses the laws of the Netherlands. **It is awaiting legal review and is not open for signature.** Maintainers must publish the approved agreement and signing process, then obtain the required contributor consent before merging external contributions covered by it. Opening a change request does not by itself grant additional commercial relicensing rights.
+The [draft CLA](CLA.md) names IOFabrik as the recipient and uses the laws of the Netherlands. **It is awaiting legal review and is not open for signature.** Maintainers must publish the approved agreement and signing process, then obtain the required contributor consent before merging external contributions covered by it. Opening a change request does not by itself grant additional commercial relicensing rights.
 
-For licensing or employer-authorization questions, contact [support.controlzebra@gmail.com](mailto:support.controlzebra@gmail.com). Do not post signed agreements or personal information in public issues.
+For licensing or employer-authorization questions, contact [hello@iofabrik.com](mailto:hello@iofabrik.com). Do not post signed agreements or personal information in public issues.
 
 Only submit work you have authority to contribute. Obtain employer permission where needed, and identify third-party code, its source, and its license. A CLA cannot grant rights you do not hold.
 

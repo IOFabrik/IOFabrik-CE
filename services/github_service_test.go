@@ -39,7 +39,7 @@ func TestMapGitHubAuthenticatedUserJSON(t *testing.T) {
 	if !result.Success {
 		t.Fatalf("expected success, got %s", result.Error)
 	}
-	if result.User.Login != "controlzebra-user" || result.User.ID != "123456" || result.User.Name != "" {
+	if result.User.Login != "iofabrik-user" || result.User.ID != "123456" || result.User.Name != "" {
 		t.Fatalf("unexpected user mapping: %#v", result.User)
 	}
 }
@@ -82,17 +82,17 @@ func TestMapGitHubChangeRequestDetailJSON(t *testing.T) {
 func TestGitHubServiceLoadsChangeRequestDetailAndFiles(t *testing.T) {
 	repoPath := createTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
-	runGitCmd(t, repoPath, "remote", "add", "origin", "https://github.com/controlzebra/plant-project.git")
+	runGitCmd(t, repoPath, "remote", "add", "origin", "https://github.com/iofabrik/plant-project.git")
 
 	tempDir := t.TempDir()
 	fakeGh := filepath.Join(tempDir, "gh")
 	script := `#!/bin/sh
 case "$1" in
 repo)
-  printf '%s\n' '{"nameWithOwner":"controlzebra/plant-project","url":"https://github.com/controlzebra/plant-project","defaultBranchRef":{"name":"main"}}'
+  printf '%s\n' '{"nameWithOwner":"iofabrik/plant-project","url":"https://github.com/iofabrik/plant-project","defaultBranchRef":{"name":"main"}}'
   ;;
 pr)
-  printf '%s\n' '{"number":42,"title":"Update mixer sequence","url":"https://github.com/controlzebra/plant-project/pull/42","state":"OPEN","author":{"login":"operator"},"headRefName":"work/mixer-interlock","headRefOid":"head-oid","baseRefName":"main","baseRefOid":"base-oid","mergeStateStatus":"CLEAN","changedFiles":2,"reviewRequests":[{"requestedReviewer":{"login":"reviewer"}}]}'
+  printf '%s\n' '{"number":42,"title":"Update mixer sequence","url":"https://github.com/iofabrik/plant-project/pull/42","state":"OPEN","author":{"login":"operator"},"headRefName":"work/mixer-interlock","headRefOid":"head-oid","baseRefName":"main","baseRefOid":"base-oid","mergeStateStatus":"CLEAN","changedFiles":2,"reviewRequests":[{"requestedReviewer":{"login":"reviewer"}}]}'
   ;;
 api)
   printf '%s\n' '[[{"filename":"logic/Mixer.L5X","status":"modified","additions":12,"deletions":4},{"filename":"config/renamed.json","previous_filename":"config/original.json","status":"renamed","additions":1,"deletions":0}]]'
@@ -133,13 +133,13 @@ func TestMapGitHubChangeRequestRepositoryJSON(t *testing.T) {
 	if !result.Success {
 		t.Fatalf("expected repository mapping success, got %#v", result)
 	}
-	if result.Repository.NameWithOwner != "controlzebra/plant-project" || result.Repository.DefaultBranch != "main" {
+	if result.Repository.NameWithOwner != "iofabrik/plant-project" || result.Repository.DefaultBranch != "main" {
 		t.Fatalf("unexpected repository mapping: %#v", result.Repository)
 	}
 }
 
 func TestMapGitHubChangeRequestListJSONOmitsExternalRequests(t *testing.T) {
-	repository := GitHubChangeRequestRepository{NameWithOwner: "controlzebra/plant-project"}
+	repository := GitHubChangeRequestRepository{NameWithOwner: "iofabrik/plant-project"}
 	result := mapGitHubChangeRequestListJSON(readChangeRequestFixture(t, "open_requests.json"), repository)
 	if !result.Success || len(result.ChangeRequests) != 1 || result.OmittedExternalCount != 1 {
 		t.Fatalf("unexpected request list mapping: %#v", result)
@@ -156,11 +156,11 @@ func TestChangeRequestRemoteHost(t *testing.T) {
 		wantHost   string
 		wantGitHub bool
 	}{
-		{"git@github.com:controlzebra/plant-project.git", "github.com", true},
-		{"https://github.com/controlzebra/plant-project.git", "github.com", true},
-		{"ssh://git@github.enterprise.example/controlzebra/plant-project.git", "github.enterprise.example", true},
-		{"https://github-mirror.example/controlzebra/plant-project.git", "github-mirror.example", false},
-		{"https://gitlab.com/controlzebra/plant-project.git", "gitlab.com", false},
+		{"git@github.com:iofabrik/plant-project.git", "github.com", true},
+		{"https://github.com/iofabrik/plant-project.git", "github.com", true},
+		{"ssh://git@github.enterprise.example/iofabrik/plant-project.git", "github.enterprise.example", true},
+		{"https://github-mirror.example/iofabrik/plant-project.git", "github-mirror.example", false},
+		{"https://gitlab.com/iofabrik/plant-project.git", "gitlab.com", false},
 	}
 	for _, test := range tests {
 		host, isGitHub := changeRequestRemoteHost(test.remoteURL)
@@ -173,11 +173,11 @@ func TestChangeRequestRemoteHost(t *testing.T) {
 func TestGetChangeRequestRepositoryClassifiesUnresolvedRepository(t *testing.T) {
 	repoPath := createTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
-	runGitCmd(t, repoPath, "remote", "add", "origin", "https://github.com/controlzebra/missing.git")
+	runGitCmd(t, repoPath, "remote", "add", "origin", "https://github.com/iofabrik/missing.git")
 
 	tempDir := t.TempDir()
 	fakeGh := filepath.Join(tempDir, "gh")
-	script := "#!/bin/sh\necho \"GraphQL: Could not resolve to a Repository with the name 'controlzebra/missing'.\" >&2\nexit 1\n"
+	script := "#!/bin/sh\necho \"GraphQL: Could not resolve to a Repository with the name 'iofabrik/missing'.\" >&2\nexit 1\n"
 	if err := os.WriteFile(fakeGh, []byte(script), 0755); err != nil {
 		t.Fatalf("write fake gh: %v", err)
 	}
@@ -441,14 +441,14 @@ func TestVerifyBranchSyncedForChangeRequest(t *testing.T) {
 
 func TestFindOpenChangeRequestForBranch(t *testing.T) {
 	const repoScript = `repo)
-  printf '%s\n' '{"nameWithOwner":"controlzebra/plant-project","url":"https://github.com/controlzebra/plant-project","defaultBranchRef":{"name":"main"}}'
+  printf '%s\n' '{"nameWithOwner":"iofabrik/plant-project","url":"https://github.com/iofabrik/plant-project","defaultBranchRef":{"name":"main"}}'
   ;;
 `
 
 	newRepo := func(t *testing.T) string {
 		repoPath := createTestRepo(t)
 		t.Cleanup(func() { cleanupTestRepo(t, repoPath) })
-		runGitCmd(t, repoPath, "remote", "add", "origin", "https://github.com/controlzebra/plant-project.git")
+		runGitCmd(t, repoPath, "remote", "add", "origin", "https://github.com/iofabrik/plant-project.git")
 		return repoPath
 	}
 
@@ -463,7 +463,7 @@ func TestFindOpenChangeRequestForBranch(t *testing.T) {
 	t.Run("finds an existing open request", func(t *testing.T) {
 		repoPath := newRepo(t)
 		installFakeGh(t, "#!/bin/sh\ncase \"$1\" in\n"+repoScript+`pr)
-  printf '%s\n' '[{"number":7,"title":"Update mixer","url":"https://github.com/controlzebra/plant-project/pull/7","state":"OPEN","author":{"login":"operator"},"headRefName":"feature/x","baseRefName":"main","isCrossRepository":false}]'
+  printf '%s\n' '[{"number":7,"title":"Update mixer","url":"https://github.com/iofabrik/plant-project/pull/7","state":"OPEN","author":{"login":"operator"},"headRefName":"feature/x","baseRefName":"main","isCrossRepository":false}]'
   ;;
 *) exit 1 ;;
 esac

@@ -2,15 +2,15 @@
 
 ## Our community
 
-ControlZebra welcomes people of all backgrounds and experience levels. Be respectful, patient, and constructive. Critique ideas, not people, and respect privacy and boundaries.
+IOFabrik welcomes people of all backgrounds and experience levels. Be respectful, patient, and constructive. Critique ideas, not people, and respect privacy and boundaries.
 
-This policy applies to contributors and maintainers in project spaces and when officially representing ControlZebra elsewhere.
+This policy applies to contributors and maintainers in project spaces and when officially representing IOFabrik elsewhere.
 
 Harassment, discrimination, threats, sexual harassment, personal attacks, disclosure of private information without consent, and retaliation against reporters are unacceptable.
 
 ## Report a concern
 
-Report concerns privately to [support.controlzebra@gmail.com](mailto:support.controlzebra@gmail.com). Do not publish sensitive reports in public issues. Include what happened and relevant links when reporting privately. An accused maintainer must not investigate or decide their own case.
+Report concerns privately to [hello@iofabrik.com](mailto:hello@iofabrik.com). Do not publish sensitive reports in public issues. Include what happened and relevant links when reporting privately. An accused maintainer must not investigate or decide their own case.
 
 Report software vulnerabilities through the separate [security policy](SECURITY.md).
 

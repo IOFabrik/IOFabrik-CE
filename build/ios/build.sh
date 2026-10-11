@@ -2,8 +2,8 @@
 set -e
 
 # Build configuration
-APP_NAME="control-zebra"
-BUNDLE_ID="com.controlzebra.controlzebra"
+APP_NAME="iofabrik"
+BUNDLE_ID="com.iofabrik.iofabrik"
 VERSION="v0.0.1"
 BUILD_NUMBER="v0.0.1"
 BUILD_DIR="build/ios"

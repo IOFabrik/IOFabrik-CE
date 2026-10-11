@@ -10,7 +10,7 @@ import { FileWarning } from 'lucide-react';
 
 import { ICON_SIZES } from '../../../../shared/constants';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../../../../shared/ui';
-import type { ConflictQueueEntry } from '../../../../../bindings/controlzebra/services/models';
+import type { ConflictQueueEntry } from '../../../../../bindings/iofabrik/services/models';
 import {
   getConflictFileName,
   getConflictTooltip,

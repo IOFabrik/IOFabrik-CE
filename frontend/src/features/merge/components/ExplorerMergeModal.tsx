@@ -793,7 +793,7 @@ function LegacyExplorerMergeModal({ open, onOpenChange }: ExplorerMergeModalProp
       break;
     case 'needs-decisions':
       title = 'Needs decisions';
-      description = 'Choose the files to bring over first. ControlZebra will only ask you to resolve conflicts for the files you keep selected.';
+      description = 'Choose the files to bring over first. IOFabrik will only ask you to resolve conflicts for the files you keep selected.';
       footerNote = 'Note: Files marked Needs a choice will enter the guided conflict step.';
       break;
     case 'resolving':
@@ -803,8 +803,8 @@ function LegacyExplorerMergeModal({ open, onOpenChange }: ExplorerMergeModalProp
       break;
     case 'resolving-preparing':
       title = 'Preparing conflict list';
-      description = 'The merge has started. ControlZebra is confirming which files still need a choice.';
-      footerNote = 'Note: ControlZebra is getting the list of files that need a choice.';
+      description = 'The merge has started. IOFabrik is confirming which files still need a choice.';
+      footerNote = 'Note: IOFabrik is getting the list of files that need a choice.';
       break;
     case 'complete':
       title = 'Finish merge';
@@ -822,7 +822,7 @@ function LegacyExplorerMergeModal({ open, onOpenChange }: ExplorerMergeModalProp
       footerNote = 'Note: The merge is done.';
       break;
     default:
-      footerNote = 'Note: ControlZebra is getting things ready.';
+      footerNote = 'Note: IOFabrik is getting things ready.';
       break;
   }
 
@@ -981,7 +981,7 @@ function LegacyExplorerMergeModal({ open, onOpenChange }: ExplorerMergeModalProp
                         <p className="text-theme-primary text-sm font-medium">Save style</p>
                         <p className="text-theme-secondary text-xs">
                           {isSquashMerge
-                            ? 'ControlZebra will combine these changes into one save by default.'
+                            ? 'IOFabrik will combine these changes into one save by default.'
                             : 'This merge is using the repository default merge style.'}
                         </p>
                       </div>

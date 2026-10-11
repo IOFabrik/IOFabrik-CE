@@ -7,7 +7,7 @@ param(
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 if ($env:OS -ne 'Windows_NT') { throw 'Release verification requires Windows.' }
-$names = @('control-zebra-windows-amd64.exe', 'control-zebra-amd64-installer.exe')
+$names = @('iofabrik-windows-amd64.exe', 'iofabrik-amd64-installer.exe')
 $directoryPath = (Resolve-Path -LiteralPath $Directory).ProviderPath
 $checksumPath = Join-Path $directoryPath 'SHA256SUMS'
 $allowed = @($names) + @('SHA256SUMS')

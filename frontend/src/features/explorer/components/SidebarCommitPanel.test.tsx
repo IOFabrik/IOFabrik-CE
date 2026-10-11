@@ -42,7 +42,7 @@ vi.mock('../hooks/useLfsAutoTrackBeforeSave', () => ({
   }),
 }));
 
-vi.mock('../../../../bindings/controlzebra/services/settingsservice', () => ({
+vi.mock('../../../../bindings/iofabrik/services/settingsservice', () => ({
   GetUserProfile: vi.fn(() => new Promise(() => {})),
 }));
 

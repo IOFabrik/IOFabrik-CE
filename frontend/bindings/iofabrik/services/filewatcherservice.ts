@@ -22,14 +22,14 @@ import * as $models from "./models.js";
  * GetWatchedPath returns the currently watched path
  */
 export function GetWatchedPath(): $CancellablePromise<string> {
-    return $Call.ByID(3376255377);
+    return $Call.ByID(3886658643);
 }
 
 /**
  * SetApp sets the Wails application reference for event emission
  */
 export function SetApp(app: application$0.App | null): $CancellablePromise<void> {
-    return $Call.ByID(504384071, app);
+    return $Call.ByID(3087208929, app);
 }
 
 /**
@@ -38,14 +38,14 @@ export function SetApp(app: application$0.App | null): $CancellablePromise<void>
  * invalidate the services that cache repository state.
  */
 export function SetRepoEventBus(bus: $models.RepoEventBus | null): $CancellablePromise<void> {
-    return $Call.ByID(2519222806, bus);
+    return $Call.ByID(3796465956, bus);
 }
 
 /**
  * StopWatching stops watching the current directory
  */
 export function StopWatching(): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(2716782321).then(($result: any) => {
+    return $Call.ByID(3189789775).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -55,7 +55,7 @@ export function StopWatching(): $CancellablePromise<$models.OperationResult> {
  * Returns an error if the directory cannot be watched
  */
 export function WatchDirectory(path: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(3149356166, path).then(($result: any) => {
+    return $Call.ByID(3950045588, path).then(($result: any) => {
         return $$createType0($result);
     });
 }

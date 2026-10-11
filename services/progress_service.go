@@ -1,4 +1,4 @@
-// Package services provides backend functionality for the ControlZebra application.
+// Package services provides backend functionality for the IOFabrik application.
 // This file contains the ProgressService which runs git operations with progress streaming.
 package services
 
@@ -266,7 +266,7 @@ func (p *ProgressService) SyncWithProgress(repoPath, operationID string, prune b
 	}
 	if sessionID != "" {
 		if err := p.syncSessions.CompleteSyncShare(sessionID); err != nil {
-			errMsg := "Your work was pushed, but ControlZebra couldn't save the Sync status. Refresh the project before syncing again."
+			errMsg := "Your work was pushed, but IOFabrik couldn't save the Sync status. Refresh the project before syncing again."
 			p.emitProgress(ProgressUpdate{OperationID: operationID, Phase: "error", Percent: 0, Message: errMsg, IsComplete: true, Success: false, Error: errMsg})
 			return failedSync(errMsg)
 		}

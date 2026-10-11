@@ -1,10 +1,11 @@
-// Package services provides backend functionality for the ControlZebra application.
+// Package services provides backend functionality for the IOFabrik application.
 // This file contains the AuthService which stores and retrieves Supabase session
 // tokens securely via the OS credential store (macOS Keychain, Windows Credential
 // Manager, Linux Secret Service / libsecret).
 package services
 
 import (
+	"errors"
 	"fmt"
 	"sync"
 
@@ -13,8 +14,8 @@ import (
 
 const (
 	// keyringService is the service name stored in the OS credential manager.
-	// Changing this will invalidate any previously stored sessions.
-	keyringService = "com.controlzebra.desktop"
+	keyringService       = "com.iofabrik.desktop"
+	legacyKeyringService = "com.controlzebra.desktop"
 
 	// keyringUser is the account name under which the session token is stored.
 	keyringUser = "supabase-session"
@@ -64,10 +65,18 @@ func (a *AuthService) LoadSession() (string, error) {
 	defer a.mu.Unlock()
 
 	secret, err := keyring.Get(keyringService, keyringUser)
+	if errors.Is(err, keyring.ErrNotFound) {
+		secret, err = keyring.Get(legacyKeyringService, keyringUser)
+		if err == nil {
+			if saveErr := keyring.Set(keyringService, keyringUser, secret); saveErr != nil {
+				return "", fmt.Errorf("failed to migrate session to keychain: %w", saveErr)
+			}
+		}
+	}
 	if err != nil {
 		// "not found" is the expected case when no session has been stored.
 		// go-keyring returns keyring.ErrNotFound for this.
-		if err == keyring.ErrNotFound {
+		if errors.Is(err, keyring.ErrNotFound) {
 			return "", nil
 		}
 		return "", fmt.Errorf("failed to load session from keychain: %w", err)
@@ -85,10 +94,14 @@ func (a *AuthService) ClearSession() error {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 
-	err := keyring.Delete(keyringService, keyringUser)
-	if err != nil && err != keyring.ErrNotFound {
+	var failures []error
+	for _, service := range []string{keyringService, legacyKeyringService} {
+		if err := keyring.Delete(service, keyringUser); err != nil && !errors.Is(err, keyring.ErrNotFound) {
+			failures = append(failures, err)
+		}
+	}
+	if err := errors.Join(failures...); err != nil {
 		return fmt.Errorf("failed to clear session from keychain: %w", err)
 	}
-
 	return nil
 }

@@ -10,7 +10,7 @@ import { AlertTriangle } from 'lucide-react';
 
 import { ICON_SIZES } from '../../../../shared/constants';
 import { TooltipProvider } from '../../../../shared/ui';
-import type { ConflictQueueEntry } from '../../../../../bindings/controlzebra/services/models';
+import type { ConflictQueueEntry } from '../../../../../bindings/iofabrik/services/models';
 import { useConflictQueue } from '../../context/ConflictQueueContext';
 import { getPredictedConflictHint } from '../../lib/conflict-queue-presentation';
 import ConflictQueueRow from './ConflictQueueRow';

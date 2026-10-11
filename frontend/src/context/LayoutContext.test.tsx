@@ -9,7 +9,7 @@ const settingsServiceMock = vi.hoisted(() => ({
   SaveAppSettings: vi.fn(),
 }));
 
-vi.mock('../../bindings/controlzebra/services/settingsservice', () => settingsServiceMock);
+vi.mock('../../bindings/iofabrik/services/settingsservice', () => settingsServiceMock);
 
 vi.mock('../domain/analytics/analytics', () => ({
   trackViewChanged: vi.fn(),

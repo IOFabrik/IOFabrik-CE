@@ -1,16 +1,16 @@
-# ControlZebra Contributor License Agreement
+# IOFabrik Contributor License Agreement
 
 > Draft 0.1 — for legal review only. Not an active agreement and not open for signature. Submitting a contribution or commenting on a change request does not constitute acceptance of this draft.
 
 This draft is adapted from the [Harmony Combined Contributor Agreement Template, version 1.0](https://www.harmonyagreements.org/docs/ha-combined-v1), using the copyright-license alternative and outbound-license option five. It does not transfer copyright ownership.
 
-The intended recipient is **ControlZebra, Netherlands**. Before activation, legal counsel must verify the recipient's exact legal identity and address (including the underlying person or entity if ControlZebra is a trading name), review the Dutch-law provisions, and approve the signing and record-retention process. Questions can be sent to [support.controlzebra@gmail.com](mailto:support.controlzebra@gmail.com).
+The intended recipient is **IOFabrik, Netherlands**. Before activation, legal counsel must verify the recipient's exact legal identity and address (including the underlying person or entity if IOFabrik is a trading name), review the Dutch-law provisions, and approve the signing and record-retention process. Questions can be sent to [hello@iofabrik.com](mailto:hello@iofabrik.com).
 
 ## 1. Parties and scope
 
-"We" and "Us" mean ControlZebra, the recipient identified in the final agreement. "You" means the individual contributor, or the legal entity identified by its authorized signatory, entering into that agreement.
+"We" and "Us" mean IOFabrik, the recipient identified in the final agreement. "You" means the individual contributor, or the legal entity identified by its authorized signatory, entering into that agreement.
 
-"Contribution" means an original work of authorship that You intentionally submit for inclusion in ControlZebra's `controlzebra-oss` project, including code, documentation, tests, and other project materials, to the extent You own or control the rights being granted.
+"Contribution" means an original work of authorship that You intentionally submit for inclusion in IOFabrik's `IOFabrik-CE` project, including code, documentation, tests, and other project materials, to the extent You own or control the rights being granted.
 
 "Material" means that project and the works incorporating Your Contribution. "Submit" includes communications through the project's source-control systems, issue tracker, or other channels managed by Us, but excludes material clearly marked "Not a Contribution." The "Submission Date" is the date of that submission.
 
@@ -48,7 +48,7 @@ You confirm that You have legal authority to enter into the agreement and grant 
 
 You confirm that the grants do not conflict with rights already granted to another party. If an employer or another person owns rights in the Contribution, obtain their authorization or arrange for the rights holder to enter into an appropriate agreement before submission. Contributors who cannot legally enter into the agreement must contact Us before signing.
 
-Identify any material You do not own separately, provide its source and license, and disclose restrictions known to You, including relevant patent or trademark restrictions. Send authorization questions to [support.controlzebra@gmail.com](mailto:support.controlzebra@gmail.com). Do not represent third-party material as Your original work or imply that this agreement overrides its license.
+Identify any material You do not own separately, provide its source and license, and disclose restrictions known to You, including relevant patent or trademark restrictions. Send authorization questions to [hello@iofabrik.com](mailto:hello@iofabrik.com). Do not represent third-party material as Your original work or imply that this agreement overrides its license.
 
 Notify Us if You learn that these statements were materially inaccurate.
 
@@ -68,7 +68,7 @@ The executed agreement constitutes the parties' agreement concerning the rights 
 
 Signing is **disabled** while this draft awaits legal review. Do not send signatures or identity documents, and do not use public comments as acceptance of this draft.
 
-Before signing opens, ControlZebra must publish the approved agreement with its exact recipient identity, an immutable version reference, signing instructions, and information about collection, access, retention, and deletion of signing records. The process must record the signatory's identity, any entity authority, the agreement version, covered prior contributions if any, and explicit acceptance.
+Before signing opens, IOFabrik must publish the approved agreement with its exact recipient identity, an immutable version reference, signing instructions, and information about collection, access, retention, and deletion of signing records. The process must record the signatory's identity, any entity authority, the agreement version, covered prior contributions if any, and explicit acceptance.
 
 No automated CLA check is active yet. Maintainers must verify completion of the approved signing process before merging external contributions requiring a CLA.
 

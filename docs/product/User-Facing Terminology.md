@@ -2,7 +2,7 @@
 
 > **Golden rule:** If a non-technical user wouldn't understand the label, rewrite it.
 
-ControlZebra maps Git operations to plain-English labels. Every engineer must use this terminology in all user-facing text — buttons, toasts, error messages, tooltips, and documentation shown to end users.
+IOFabrik maps Git operations to plain-English labels. Every engineer must use this terminology in all user-facing text — buttons, toasts, error messages, tooltips, and documentation shown to end users.
 
 ## Operation Labels
 
@@ -21,7 +21,7 @@ ControlZebra maps Git operations to plain-English labels. Every engineer must us
 | **Create Change Request** | `gh pr create` | `GitHubService.CreateChangeRequest()` | Submit a task for team review. See [Change Requests](Change%20Requests.md) |
 ## Concept Mapping
 
-| Git Concept | ControlZebra Term | Where Used |
+| Git Concept | IOFabrik Term | Where Used |
 |-------------|-------------------|-----------|
 | Repository | Project | Welcome screen, TopBar |
 | Commit | Save / Saved change | Explorer, History |

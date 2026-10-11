@@ -28,7 +28,8 @@ import {
 } from '../shared/constants';
 import { trackViewChanged, trackSettingsOpened } from '../domain/analytics/analytics';
 import { useWindowSize } from '../shared/hooks/useWindowSize';
-import { GetAppSettings, SaveAppSettings } from '../../bindings/controlzebra/services/settingsservice';
+import { readMigratedStorage } from '../shared/utils/migratedStorage';
+import { GetAppSettings, SaveAppSettings } from '../../bindings/iofabrik/services/settingsservice';
 import { toast } from 'sonner';
 
 // ============================================================================
@@ -100,8 +101,8 @@ const LayoutContext = createContext<LayoutContextValue | null>(null);
 const DEFAULT_SIDEBAR_WIDTH = 400;
 
 // Global UI events emitted by RepoContext to keep explorer previews in sync
-const CLOSE_ALL_PREVIEW_TABS_EVENT = 'cz:explorer-close-all-previews';
-const CLOSE_FILE_PREVIEW_TABS_EVENT = 'cz:explorer-close-file-previews';
+const CLOSE_ALL_PREVIEW_TABS_EVENT = 'iofabrik:explorer-close-all-previews';
+const CLOSE_FILE_PREVIEW_TABS_EVENT = 'iofabrik:explorer-close-file-previews';
 
 export function LayoutProvider({ children }: LayoutProviderProps): JSX.Element {
   // Responsive window size tracking
@@ -273,7 +274,7 @@ export function LayoutProvider({ children }: LayoutProviderProps): JSX.Element {
   
   // Theme state – read persisted value so login screen preference carries over
   const [theme, setTheme] = useState<Theme>(() => {
-    const stored = localStorage.getItem('cz_theme');
+    const stored = readMigratedStorage('iofabrik_theme', 'cz_theme');
     if (stored === 'light' || stored === 'dark' || stored === 'system') return stored;
     return 'system';
   });

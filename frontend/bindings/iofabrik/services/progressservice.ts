@@ -22,7 +22,7 @@ import * as $models from "./models.js";
  * PullWithProgress performs git pull with progress updates
  */
 export function PullWithProgress(repoPath: string, operationID: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(2788985119, repoPath, operationID).then(($result: any) => {
+    return $Call.ByID(3234822861, repoPath, operationID).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -31,7 +31,7 @@ export function PullWithProgress(repoPath: string, operationID: string): $Cancel
  * PushWithProgress performs git push with progress updates
  */
 export function PushWithProgress(repoPath: string, operationID: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(4172712624, repoPath, operationID).then(($result: any) => {
+    return $Call.ByID(1000360706, repoPath, operationID).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -40,7 +40,7 @@ export function PushWithProgress(repoPath: string, operationID: string): $Cancel
  * SetApp sets the Wails application reference for event emission
  */
 export function SetApp(app: application$0.App | null): $CancellablePromise<void> {
-    return $Call.ByID(3463078608, app);
+    return $Call.ByID(604200078, app);
 }
 
 /**
@@ -48,7 +48,7 @@ export function SetApp(app: application$0.App | null): $CancellablePromise<void>
  * holding services can react to the operations it runs.
  */
 export function SetRepoEventBus(bus: $models.RepoEventBus | null): $CancellablePromise<void> {
-    return $Call.ByID(3862646179, bus);
+    return $Call.ByID(3850582853, bus);
 }
 
 /**
@@ -58,7 +58,7 @@ export function SetRepoEventBus(bus: $models.RepoEventBus | null): $CancellableP
  * tags: if true, adds --tags to fetch all tags
  */
 export function SyncWithProgress(repoPath: string, operationID: string, prune: boolean, tags: boolean): $CancellablePromise<$models.SyncResult> {
-    return $Call.ByID(2296486007, repoPath, operationID, prune, tags).then(($result: any) => {
+    return $Call.ByID(719015537, repoPath, operationID, prune, tags).then(($result: any) => {
         return $$createType1($result);
     });
 }

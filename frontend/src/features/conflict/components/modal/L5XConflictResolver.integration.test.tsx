@@ -16,7 +16,7 @@ vi.mock('ladder-visualizer', async (importOriginal) => {
 });
 
 vi.mock('../../../../viewers/components/file/l5x/theme', () => ({
-  CONTROL_ZEBRA_LADDER_THEME: {},
+  IOFABRIK_LADDER_THEME: {},
 }));
 
 vi.mock('../../../../context/LayoutContext', () => ({

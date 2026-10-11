@@ -27,7 +27,7 @@ func newTestIntegrationService(t *testing.T) *IntegrationSessionService {
 	}
 }
 
-// newFeatureBranchRepo is the ordinary ControlZebra shape: one project
+// newFeatureBranchRepo is the ordinary IOFabrik shape: one project
 // directory, the user on a feature branch, the destination checked out nowhere.
 func newFeatureBranchRepo(t *testing.T) string {
 	t.Helper()
@@ -761,7 +761,7 @@ func TestReconcileFlagsAnInterruptedUpdate(t *testing.T) {
 		t.Fatalf("expected needs-decisions, got %q (%s)", snapshot.State, snapshot.Error)
 	}
 
-	// The merge is interrupted outside ControlZebra.
+	// The merge is interrupted outside IOFabrik.
 	runGitCmd(t, fixture.openProject, "merge", "--abort")
 
 	if result := service.RecoverSessions(); !result.Success {

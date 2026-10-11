@@ -1,8 +1,8 @@
 # Product Overview
 
-> ControlZebra helps industrial automation teams manage project revisions and review changes.
+> IOFabrik helps industrial automation teams manage project revisions and review changes.
 
-ControlZebra is a desktop Git client for PLC engineers, HMI designers, and teams
+IOFabrik is a desktop Git client for PLC engineers, HMI designers, and teams
 working with configuration files. It presents common repository operations as
 guided workflows with clear messages and recovery options.
 

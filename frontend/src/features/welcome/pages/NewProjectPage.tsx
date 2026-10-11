@@ -43,11 +43,11 @@ import GitHubDeviceFlowModal from '../../auth/components/GitHubDeviceFlowModal';
 import ProjectCreationStepper, { type StepperStatus } from '../components/ProjectCreationStepper';
 import { Button, Input, Select, Switch, ToggleGroup } from '../../../shared/ui';
 import type { SelectOption } from '../../../shared/ui';
-import { OpenFolderDialog } from '../../../../bindings/controlzebra/services/filedialogservice';
-import { DetectRepo, GetRemoteURL } from '../../../../bindings/controlzebra/services/gitservice';
-import { ListDirectory } from '../../../../bindings/controlzebra/services/filesystemservice';
-import { CheckRepoNameExists } from '../../../../bindings/controlzebra/services/githubservice';
-import { GetGitignoreTemplates } from '../../../../bindings/controlzebra/services/repositorysettingsservice';
+import { OpenFolderDialog } from '../../../../bindings/iofabrik/services/filedialogservice';
+import { DetectRepo, GetRemoteURL } from '../../../../bindings/iofabrik/services/gitservice';
+import { ListDirectory } from '../../../../bindings/iofabrik/services/filesystemservice';
+import { CheckRepoNameExists } from '../../../../bindings/iofabrik/services/githubservice';
+import { GetGitignoreTemplates } from '../../../../bindings/iofabrik/services/repositorysettingsservice';
 
 // ============================================================================
 // Types

@@ -16,7 +16,7 @@ var integrationSessionOutcomeStates = []string{
 	"sharing", "shared", "blocked", "cancelling", "cancelled", "failed",
 }
 
-// gitJargonPattern matches the vocabulary users of ControlZebra do not know.
+// gitJargonPattern matches the vocabulary users of IOFabrik do not know.
 // Word boundaries matter: "refreshed" must not trip the "ref" rule.
 var gitJargonPattern = regexp.MustCompile(`(?i)\b(commit|commits|committed|branch|branches|merge|merged|merging|rebase|stash|head|sha|staging|staged|index|checkout|push|pushed|pull|repo|repository|worktree|ref|refs|upstream|origin|remote|revision|oid|detached)\b`)
 

@@ -16,7 +16,7 @@ import (
 
 // integrationResultRefPrefix mirrors the private namespace the session service
 // will use, so the unreachability assertions exercise the real ref location.
-const integrationResultRefPrefix = "refs/controlzebra/integration/"
+const integrationResultRefPrefix = "refs/iofabrik/integration/"
 
 // integrationFixture is a repository shaped like the real scenario: the
 // destination branch is checked out in the open project and the source branch

@@ -177,7 +177,7 @@ function IntegrationsSettings(): JSX.Element {
         <div className="border-b border-theme-default px-6 py-5">
           <h3 className="text-base font-medium text-theme-primary">Remote integrations</h3>
           <p className="mt-1 text-sm text-theme-muted">
-            Connect external hosting providers separately from your ControlZebra account.
+            Connect external hosting providers separately from your IOFabrik account.
           </p>
         </div>
 

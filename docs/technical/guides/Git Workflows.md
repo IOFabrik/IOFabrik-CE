@@ -1,6 +1,6 @@
 # Git Workflows
 
-> Complete decision trees for all git operations in ControlZebra.
+> Complete decision trees for all git operations in IOFabrik.
 
 ## Design Principles
 

@@ -20,7 +20,7 @@ import * as $models from "./models.js";
  * The flow shows a code that the user must enter in their browser.
  */
 export function AuthLogin(): $CancellablePromise<$models.GitHubAuthResult> {
-    return $Call.ByID(3633986302).then(($result: any) => {
+    return $Call.ByID(4122627568).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -29,7 +29,7 @@ export function AuthLogin(): $CancellablePromise<$models.GitHubAuthResult> {
  * AuthLoginCancel cancels and reaps the current device-code process.
  */
 export function AuthLoginCancel(): $CancellablePromise<$models.GitHubAuthResult> {
-    return $Call.ByID(979810388).then(($result: any) => {
+    return $Call.ByID(2999215530).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -39,7 +39,7 @@ export function AuthLoginCancel(): $CancellablePromise<$models.GitHubAuthResult>
  * only cancel the attempt that was current when this call began.
  */
 export function AuthLoginComplete(): $CancellablePromise<$models.GitHubAuthResult> {
-    return $Call.ByID(1398634085).then(($result: any) => {
+    return $Call.ByID(2708627879).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -49,7 +49,7 @@ export function AuthLoginComplete(): $CancellablePromise<$models.GitHubAuthResul
  * starts share its result rather than cancelling a sign-in already in progress.
  */
 export function AuthLoginStart(): $CancellablePromise<$models.GitHubDeviceFlowResult> {
-    return $Call.ByID(2121897454).then(($result: any) => {
+    return $Call.ByID(1572567916).then(($result: any) => {
         return $$createType1($result);
     });
 }
@@ -58,7 +58,7 @@ export function AuthLoginStart(): $CancellablePromise<$models.GitHubDeviceFlowRe
  * AuthLogout logs out of GitHub CLI
  */
 export function AuthLogout(): $CancellablePromise<$models.GitHubAuthResult> {
-    return $Call.ByID(2541881663).then(($result: any) => {
+    return $Call.ByID(924563733).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -67,7 +67,7 @@ export function AuthLogout(): $CancellablePromise<$models.GitHubAuthResult> {
  * AuthStatus checks the current authentication status
  */
 export function AuthStatus(): $CancellablePromise<$models.GitHubAuthStatus> {
-    return $Call.ByID(3725782427).then(($result: any) => {
+    return $Call.ByID(1323872181).then(($result: any) => {
         return $$createType2($result);
     });
 }
@@ -80,7 +80,7 @@ export function AuthStatus(): $CancellablePromise<$models.GitHubAuthStatus> {
  * name: repository name to check
  */
 export function CheckRepoNameExists(owner: string, name: string): $CancellablePromise<$models.RepoNameCheckResult> {
-    return $Call.ByID(3422910298, owner, name).then(($result: any) => {
+    return $Call.ByID(1098912888, owner, name).then(($result: any) => {
         return $$createType3($result);
     });
 }
@@ -91,7 +91,7 @@ export function CheckRepoNameExists(owner: string, name: string): $CancellablePr
  * never retries: a duplicate routes the caller to the existing request instead.
  */
 export function CreateChangeRequest(repoPath: string, options: $models.GitHubCreateChangeRequestOptions): $CancellablePromise<$models.GitHubCreateChangeRequestResult> {
-    return $Call.ByID(1037196188, repoPath, options).then(($result: any) => {
+    return $Call.ByID(3504281854, repoPath, options).then(($result: any) => {
         return $$createType4($result);
     });
 }
@@ -102,7 +102,7 @@ export function CreateChangeRequest(repoPath: string, options: $models.GitHubCre
  * `gh pr create` reports a duplicate.
  */
 export function FindOpenChangeRequestForBranch(repoPath: string, sourceBranch: string): $CancellablePromise<$models.GitHubFindChangeRequestResult> {
-    return $Call.ByID(1995444776, repoPath, sourceBranch).then(($result: any) => {
+    return $Call.ByID(3837355970, repoPath, sourceBranch).then(($result: any) => {
         return $$createType5($result);
     });
 }
@@ -112,7 +112,7 @@ export function FindOpenChangeRequestForBranch(repoPath: string, sourceBranch: s
  * Change Request grouping. It intentionally does not parse `gh auth status`.
  */
 export function GetAuthenticatedUser(): $CancellablePromise<$models.GitHubAuthenticatedUserResult> {
-    return $Call.ByID(4246353527).then(($result: any) => {
+    return $Call.ByID(793130893).then(($result: any) => {
         return $$createType6($result);
     });
 }
@@ -121,7 +121,7 @@ export function GetAuthenticatedUser(): $CancellablePromise<$models.GitHubAuthen
  * GetChangeRequest loads the full review metadata required by the detail view.
  */
 export function GetChangeRequest(repoPath: string, $number: number): $CancellablePromise<$models.GitHubChangeRequestDetailResult> {
-    return $Call.ByID(1137836286, repoPath, $number).then(($result: any) => {
+    return $Call.ByID(4218185680, repoPath, $number).then(($result: any) => {
         return $$createType7($result);
     });
 }
@@ -131,7 +131,7 @@ export function GetChangeRequest(repoPath: string, $number: number): $Cancellabl
  * github.com repository and returns its authoritative GitHub metadata.
  */
 export function GetChangeRequestRepository(repoPath: string): $CancellablePromise<$models.GitHubChangeRequestRepositoryResult> {
-    return $Call.ByID(1966343182, repoPath).then(($result: any) => {
+    return $Call.ByID(1270401028, repoPath).then(($result: any) => {
         return $$createType8($result);
     });
 }
@@ -140,14 +140,14 @@ export function GetChangeRequestRepository(repoPath: string): $CancellablePromis
  * GetGHVersion returns the installed GitHub CLI version
  */
 export function GetGHVersion(): $CancellablePromise<string> {
-    return $Call.ByID(2628927162);
+    return $Call.ByID(2093319800);
 }
 
 /**
  * IsGHInstalled checks if the GitHub CLI (gh) is installed and available
  */
 export function IsGHInstalled(): $CancellablePromise<boolean> {
-    return $Call.ByID(2985805654);
+    return $Call.ByID(2407297572);
 }
 
 /**
@@ -156,7 +156,7 @@ export function IsGHInstalled(): $CancellablePromise<boolean> {
  * detected without re-downloading the whole request payload.
  */
 export function ListChangeRequestFiles(repoPath: string, $number: number): $CancellablePromise<$models.GitHubChangeRequestFilesResult> {
-    return $Call.ByID(4223772539, repoPath, $number).then(($result: any) => {
+    return $Call.ByID(769103341, repoPath, $number).then(($result: any) => {
         return $$createType9($result);
     });
 }
@@ -167,7 +167,7 @@ export function ListChangeRequestFiles(repoPath: string, $number: number): $Canc
  * reads directly from origin so stale local remote-tracking refs cannot appear.
  */
 export function ListChangeRequestTargets(repoPath: string): $CancellablePromise<$models.GitHubChangeRequestTargetsResult> {
-    return $Call.ByID(3337707586, repoPath).then(($result: any) => {
+    return $Call.ByID(4084644296, repoPath).then(($result: any) => {
         return $$createType10($result);
     });
 }
@@ -177,7 +177,7 @@ export function ListChangeRequestTargets(repoPath: string): $CancellablePromise<
  * primary GitHub repository. External requests are deliberately omitted.
  */
 export function ListChangeRequests(repoPath: string): $CancellablePromise<$models.GitHubChangeRequestListResult> {
-    return $Call.ByID(1551363805, repoPath).then(($result: any) => {
+    return $Call.ByID(2464748315, repoPath).then(($result: any) => {
         return $$createType11($result);
     });
 }
@@ -187,7 +187,7 @@ export function ListChangeRequests(repoPath: string): $CancellablePromise<$model
  * This is used for the "publish to GitHub" form to allow users to choose the repo owner
  */
 export function ListUserOrganizations(): $CancellablePromise<$models.GitHubOrganizationsResult> {
-    return $Call.ByID(2146096128).then(($result: any) => {
+    return $Call.ByID(3659339090).then(($result: any) => {
         return $$createType12($result);
     });
 }
@@ -199,7 +199,7 @@ export function ListUserOrganizations(): $CancellablePromise<$models.GitHubOrgan
  * shallow: when true, clone only the latest commit history (depth=1)
  */
 export function RepoClone(repo: string, destPath: string, shallow: boolean): $CancellablePromise<$models.GitHubCloneResult> {
-    return $Call.ByID(3713232932, repo, destPath, shallow).then(($result: any) => {
+    return $Call.ByID(1000186070, repo, destPath, shallow).then(($result: any) => {
         return $$createType13($result);
     });
 }
@@ -208,7 +208,7 @@ export function RepoClone(repo: string, destPath: string, shallow: boolean): $Ca
  * RepoCreate creates a new repository on GitHub
  */
 export function RepoCreate(options: $models.GitHubRepoCreateOptions): $CancellablePromise<$models.GitHubRepoCreateResult> {
-    return $Call.ByID(1420268655, options).then(($result: any) => {
+    return $Call.ByID(3776930065, options).then(($result: any) => {
         return $$createType14($result);
     });
 }
@@ -222,7 +222,7 @@ export function RepoCreate(options: $models.GitHubRepoCreateOptions): $Cancellab
  * owner: the owner for the repository (username or organization login). If empty, defaults to authenticated user.
  */
 export function RepoCreateFromLocal(localPath: string, name: string, description: string, $private: boolean, owner: string): $CancellablePromise<$models.GitHubRepoCreateResult> {
-    return $Call.ByID(1048591282, localPath, name, description, $private, owner).then(($result: any) => {
+    return $Call.ByID(37558460, localPath, name, description, $private, owner).then(($result: any) => {
         return $$createType14($result);
     });
 }
@@ -233,7 +233,7 @@ export function RepoCreateFromLocal(localPath: string, name: string, description
  * visibility: "public", "private", or empty for all
  */
 export function RepoList(limit: number, visibility: string): $CancellablePromise<$models.GitHubRepoListResult> {
-    return $Call.ByID(106928271, limit, visibility).then(($result: any) => {
+    return $Call.ByID(440389357, limit, visibility).then(($result: any) => {
         return $$createType15($result);
     });
 }
@@ -242,7 +242,7 @@ export function RepoList(limit: number, visibility: string): $CancellablePromise
  * RepoListForOrg lists repositories for a specific organization
  */
 export function RepoListForOrg(org: string, limit: number): $CancellablePromise<$models.GitHubRepoListResult> {
-    return $Call.ByID(1651014432, org, limit).then(($result: any) => {
+    return $Call.ByID(1168613830, org, limit).then(($result: any) => {
         return $$createType15($result);
     });
 }

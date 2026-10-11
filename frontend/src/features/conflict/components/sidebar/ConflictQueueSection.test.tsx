@@ -7,7 +7,7 @@ import {
   ConflictKind,
   ConflictQueueEntry,
   ConflictState,
-} from '../../../../../bindings/controlzebra/services/models';
+} from '../../../../../bindings/iofabrik/services/models';
 import ConflictQueueSection from './ConflictQueueSection';
 
 const { queueStore } = vi.hoisted(() => ({

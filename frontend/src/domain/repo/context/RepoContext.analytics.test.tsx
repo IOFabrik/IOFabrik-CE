@@ -35,7 +35,7 @@ const {
   GetSettings,
   StartBackgroundTasks,
   StopBackgroundTasks,
-  EnsureControlZebraDir,
+  EnsureIOFabrikDir,
   IsDefaultBranchSyncEligible,
 } = vi.hoisted(() => ({
   analyticsMocks: {
@@ -93,20 +93,20 @@ const {
   GetSettings: vi.fn(),
   StartBackgroundTasks: vi.fn(),
   StopBackgroundTasks: vi.fn(),
-  EnsureControlZebraDir: vi.fn(),
+  EnsureIOFabrikDir: vi.fn(),
   IsDefaultBranchSyncEligible: vi.fn(),
 }));
 
 vi.mock('../../auth/context/AuthContext', () => ({
   useAuth: () => ({
     userName: 'Test User',
-    userEmail: 'test@controlzebra.com',
+    userEmail: 'test@iofabrik.com',
   }),
 }));
 
 vi.mock('../../analytics/analytics', () => analyticsMocks);
 
-vi.mock('../../../../bindings/controlzebra/services/gitservice', () => ({
+vi.mock('../../../../bindings/iofabrik/services/gitservice', () => ({
   DetectRepo,
   Status,
   CommitAll,
@@ -158,7 +158,7 @@ vi.mock('../../../../bindings/controlzebra/services/gitservice', () => ({
   Pull,
 }));
 
-vi.mock('../../../../bindings/controlzebra/services/githubservice', () => ({
+vi.mock('../../../../bindings/iofabrik/services/githubservice', () => ({
   IsGHInstalled,
   GetGHVersion,
   AuthLogin: vi.fn(),
@@ -173,26 +173,26 @@ vi.mock('../../../../bindings/controlzebra/services/githubservice', () => ({
   ListUserOrganizations: vi.fn(),
 }));
 
-vi.mock('../../../../bindings/controlzebra/services/lfsservice', () => ({
+vi.mock('../../../../bindings/iofabrik/services/lfsservice', () => ({
   InitializeLFS,
   IsLFSInstalled,
   GetPresetPatterns,
   TrackPattern,
 }));
 
-vi.mock('../../../../bindings/controlzebra/services/localbinservice', () => ({
+vi.mock('../../../../bindings/iofabrik/services/localbinservice', () => ({
   EnsurePortableToolchainIfNeeded,
 }));
 
-vi.mock('../../../../bindings/controlzebra/services/progressservice', () => ({
+vi.mock('../../../../bindings/iofabrik/services/progressservice', () => ({
   SyncWithProgress,
 }));
 
-vi.mock('../../../../bindings/controlzebra/services/integrationsessionservice', () => ({
+vi.mock('../../../../bindings/iofabrik/services/integrationsessionservice', () => ({
   IsDefaultBranchSyncEligible,
 }));
 
-vi.mock('../../../../bindings/controlzebra/services/settingsservice', () => ({
+vi.mock('../../../../bindings/iofabrik/services/settingsservice', () => ({
   GetAppSettings,
   SaveAppSettings,
   EnsureIdentity,
@@ -200,22 +200,22 @@ vi.mock('../../../../bindings/controlzebra/services/settingsservice', () => ({
   SetUserProfile,
 }));
 
-vi.mock('../../../../bindings/controlzebra/services/filewatcherservice', () => ({
+vi.mock('../../../../bindings/iofabrik/services/filewatcherservice', () => ({
   WatchDirectory,
   StopWatching,
 }));
 
-vi.mock('../../../../bindings/controlzebra/services/repositorysettingsservice', () => ({
+vi.mock('../../../../bindings/iofabrik/services/repositorysettingsservice', () => ({
   GetRemotes,
   WriteRepoLocalConfig: vi.fn(),
-  EnsureControlZebraDir,
+  EnsureIOFabrikDir,
   GetSettings,
   StartBackgroundTasks,
   StopBackgroundTasks,
   ApplyGitignoreTemplate: vi.fn(),
 }));
 
-vi.mock('../../../../bindings/controlzebra/services/filesystemservice', () => ({
+vi.mock('../../../../bindings/iofabrik/services/filesystemservice', () => ({
   RevealInFinder: vi.fn(),
   OpenInTerminal: vi.fn(),
 }));
@@ -308,7 +308,7 @@ describe('RepoContext analytics validation', () => {
     GetAppSettings.mockResolvedValue({ lastRepoPath: '' });
     SaveAppSettings.mockResolvedValue({ success: true });
     EnsureIdentity.mockResolvedValue({ wasAutoSet: false, name: '', email: '' });
-    GetUserProfile.mockResolvedValue({ name: 'Test User', email: 'test@controlzebra.com' });
+    GetUserProfile.mockResolvedValue({ name: 'Test User', email: 'test@iofabrik.com' });
     SetUserProfile.mockResolvedValue({ success: true, message: 'saved' });
 
     WatchDirectory.mockResolvedValue({ success: true });
@@ -318,7 +318,7 @@ describe('RepoContext analytics validation', () => {
     GetSettings.mockResolvedValue({ fetchSettings: { pruneStaleBranches: true, fetchTags: true } });
     StartBackgroundTasks.mockResolvedValue({ success: true });
     StopBackgroundTasks.mockResolvedValue({ success: true });
-    EnsureControlZebraDir.mockResolvedValue({ success: true });
+    EnsureIOFabrikDir.mockResolvedValue({ success: true });
   });
 
   it('fires project_setup_started once per startTracking() call', async () => {
@@ -361,7 +361,7 @@ describe('RepoContext analytics validation', () => {
   it('cleans up the previous project and immediately loads the newly opened project', async () => {
     let api: ReturnType<typeof useRepo> | null = null;
     const closedPreviews = vi.fn();
-    window.addEventListener('cz:explorer-close-all-previews', closedPreviews);
+    window.addEventListener('iofabrik:explorer-close-all-previews', closedPreviews);
     DetectRepo.mockImplementation(async (path: string) => ({
       path,
       isRepo: true,
@@ -398,7 +398,7 @@ describe('RepoContext analytics validation', () => {
         StartBackgroundTasks.mock.invocationCallOrder[1]
       );
     } finally {
-      window.removeEventListener('cz:explorer-close-all-previews', closedPreviews);
+      window.removeEventListener('iofabrik:explorer-close-all-previews', closedPreviews);
     }
   });
 

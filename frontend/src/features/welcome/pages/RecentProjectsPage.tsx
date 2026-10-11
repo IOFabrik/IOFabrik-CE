@@ -9,8 +9,8 @@ import { memo, useState, useEffect, useCallback, useRef, type CSSProperties, typ
 import { Clock, GitBranch, HardDrive, Folder, X, Trash2, RotateCcw } from 'lucide-react';
 import { ICON_STYLES } from '../../../shared/utils/gitHelpers';
 import { loadMergedRecentFolders, removeRecentFolder, clearRecentFolders, getFolderName } from '../../../shared/utils/recentFolders';
-import { ClearRecentFolders } from '../../../../bindings/controlzebra/services/settingsservice';
-import { DetectRepo, GetRemoteURL } from '../../../../bindings/controlzebra/services/gitservice';
+import { ClearRecentFolders } from '../../../../bindings/iofabrik/services/settingsservice';
+import { DetectRepo, GetRemoteURL } from '../../../../bindings/iofabrik/services/gitservice';
 
 // ============================================================================
 // Types

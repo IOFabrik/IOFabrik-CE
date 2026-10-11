@@ -1,5 +1,5 @@
 import { memo, useCallback, useEffect, useState } from 'react';
-import { DiffCommitFileRaw, ShowCommit } from '../../../../bindings/controlzebra/services/gitservice';
+import { DiffCommitFileRaw, ShowCommit } from '../../../../bindings/iofabrik/services/gitservice';
 import { useRepo, type CommitDetail, type FileDiff } from '../../../context';
 import LoadingState from '../../../shared/ui/LoadingState';
 import CommitOverviewPanel from '../../history/components/CommitOverviewPanel';

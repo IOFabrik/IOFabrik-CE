@@ -119,12 +119,12 @@ import { FolderOpen } from 'lucide-react';
 
 ## Wails Bindings
 
-Auto-generated TypeScript bindings live in `frontend/bindings/controlzebra/services/`. **Never edit these manually.**
+Auto-generated TypeScript bindings live in `frontend/bindings/iofabrik/services/`. **Never edit these manually.**
 
 Import pattern:
 ```tsx
-import { CommitAll } from '../../bindings/controlzebra/services/gitservice';
-import type { OperationResult } from '../../bindings/controlzebra/services/models';
+import { CommitAll } from '../../bindings/iofabrik/services/gitservice';
+import type { OperationResult } from '../../bindings/iofabrik/services/models';
 ```
 
 Regenerate after Go changes:

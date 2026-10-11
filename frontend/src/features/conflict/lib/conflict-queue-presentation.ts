@@ -10,7 +10,7 @@ import {
   ConflictKind,
   ConflictState,
   type ConflictQueueEntry,
-} from '../../../../bindings/controlzebra/services/models';
+} from '../../../../bindings/iofabrik/services/models';
 import { getFolderNameFromPath } from '../../../shared/utils/gitHelpers';
 
 const UNKNOWN_KIND_LABEL = 'This file needs a decision';

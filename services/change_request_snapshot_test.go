@@ -546,7 +546,7 @@ func TestResolveBranchRef_QualifiedRefIsNotRemotePrefixed(t *testing.T) {
 		t.Errorf("Expected %s to resolve unchanged, got %s", snapshot.Snapshot.BaseRef, resolved)
 	}
 
-	if _, err := svc.resolveBranchRef(fixture.ConsumerPath, "refs/controlzebra/change-requests/999/base", true); err == nil {
+	if _, err := svc.resolveBranchRef(fixture.ConsumerPath, "refs/iofabrik/change-requests/999/base", true); err == nil {
 		t.Error("Expected a missing qualified ref to fail rather than fall back to a branch lookup")
 	}
 }

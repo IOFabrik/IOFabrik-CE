@@ -32,7 +32,7 @@ function AuthGate(): JSX.Element {
     }
 
     document.documentElement.dataset.czAppReady = 'true';
-    window.dispatchEvent(new CustomEvent('cz:app-shell-ready'));
+    window.dispatchEvent(new CustomEvent('iofabrik:app-shell-ready'));
   }, [isLoading]);
 
   if (isLoading) {

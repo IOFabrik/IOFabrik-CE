@@ -26,11 +26,11 @@ import {
   ClearRepository,
   Refresh,
   SetRepository,
-} from '../../../../bindings/controlzebra/services/conflictqueueservice';
+} from '../../../../bindings/iofabrik/services/conflictqueueservice';
 import type {
   ConflictQueueEntry,
   ConflictQueueSnapshot,
-} from '../../../../bindings/controlzebra/services/models';
+} from '../../../../bindings/iofabrik/services/models';
 import { useRepo } from '../../../context';
 import { useIntegrationSession } from '../../integration';
 import { onEvent } from '../../../shared/runtime/events';

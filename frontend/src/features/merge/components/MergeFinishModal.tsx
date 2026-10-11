@@ -158,7 +158,7 @@ function MergeFinishModal({ open, onOpenChange }: MergeFinishModalProps): JSX.El
           <AlertDialogHeader>
             <AlertDialogTitle>Cancel this update?</AlertDialogTitle>
             <AlertDialogDescription>
-              ControlZebra will restore the project to exactly how it was before shared updates were added.
+              IOFabrik will restore the project to exactly how it was before shared updates were added.
               Choices made in this review will be removed.
             </AlertDialogDescription>
           </AlertDialogHeader>

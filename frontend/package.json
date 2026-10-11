@@ -31,7 +31,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
-    "ladder-visualizer": "git+https://github.com/ControlZebra/ladder-visualizer.git#8afb87074df26c6617966b080df70220d18f66ed",
+    "ladder-visualizer": "git+https://github.com/IOFabrik/ladder-visualizer.git#8afb87074df26c6617966b080df70220d18f66ed",
     "lucide-react": "^0.562.0",
     "online-3d-viewer": "^0.18.0",
     "pixelmatch": "^7.1.0",

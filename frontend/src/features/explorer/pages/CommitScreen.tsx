@@ -22,7 +22,7 @@ import {
 
 import { RewindConfirmModal } from '../../../widgets/layout';
 import LFSAutoTrackModal from '../components/LFSAutoTrackModal';
-import { GetUserProfile } from '../../../../bindings/controlzebra/services/settingsservice';
+import { GetUserProfile } from '../../../../bindings/iofabrik/services/settingsservice';
 import { useLfsAutoTrackBeforeSave } from '../hooks/useLfsAutoTrackBeforeSave';
 import type { FileStatus } from '../../../context';
 

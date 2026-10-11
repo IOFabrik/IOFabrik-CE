@@ -18,7 +18,7 @@ import * as $models from "./models.js";
  * ClearLogs removes all entries from the ring buffer.
  */
 export function ClearLogs(): $CancellablePromise<void> {
-    return $Call.ByID(2613125385);
+    return $Call.ByID(2835297015);
 }
 
 /**
@@ -26,7 +26,7 @@ export function ClearLogs(): $CancellablePromise<void> {
  * Returns an empty string if export fails.
  */
 export function ExportLogs(): $CancellablePromise<string> {
-    return $Call.ByID(248138472);
+    return $Call.ByID(2264934674);
 }
 
 /**
@@ -34,7 +34,7 @@ export function ExportLogs(): $CancellablePromise<string> {
  * Returns nil if not found.
  */
 export function GetLogByID(id: number): $CancellablePromise<$models.LogEntry | null> {
-    return $Call.ByID(3486691767, id).then(($result: any) => {
+    return $Call.ByID(1822498997, id).then(($result: any) => {
         return $$createType1($result);
     });
 }
@@ -43,7 +43,7 @@ export function GetLogByID(id: number): $CancellablePromise<$models.LogEntry | n
  * GetLogs returns log entries matching the given filter.
  */
 export function GetLogs(filter: $models.LogFilter): $CancellablePromise<$models.LogEntry[]> {
-    return $Call.ByID(2123370372, filter).then(($result: any) => {
+    return $Call.ByID(93718270, filter).then(($result: any) => {
         return $$createType2($result);
     });
 }
@@ -52,7 +52,7 @@ export function GetLogs(filter: $models.LogFilter): $CancellablePromise<$models.
  * GetStats returns a summary of the logger state (entry counts, buffer usage, etc.).
  */
 export function GetStats(): $CancellablePromise<$models.DebugStats> {
-    return $Call.ByID(2838011106).then(($result: any) => {
+    return $Call.ByID(3674238164).then(($result: any) => {
         return $$createType3($result);
     });
 }
@@ -61,14 +61,14 @@ export function GetStats(): $CancellablePromise<$models.DebugStats> {
  * IsEnabled returns whether debug logging is currently active.
  */
 export function IsEnabled(): $CancellablePromise<boolean> {
-    return $Call.ByID(3290320886);
+    return $Call.ByID(3407099132);
 }
 
 /**
  * SetEnabled toggles debug logging on or off at runtime.
  */
 export function SetEnabled(enabled: boolean): $CancellablePromise<void> {
-    return $Call.ByID(2814417696, enabled);
+    return $Call.ByID(463170682, enabled);
 }
 
 // Private type creation functions

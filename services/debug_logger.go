@@ -1,4 +1,4 @@
-// Package services provides backend functionality for the ControlZebra application.
+// Package services provides backend functionality for the IOFabrik application.
 // This file contains the DebugLogger — a thread-safe, in-memory ring-buffer logger
 // that captures CLI command executions, service method calls, events, and errors.
 // Logging is OFF by default; it can be toggled at runtime with near-zero overhead

@@ -30,7 +30,7 @@ const {
   StopBackgroundTasks,
   WriteRepoLocalConfig,
   RepoCreateFromLocal,
-  EnsureControlZebraDir,
+  EnsureIOFabrikDir,
   WatchDirectory,
   StopWatching,
   toastMocks,
@@ -62,7 +62,7 @@ const {
   StopBackgroundTasks: vi.fn(),
   WriteRepoLocalConfig: vi.fn(),
   RepoCreateFromLocal: vi.fn(),
-  EnsureControlZebraDir: vi.fn(),
+  EnsureIOFabrikDir: vi.fn(),
   WatchDirectory: vi.fn(),
   StopWatching: vi.fn(),
   toastMocks: {
@@ -153,7 +153,7 @@ vi.mock('../services/repo-commands', () => ({
   GetUserProfile,
   SetUserProfile,
   WriteRepoLocalConfig,
-  EnsureControlZebraDir,
+  EnsureIOFabrikDir,
   StartBackgroundTasks,
   StopBackgroundTasks,
   ApplyGitignoreTemplate: vi.fn(),
@@ -197,7 +197,7 @@ vi.mock('../../analytics/analytics', () => ({
   trackProjectPublishCompleted: vi.fn(),
 }));
 
-vi.mock('../../../../bindings/controlzebra/services/filewatcherservice', () => ({
+vi.mock('../../../../bindings/iofabrik/services/filewatcherservice', () => ({
   WatchDirectory,
   StopWatching,
 }));
@@ -277,7 +277,7 @@ describe('RepoContext git identity prompts', () => {
     SetUserProfile.mockResolvedValue({ success: true, message: 'saved' });
     StartBackgroundTasks.mockResolvedValue({ success: true });
     StopBackgroundTasks.mockResolvedValue({ success: true });
-    EnsureControlZebraDir.mockResolvedValue({ success: true });
+    EnsureIOFabrikDir.mockResolvedValue({ success: true });
     WriteRepoLocalConfig.mockResolvedValue({ success: true });
     WatchDirectory.mockResolvedValue({ success: true });
     StopWatching.mockResolvedValue({ success: true });
@@ -293,16 +293,16 @@ describe('RepoContext git identity prompts', () => {
       expect(await api!.openRepo('/tmp/folder')).toBe(true);
     });
 
-    expect(EnsureControlZebraDir).not.toHaveBeenCalled();
+    expect(EnsureIOFabrikDir).not.toHaveBeenCalled();
   });
 
   it.each(['result', 'rejection'])('stops project setup when the settings folder cannot be prepared (%s)', async (failure) => {
     const error = 'Could not prepare the project settings folder. Check the folder\'s permissions and try again.';
     DetectRepo.mockResolvedValue({ path: '/tmp/folder', isRepo: false, hasError: false });
     if (failure === 'result') {
-      EnsureControlZebraDir.mockResolvedValue({ success: false, error });
+      EnsureIOFabrikDir.mockResolvedValue({ success: false, error });
     } else {
-      EnsureControlZebraDir.mockRejectedValue(new Error('Attribute update failed'));
+      EnsureIOFabrikDir.mockRejectedValue(new Error('Attribute update failed'));
     }
     let api: ReturnType<typeof useRepo> | null = null;
     renderHarness((value) => { api = value; });
@@ -311,7 +311,7 @@ describe('RepoContext git identity prompts', () => {
 
     await act(async () => { expect(await api!.startTracking()).toBe(false); });
 
-    expect(EnsureControlZebraDir).toHaveBeenCalledWith('/tmp/folder');
+    expect(EnsureIOFabrikDir).toHaveBeenCalledWith('/tmp/folder');
     expect(CommitAll).not.toHaveBeenCalled();
     expect(toastMocks.error).toHaveBeenCalledWith(error, expect.any(Object));
     expect(toastMocks.success).not.toHaveBeenCalled();

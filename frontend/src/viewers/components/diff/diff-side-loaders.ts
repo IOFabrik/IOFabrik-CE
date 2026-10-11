@@ -1,5 +1,5 @@
-import { GetFileAtRevisionBase64, ReadFileAtRevisionLarge } from '../../../../bindings/controlzebra/services/gitservice';
-import { ReadFileBase64, ReadTextFile } from '../../../../bindings/controlzebra/services/filesystemservice';
+import { GetFileAtRevisionBase64, ReadFileAtRevisionLarge } from '../../../../bindings/iofabrik/services/gitservice';
+import { ReadFileBase64, ReadTextFile } from '../../../../bindings/iofabrik/services/filesystemservice';
 import type { DiffSide } from '../../registry/diff-registry';
 
 export interface BinarySidePayload {

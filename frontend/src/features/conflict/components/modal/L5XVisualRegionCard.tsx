@@ -4,7 +4,7 @@ import type { NormalizedRung, NormalizedTag, STLine, VisualConflictKind, VisualC
 import { VirtualizedLadderDiagram, measureRoutineDiffRowHeight } from 'ladder-visualizer';
 
 import { useLayout } from '../../../../context/LayoutContext';
-import { CONTROL_ZEBRA_LADDER_THEME } from '../../../../viewers/components/file/l5x/theme';
+import { IOFABRIK_LADDER_THEME } from '../../../../viewers/components/file/l5x/theme';
 import type { ConflictRegionDecision, ConflictSide } from '../../types';
 
 // Cap tall rungs so a single preview never dominates the resolver; taller rungs scroll internally.
@@ -157,7 +157,7 @@ function RungPreview({ rung, isDarkMode }: { rung: NormalizedRung; isDarkMode: b
     >
       <VirtualizedLadderDiagram
         rungs={[rung]}
-        theme={CONTROL_ZEBRA_LADDER_THEME}
+        theme={IOFABRIK_LADDER_THEME}
         height={height}
         className="h-full w-full"
       />

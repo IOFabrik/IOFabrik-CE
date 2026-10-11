@@ -33,7 +33,7 @@ class PublicationPolicyTests(unittest.TestCase):
         for name in ['main.go', 'frontend/.env.example', 'frontend/.env.production.example',
                      'build/windows/icon.ico', 'build/darwin/Info.plist',
                      'services/testdata/example.json', 'verification.pub',
-                     'frontend/bindings/controlzebra/services/models.ts', 'LICENSE']:
+                     'frontend/bindings/iofabrik/services/models.ts', 'LICENSE']:
             self.stage(name)
         self.assertEqual(self.check().returncode, 0)
 

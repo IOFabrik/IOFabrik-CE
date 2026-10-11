@@ -1,5 +1,5 @@
 /**
- * Supabase Auth Client for ControlZebra Desktop
+ * Supabase Auth Client for IOFabrik Desktop
  *
  * Thin wrapper around @supabase/supabase-js that:
  * 1. Initialises the client with project URL + publishable key from env vars when available.

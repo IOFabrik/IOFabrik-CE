@@ -1,4 +1,4 @@
-module controlzebra
+module iofabrik
 
 go 1.26
 

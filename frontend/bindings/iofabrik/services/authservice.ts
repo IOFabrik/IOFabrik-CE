@@ -17,7 +17,7 @@ import { Call as $Call, CancellablePromise as $CancellablePromise, Create as $Cr
  * It is a no-op (no error) if no session exists.
  */
 export function ClearSession(): $CancellablePromise<void> {
-    return $Call.ByID(4149955217);
+    return $Call.ByID(3931820847);
 }
 
 /**
@@ -26,7 +26,7 @@ export function ClearSession(): $CancellablePromise<void> {
  * frontend can treat empty-string as "not authenticated".
  */
 export function LoadSession(): $CancellablePromise<string> {
-    return $Call.ByID(1486670922);
+    return $Call.ByID(1223079272);
 }
 
 /**
@@ -34,5 +34,5 @@ export function LoadSession(): $CancellablePromise<string> {
  * It overwrites any previously stored session.
  */
 export function SaveSession(sessionJSON: string): $CancellablePromise<void> {
-    return $Call.ByID(3679177501, sessionJSON);
+    return $Call.ByID(3569260415, sessionJSON);
 }

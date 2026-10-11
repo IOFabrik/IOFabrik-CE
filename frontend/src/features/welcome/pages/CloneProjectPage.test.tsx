@@ -27,12 +27,12 @@ vi.mock('../../auth/hooks/useGitHubDeviceFlow', () => ({
   }),
 }));
 
-vi.mock('../../../../bindings/controlzebra/services/filedialogservice', () => ({
+vi.mock('../../../../bindings/iofabrik/services/filedialogservice', () => ({
   OpenFolderDialog: vi.fn(),
 }));
 
-vi.mock('../../../../bindings/controlzebra/services/githubservice', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('../../../../bindings/controlzebra/services/githubservice')>();
+vi.mock('../../../../bindings/iofabrik/services/githubservice', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../../../bindings/iofabrik/services/githubservice')>();
 
   return {
     ...actual,

@@ -25,14 +25,14 @@ import * as $models from "./models.js";
  * operation that can create or clear conflicts refreshes the queue.
  */
 export function AttachToBus(bus: $models.RepoEventBus | null): $CancellablePromise<void> {
-    return $Call.ByID(3218966251, bus);
+    return $Call.ByID(701644913, bus);
 }
 
 /**
  * ClearRepository unbinds the queue and emits an empty snapshot.
  */
 export function ClearRepository(): $CancellablePromise<$models.ConflictQueueSnapshot> {
-    return $Call.ByID(332920136).then(($result: any) => {
+    return $Call.ByID(3557601954).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -41,14 +41,14 @@ export function ClearRepository(): $CancellablePromise<$models.ConflictQueueSnap
  * DetachFromBus removes the bus subscription, if any.
  */
 export function DetachFromBus(): $CancellablePromise<void> {
-    return $Call.ByID(690322058);
+    return $Call.ByID(2592251784);
 }
 
 /**
  * GetConflictQueue returns the current snapshot without rescanning.
  */
 export function GetConflictQueue(): $CancellablePromise<$models.ConflictQueueSnapshot> {
-    return $Call.ByID(2792245334).then(($result: any) => {
+    return $Call.ByID(847138248).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -57,7 +57,7 @@ export function GetConflictQueue(): $CancellablePromise<$models.ConflictQueueSna
  * Refresh forces an immediate rescan, coalesced with any scan already running.
  */
 export function Refresh(): $CancellablePromise<$models.ConflictQueueSnapshot> {
-    return $Call.ByID(4276864702).then(($result: any) => {
+    return $Call.ByID(3652296660).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -66,7 +66,7 @@ export function Refresh(): $CancellablePromise<$models.ConflictQueueSnapshot> {
  * SetApp sets the Wails application reference for event emission.
  */
 export function SetApp(app: application$0.App | null): $CancellablePromise<void> {
-    return $Call.ByID(11458008, app);
+    return $Call.ByID(1267200758, app);
 }
 
 /**
@@ -74,7 +74,7 @@ export function SetApp(app: application$0.App | null): $CancellablePromise<void>
  * scans once so the caller receives an immediately usable snapshot.
  */
 export function SetRepository(repoPath: string): $CancellablePromise<$models.ConflictQueueSnapshot> {
-    return $Call.ByID(2906642793, repoPath).then(($result: any) => {
+    return $Call.ByID(609686279, repoPath).then(($result: any) => {
         return $$createType0($result);
     });
 }

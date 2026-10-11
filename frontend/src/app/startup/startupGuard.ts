@@ -1,7 +1,7 @@
-import type { DataLocations, OpenFileResult } from '../../../bindings/controlzebra/services/models';
+import type { DataLocations, OpenFileResult } from '../../../bindings/iofabrik/services/models';
 
-type SettingsServiceModule = typeof import('../../../bindings/controlzebra/services/settingsservice');
-type FileSystemServiceModule = typeof import('../../../bindings/controlzebra/services/filesystemservice');
+type SettingsServiceModule = typeof import('../../../bindings/iofabrik/services/settingsservice');
+type FileSystemServiceModule = typeof import('../../../bindings/iofabrik/services/filesystemservice');
 
 export interface StartupGuardElements {
   recoveryShell: HTMLElement | null;
@@ -44,7 +44,7 @@ export function createStartupFailureReference(
   now: Date = new Date(),
   randomValue: number = Math.random(),
 ): string {
-  return `CZ-STARTUP-${now.toISOString().replace(/[:.]/g, '-')}-${randomValue
+  return `IOFABRIK-STARTUP-${now.toISOString().replace(/[:.]/g, '-')}-${randomValue
     .toString(36)
     .slice(2, 8)
     .toUpperCase()}`;
@@ -57,7 +57,7 @@ export function formatStartupIssue(prefix: string, detail: string, now: Date = n
 export function buildStartupReferencePayload(reference: string, issues: string[]): string {
   return [
     `Reference: ${reference}`,
-    'Issue: ControlZebra startup recovery',
+    'Issue: IOFabrik startup recovery',
     '',
     issues.length > 0 ? issues.join('\n\n') : 'No technical details captured.',
   ].join('\n');
@@ -117,10 +117,10 @@ function renderIssues(elements: StartupGuardElements, issues: string[]): void {
 
 function getActionErrorMessage(action: 'diagnostics' | 'reference-copy'): string {
   if (action === 'diagnostics') {
-    return 'ControlZebra could not open diagnostics automatically.';
+    return 'IOFabrik could not open diagnostics automatically.';
   }
 
-  return 'ControlZebra could not copy the reference.';
+  return 'IOFabrik could not copy the reference.';
 }
 
 async function tryOpenDiagnosticsPath(
@@ -139,17 +139,17 @@ export function installStartupGuard(dependencies: StartupGuardDependencies = {})
   const documentRef = dependencies.document ?? document;
   const windowRef = dependencies.window ?? window;
   const isDev = dependencies.isDev ?? import.meta.env.DEV;
-  const previewFailure = dependencies.previewFailure ?? import.meta.env.VITE_CZ_STARTUP_ERROR_PREVIEW === '1';
+  const previewFailure = dependencies.previewFailure ?? import.meta.env.VITE_IOFABRIK_STARTUP_ERROR_PREVIEW === '1';
   const startupTimeoutMs = dependencies.startupTimeoutMs ?? DEFAULT_STARTUP_TIMEOUT_MS;
   const now = dependencies.now ?? (() => new Date());
   const random = dependencies.random ?? Math.random;
   const logger = dependencies.logger ?? console;
   const importSettingsService =
     dependencies.importSettingsService ??
-    (() => import('../../../bindings/controlzebra/services/settingsservice'));
+    (() => import('../../../bindings/iofabrik/services/settingsservice'));
   const importFileSystemService =
     dependencies.importFileSystemService ??
-    (() => import('../../../bindings/controlzebra/services/filesystemservice'));
+    (() => import('../../../bindings/iofabrik/services/filesystemservice'));
 
   const elements = getStartupGuardElements(documentRef);
   const issues: string[] = [];
@@ -197,7 +197,7 @@ export function installStartupGuard(dependencies: StartupGuardDependencies = {})
 
       const result = await tryOpenDiagnosticsPath(fileSystemService, diagnosticsPath);
       if (!result.success) {
-        throw new Error(result.error || 'ControlZebra could not open diagnostics automatically.');
+        throw new Error(result.error || 'IOFabrik could not open diagnostics automatically.');
       }
 
       setStatus(elements, 'Diagnostics opened.');
@@ -281,7 +281,7 @@ export function installStartupGuard(dependencies: StartupGuardDependencies = {})
     if (root && root.children.length === 0) {
       showStartupFailure(
         '[mount-timeout]',
-        'ControlZebra did not finish opening before the startup timeout. The app shell never became ready.',
+        'IOFabrik did not finish opening before the startup timeout. The app shell never became ready.',
       );
     }
   }, startupTimeoutMs);
@@ -296,14 +296,14 @@ export function installStartupGuard(dependencies: StartupGuardDependencies = {})
     void copyReference();
   });
 
-  windowRef.addEventListener('cz:app-shell-ready', handleReady, { once: true });
+  windowRef.addEventListener('iofabrik:app-shell-ready', handleReady, { once: true });
   windowRef.addEventListener('error', handleWindowError as EventListener);
   windowRef.addEventListener('unhandledrejection', handleUnhandledRejection as EventListener);
 
   if (previewFailure) {
     showStartupFailure(
       '[preview]',
-      'Simulated startup recovery screen. Disable VITE_CZ_STARTUP_ERROR_PREVIEW to return to the normal app.',
+      'Simulated startup recovery screen. Disable VITE_IOFABRIK_STARTUP_ERROR_PREVIEW to return to the normal app.',
     );
   }
 
@@ -311,7 +311,7 @@ export function installStartupGuard(dependencies: StartupGuardDependencies = {})
     failureReference,
     cleanup: () => {
       windowRef.clearTimeout(timeoutId);
-      windowRef.removeEventListener('cz:app-shell-ready', handleReady as EventListener);
+      windowRef.removeEventListener('iofabrik:app-shell-ready', handleReady as EventListener);
       windowRef.removeEventListener('error', handleWindowError as EventListener);
       windowRef.removeEventListener('unhandledrejection', handleUnhandledRejection as EventListener);
     },

@@ -1,5 +1,5 @@
 /**
- * AuthContext - Supabase authentication state + actions for ControlZebra.
+ * AuthContext - Supabase authentication state + actions for IOFabrik.
  *
  * Handles:
  * - Session hydration from backend keychain
@@ -29,7 +29,7 @@ import {
   LoadSession,
   SaveSession,
   ClearSession,
-} from '../../../../bindings/controlzebra/services/authservice';
+} from '../../../../bindings/iofabrik/services/authservice';
 
 interface AuthContextValue {
   isLoading: boolean;

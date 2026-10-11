@@ -22,7 +22,7 @@ vi.mock('../supabaseClient', () => ({
   isSupabaseConfigured: (...args: unknown[]) => mockIsSupabaseConfigured(...args),
 }));
 
-vi.mock('../../../../bindings/controlzebra/services/authservice', () => ({
+vi.mock('../../../../bindings/iofabrik/services/authservice', () => ({
   LoadSession: (...args: unknown[]) => mockLoadSession(...args),
   SaveSession: (...args: unknown[]) => mockSaveSession(...args),
   ClearSession: (...args: unknown[]) => mockClearSession(...args),
@@ -60,7 +60,7 @@ const mockSession = {
   expires_at: 123,
   expires_in: 3600,
   token_type: 'bearer',
-  user: { email: 'user@controlzebra.com', user_metadata: {} },
+  user: { email: 'user@iofabrik.com', user_metadata: {} },
 } as unknown;
 
 beforeEach(() => {
@@ -98,7 +98,7 @@ describe('AuthContext', () => {
     expect(screen.getByTestId('auth')).toHaveTextContent('true');
     expect(screen.getByTestId('guest')).toHaveTextContent('false');
     expect(screen.getByTestId('available')).toHaveTextContent('true');
-    expect(screen.getByTestId('email')).toHaveTextContent('user@controlzebra.com');
+    expect(screen.getByTestId('email')).toHaveTextContent('user@iofabrik.com');
     expect(mockSaveSession).toHaveBeenCalledWith('serialized-session');
   });
 
@@ -158,10 +158,10 @@ describe('AuthContext', () => {
     });
 
     await act(async () => {
-      await capturedLogin?.('user@controlzebra.com', 'password123');
+      await capturedLogin?.('user@iofabrik.com', 'password123');
     });
 
-    expect(mockSignIn).toHaveBeenCalledWith('user@controlzebra.com', 'password123');
+    expect(mockSignIn).toHaveBeenCalledWith('user@iofabrik.com', 'password123');
     expect(mockSaveSession).toHaveBeenCalledWith('serialized-session');
     expect(screen.getByTestId('auth')).toHaveTextContent('true');
   });

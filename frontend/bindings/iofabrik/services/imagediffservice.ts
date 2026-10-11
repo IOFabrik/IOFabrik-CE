@@ -24,7 +24,7 @@ import * as $models from "./models.js";
  *   - newRevision: commit hash, or empty string = use working tree version
  */
 export function ImageDiff(repoPath: string, filePath: string, oldRevision: string, newRevision: string): $CancellablePromise<$models.ImageDiffResult> {
-    return $Call.ByID(603761054, repoPath, filePath, oldRevision, newRevision).then(($result: any) => {
+    return $Call.ByID(1246841168, repoPath, filePath, oldRevision, newRevision).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -34,7 +34,7 @@ export function ImageDiff(repoPath: string, filePath: string, oldRevision: strin
  * Convenience method for viewing changes introduced by a specific commit.
  */
 export function ImageDiffCommit(repoPath: string, filePath: string, commitHash: string): $CancellablePromise<$models.ImageDiffResult> {
-    return $Call.ByID(2941118283, repoPath, filePath, commitHash).then(($result: any) => {
+    return $Call.ByID(2540857741, repoPath, filePath, commitHash).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -44,7 +44,7 @@ export function ImageDiffCommit(repoPath: string, filePath: string, commitHash: 
  * Convenience method for the common case of viewing uncommitted changes.
  */
 export function ImageDiffWorking(repoPath: string, filePath: string): $CancellablePromise<$models.ImageDiffResult> {
-    return $Call.ByID(2579508021, repoPath, filePath).then(($result: any) => {
+    return $Call.ByID(1044074275, repoPath, filePath).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -54,7 +54,7 @@ export function ImageDiffWorking(repoPath: string, filePath: string): $Cancellab
  * SVG is excluded since it's XML and better handled by text diff.
  */
 export function IsImageFile(filePath: string): $CancellablePromise<boolean> {
-    return $Call.ByID(2072494783, filePath);
+    return $Call.ByID(2237047753, filePath);
 }
 
 // Private type creation functions

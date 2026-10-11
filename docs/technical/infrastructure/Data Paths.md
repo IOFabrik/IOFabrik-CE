@@ -1,10 +1,10 @@
 # Data Paths
 
-> `services/data_paths.go` — XDG-compliant storage layout with legacy migration.
+> `services/data_paths.go` — Platform-specific storage layout with legacy migration.
 
 ## Overview
 
-All application data is organized into roaming config (syncs across machines) and local data (machine-specific). On startup, a one-time migration moves legacy `control-zebra` paths to canonical `ControlZebra` paths.
+Application settings use the OS config directory on macOS and Linux. Windows settings and other machine data share `%LOCALAPPDATA%\IOFabrik`. On startup, migration recovers data from the previous `ControlZebra` and older `control-zebra` layouts.
 
 ## DataLocations Structure
 
@@ -18,7 +18,7 @@ type DataLocations struct {
     CacheDir               string  // Build artifacts
     ToolsBinDir            string  // Portable binaries (Windows only)
     WebView2Dir            string  // WebView2 runtime (Windows)
-    MigrationMarkerFile    string  // data-layout-v1.json
+    MigrationMarkerFile    string  // data-layout-v3.json
 }
 ```
 
@@ -28,42 +28,44 @@ type DataLocations struct {
 
 | Data | Path |
 |------|------|
-| Roaming Config | `%APPDATA%\ControlZebra\config\` |
-| Settings File | `%APPDATA%\ControlZebra\config\settings.json` |
-| Repo Settings | `%APPDATA%\ControlZebra\config\repositories\<repoID>\` |
-| Local Data | `%LOCALAPPDATA%\ControlZebra\` |
-| Logs | `%LOCALAPPDATA%\ControlZebra\logs\` |
-| Portable Tools | `%LOCALAPPDATA%\ControlZebra\tools\bin\` |
-| WebView2 | `%LOCALAPPDATA%\ControlZebra\webview2\` |
+| Roaming Config | `%LOCALAPPDATA%\IOFabrik\config\` |
+| Settings File | `%LOCALAPPDATA%\IOFabrik\config\settings.json` |
+| Repo Settings | `%LOCALAPPDATA%\IOFabrik\config\repositories\<repoID>.json` |
+| Local Data | `%LOCALAPPDATA%\IOFabrik\` |
+| Logs | `%LOCALAPPDATA%\IOFabrik\logs\` |
+| Portable Tools | `%LOCALAPPDATA%\IOFabrik\tools\bin\` |
+| WebView2 | `%LOCALAPPDATA%\IOFabrik\webview2\` |
 
 ### macOS
 
 | Data | Path |
 |------|------|
-| Roaming Config | `~/.config/ControlZebra/config/` |
-| Settings File | `~/.config/ControlZebra/config/settings.json` |
-| Repo Settings | `~/.config/ControlZebra/config/repositories/<repoID>/` |
-| Local Data | `~/Library/Caches/ControlZebra/` |
-| Logs | `~/Library/Caches/ControlZebra/logs/` |
+| Roaming Config | `~/Library/Application Support/IOFabrik/config/` |
+| Settings File | `~/Library/Application Support/IOFabrik/config/settings.json` |
+| Repo Settings | `~/Library/Application Support/IOFabrik/config/repositories/<repoID>.json` |
+| Local Data | `~/Library/Caches/IOFabrik/` |
+| Logs | `~/Library/Caches/IOFabrik/logs/` |
 | Portable Tools | N/A (uses system binaries) |
 
 ## Data Layout Migration
 
-On startup, `RunDataLayoutMigration()`:
+On startup, `RunDataLayoutMigration()` checks for `data-layout-v3.json`.
+If it is absent, migration moves settings, logs, cache, browser profiles, and
+review-session records into the IOFabrik directories. Current destination files
+take precedence. The marker is written only after migration succeeds.
 
-1. Checks for `data-layout-v1.json` marker file
-2. If missing → this is a fresh install or pre-migration install
-3. If pre-migration data exists at legacy paths (`control-zebra` → `ControlZebra`):
-   - Copies settings, repo configs
-   - Non-destructive: existing files at target are **not** overwritten
-4. Writes `data-layout-v1.json` marker to prevent re-migration
+Windows sources include `%LOCALAPPDATA%\ControlZebra`,
+`%APPDATA%\ControlZebra\config`, and `%APPDATA%\control-zebra`.
+macOS sources include `~/Library/Application Support/ControlZebra/config`
+and `~/Library/Caches/ControlZebra`. Older `control-zebra` config and log
+locations are also checked. Linux uses its OS config and cache directories,
+including the `XDG_CONFIG_HOME` and `XDG_CACHE_HOME` overrides.
 
-### Legacy Paths (pre-migration)
-
-```
-Windows: %APPDATA%\control-zebra\  →  %APPDATA%\ControlZebra\
-macOS:   ~/.config/control-zebra/  →  ~/.config/ControlZebra/
-```
+Existing review workspaces remain in the previous `ControlZebra/integration/workspaces`
+directory because their records and Git worktree registrations contain absolute
+paths. The new app accepts their legacy ownership markers and cleans up both
+old and new result refs. New reviews use IOFabrik paths and identifiers.
+Portable tools migrate only when the new location has no managed bundle manifest.
 
 ## Per-Repo Settings Location
 
@@ -71,10 +73,10 @@ Each repository gets a unique directory based on its path hash:
 
 ```go
 repoID := sha256(repoPath)[:16]  // First 16 hex chars
-settingsPath := filepath.Join(RepositorySettingsDir, repoID, "settings.json")
+settingsPath := filepath.Join(RepositorySettingsDir, repoID+".json")
 ```
 
-This allows settings to persist even if the repo is moved or renamed (though the hash would change).
+Moving or renaming the repository changes its path hash and therefore its settings filename.
 
 ## Access Pattern
 

@@ -1,4 +1,4 @@
-# AGENTS.md — ControlZebra
+# AGENTS.md — IOFabrik
 
 Read `.github/copilot-instructions.md` first for architecture. This file is
 the non-negotiable checklist for any autonomous/agentic change.

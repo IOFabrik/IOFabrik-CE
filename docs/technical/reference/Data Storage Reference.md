@@ -6,12 +6,12 @@
 
 | Data Class | Windows | macOS |
 |---|---|---|
-| **Config (roaming)** | `%APPDATA%\ControlZebra\config\` | `~/.config/ControlZebra/config/` |
+| **Config** | `%LOCALAPPDATA%\IOFabrik\config\` | `~/Library/Application Support/IOFabrik/config/` |
 | **Settings file** | `…\config\settings.json` | `…/config/settings.json` |
 | **Repo settings** | `…\config\repositories\<hash>.json` | `…/config/repositories/<hash>.json` |
-| **Local data** | `%LOCALAPPDATA%\ControlZebra\` | `~/Library/Caches/ControlZebra/` |
-| **Logs** | `…\ControlZebra\logs\` | `…/ControlZebra/logs/` |
-| **Portable tools** | `…\ControlZebra\tools\bin\` | N/A (uses system) |
+| **Local data** | `%LOCALAPPDATA%\IOFabrik\` | `~/Library/Caches/IOFabrik/` |
+| **Logs** | `…\IOFabrik\logs\` | `…/IOFabrik/logs/` |
+| **Portable tools** | `…\IOFabrik\tools\bin\` | N/A (uses system) |
 
 ## settings.json
 
@@ -28,7 +28,7 @@ Managed by [SettingsService](../backend/services/SettingsService.md):
 
 ## Repository Settings
 
-Per-repo configuration managed by [RepositorySettingsService](../backend/services/RepositorySettingsService.md), stored in `repositories/<sha256-of-path>.json`:
+Per-repo configuration managed by [RepositorySettingsService](../backend/services/RepositorySettingsService.md), stored in `repositories/<first-16-hex-characters-of-sha256-of-path>.json`:
 
 ```json
 {
@@ -53,21 +53,22 @@ Repo settings filenames use SHA-256 hash of the absolute repo path:
 ```go
 func hashRepoPath(repoPath string) string {
     h := sha256.Sum256([]byte(repoPath))
-    return hex.EncodeToString(h[:])
+    return hex.EncodeToString(h[:8])
 }
 // "/Users/dev/my-project" → "a3f8c1d2...json"
 ```
 
 ## Legacy Migration
 
-On startup, `data_paths.go` checks for legacy directory names and migrates:
+Migration recovers the previous `ControlZebra` and older `control-zebra` data
+layouts. Current IOFabrik files take precedence. The version 3 marker prevents
+repeat migration after success. Registered review workspaces stay at their
+original paths until the reviews finish or are cancelled.
+See [Data Paths](../infrastructure/Data%20Paths.md) for migration sources.
 
-| Old Path | New Path |
-|---|---|
-| `control-zebra/config/` | `ControlZebra/config/` |
-| `control-zebra/logs/` | `ControlZebra/logs/` |
-
-Migration is one-time and logged. The old directories are removed after successful migration.
+Project config now uses `.iofabrik/config.json` and `.iofabrik/local.json`.
+Reads fall back to the corresponding `.controlzebra` file if the new file is
+absent; writes use the new directory.
 
 ## Keychain Storage
 
@@ -78,8 +79,11 @@ The [AuthService](../backend/services/Other%20Services.md#authservice) stores th
 | macOS | Keychain Access (via `go-keyring`) |
 | Windows | Windows Credential Manager |
 
-**Service name:** `ControlZebra`
-**Key:** `supabase_session`
+**Service name:** `com.iofabrik.desktop`
+**Key:** `supabase-session`
+
+If the new credential is absent, AuthService recovers and promotes the session
+from `com.controlzebra.desktop`. Signing out clears both service names.
 
 ---
 

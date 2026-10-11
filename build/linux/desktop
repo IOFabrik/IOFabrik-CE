@@ -1,13 +1,13 @@
 [Desktop Entry]
 Version=1.0
-Name=ControlZebra
-Comment=ControlZebra
+Name=IOFabrik
+Comment=IOFabrik
 # The Exec line includes %u to pass the URL to the application
-Exec=/usr/local/bin/control-zebra %u
+Exec=/usr/local/bin/iofabrik %u
 Terminal=false
 Type=Application
-Icon=control-zebra
+Icon=iofabrik
 Categories=Utility;
-StartupWMClass=control-zebra
+StartupWMClass=iofabrik
 
  

@@ -1,5 +1,5 @@
 /**
- * LoginView - Modern full-screen login gate for ControlZebra.
+ * LoginView - Modern full-screen login gate for IOFabrik.
  *
  * Uses a standalone theme hook (useLoginTheme) because LayoutContext
  * isn't available until after authentication. Theme preference is
@@ -25,6 +25,7 @@ import {
 import { useAuth } from '../../../context';
 import { useLoginTheme } from '../../../shared/hooks/useLoginTheme';
 import Spinner from '../../../shared/ui/Spinner';
+import iofabrikMark from '../../../shared/brand/iofabrik-mark.svg';
 
 interface LoginViewProps {
   variant?: 'fullscreen' | 'embedded';
@@ -35,41 +36,6 @@ interface LoginViewProps {
 /* -------------------------------------------------------------------------- */
 /*  Logo                                                                      */
 /* -------------------------------------------------------------------------- */
-
-function ZebraLogo({ className = 'h-10 w-10' }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 48 48"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <circle cx="24" cy="24" r="22" className="fill-blue-500/20" />
-      <circle cx="24" cy="24" r="18" className="fill-neutral-900 dark:fill-neutral-100" />
-      {/* Git branch nodes */}
-      <circle cx="24" cy="14" r="3" className="fill-blue-500" />
-      <circle cx="18" cy="24" r="3" className="fill-blue-400" />
-      <circle cx="30" cy="24" r="3" className="fill-blue-400" />
-      <circle cx="24" cy="34" r="3" className="fill-blue-500" />
-      {/* Branch lines */}
-      <path
-        d="M24 17 L24 31 M21 24 L27 24 M21 21 L27 27 M27 21 L21 27"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        className="text-blue-500/60"
-      />
-      {/* Zebra stripes */}
-      <path
-        d="M15 20 L18 17 M33 20 L30 17 M15 28 L18 31 M33 28 L30 31"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        className="text-neutral-500 dark:text-neutral-500"
-      />
-    </svg>
-  );
-}
 
 /* -------------------------------------------------------------------------- */
 /*  Theme toggle                                                              */
@@ -166,7 +132,7 @@ function LoginCard({
           <div className="rounded-md border border-theme-default bg-theme-surface px-4 py-4 text-sm text-theme-secondary">
             <p className="font-medium text-theme-primary">Account sign-in is unavailable in this build.</p>
             <p className="mt-1 text-theme-muted">
-              You can keep using ControlZebra for local Git work without signing in.
+              You can keep using IOFabrik for local Git work without signing in.
             </p>
           </div>
         ) : isLoading ? (
@@ -261,14 +227,14 @@ function LoginView({
   const cardTitle = title ?? 'Sign in';
   const cardDescription = description ?? (
     variant === 'embedded'
-      ? 'Use your ControlZebra account for optional cloud features. Local Git work stays available without signing in.'
+      ? 'Use your IOFabrik account for optional cloud features. Local Git work stays available without signing in.'
       : 'Enter your credentials to continue.'
   );
   const footer = isAuthAvailable ? (
     <p className="text-xs text-theme-muted text-center">
       Don&apos;t have an account?{' '}
       <a
-        href="https://controlzebra.com"
+        href="https://iofabrik.com"
         target="_blank"
         rel="noopener noreferrer"
         className="text-blue-500 hover:text-blue-400 transition-colors"
@@ -278,7 +244,7 @@ function LoginView({
     </p>
   ) : (
     <p className="text-xs text-theme-muted text-center">
-      ControlZebra accounts are optional. Guest mode still supports local version control.
+      IOFabrik accounts are optional. Guest mode still supports local version control.
     </p>
   );
 
@@ -350,10 +316,10 @@ function LoginView({
       <div className="relative z-10 w-full max-w-sm px-4 animate-screen-enter">
         {/* Branding */}
         <div className="mb-8 flex flex-col items-center gap-3 text-center select-none">
-          <ZebraLogo className="h-12 w-12" />
+          <img src={iofabrikMark} alt="" className="h-12 w-12" />
           <div>
             <h1 className="text-xl font-semibold tracking-tight text-theme-primary">
-              Control<span className="text-blue-500">Zebra</span>
+              IO<span className="text-blue-500">Fabrik</span>
             </h1>
             <p className="mt-1 text-xs text-theme-muted">
               Version control for industrial automation
@@ -380,7 +346,7 @@ function LoginView({
 
         {/* Footer legal */}
         <p className="mt-6 text-center text-[11px] text-theme-muted select-none">
-          © {new Date().getFullYear()} ControlZebra. All rights reserved.
+          © {new Date().getFullYear()} IOFabrik. All rights reserved.
         </p>
       </div>
     </div>

@@ -90,8 +90,8 @@ Or just run `task dev` — bindings auto-regenerate in dev mode.
 Import the generated binding:
 
 ```tsx
-import { DoSomething } from '../../bindings/controlzebra/services/myservice';
-import type { OperationResult } from '../../bindings/controlzebra/services/models';
+import { DoSomething } from '../../bindings/iofabrik/services/myservice';
+import type { OperationResult } from '../../bindings/iofabrik/services/models';
 
 const result = await DoSomething(repoPath, "param");
 if (result.success) {

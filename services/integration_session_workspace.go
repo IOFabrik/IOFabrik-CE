@@ -34,7 +34,7 @@ const (
 	// integrationOwnershipMarkerName lives in the worktree's administrative
 	// directory, outside the working tree, so it never shows up as untracked
 	// content that could be swept into a resolution.
-	integrationOwnershipMarkerName = "controlzebra-session.json"
+	integrationOwnershipMarkerName = "iofabrik-session.json"
 )
 
 type integrationOwnershipMarker struct {
@@ -159,7 +159,7 @@ func forceRemoveIntegrationWorkspace(runner gitAdminPathRunner, repoPath string,
 }
 
 func integrationWorktreeLockReason(sessionID string) string {
-	return "ControlZebra Conflict Review " + sessionID
+	return "IOFabrik Conflict Review " + sessionID
 }
 
 // cancelIntegrationSession removes everything a session created: its workspace,
@@ -170,11 +170,9 @@ func cancelIntegrationSession(runner gitAdminPathRunner, store *integrationSessi
 		return err
 	}
 
-	ref, err := integrationResultRef(session.SessionID)
-	if err != nil {
+	if err := deleteIntegrationResultRefs(runner, session.OpenProjectPath, session.SessionID); err != nil {
 		return err
 	}
-	runner.RunGit(session.OpenProjectPath, "update-ref", "-d", ref)
 
 	return store.delete(session.SessionID)
 }
@@ -203,7 +201,7 @@ func cancelUpdateSession(runner gitAdminPathRunner, store *integrationSessionSto
 	}
 
 	if err := store.delete(session.SessionID); err != nil {
-		return fmt.Errorf("ControlZebra couldn't finish cancelling the update. Close and reopen ControlZebra, then try again.")
+		return fmt.Errorf("IOFabrik couldn't finish cancelling the update. Close and reopen IOFabrik, then try again.")
 	}
 	return nil
 }
@@ -246,8 +244,11 @@ func verifyIntegrationOwnership(runner gitAdminPathRunner, workspacePath string,
 	}
 
 	payload, err := os.ReadFile(markerPath)
+	if os.IsNotExist(err) {
+		payload, err = os.ReadFile(filepath.Join(filepath.Dir(markerPath), "controlzebra-session.json"))
+	}
 	if err != nil {
-		return fmt.Errorf("refusing to remove %s: it is not a ControlZebra review workspace", workspacePath)
+		return fmt.Errorf("refusing to remove %s: it is not a IOFabrik review workspace", workspacePath)
 	}
 
 	marker := integrationOwnershipMarker{}

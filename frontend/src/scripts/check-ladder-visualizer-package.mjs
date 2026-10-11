@@ -3,12 +3,12 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const frontendRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
-const expectedRepository = 'git+https://github.com/ControlZebra/ladder-visualizer.git';
+const expectedRepository = 'git+https://github.com/IOFabrik/ladder-visualizer.git';
 const immutableDependencyPattern = new RegExp(
   `^${expectedRepository.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}#[0-9a-f]{40}$`,
 );
 const npmLockResolutionPattern =
-  /^git\+(?:https:\/\/github\.com\/|ssh:\/\/git@github\.com\/)ControlZebra\/ladder-visualizer\.git#[0-9a-f]{40}$/;
+  /^git\+(?:https:\/\/github\.com\/|ssh:\/\/git@github\.com\/)IOFabrik\/ladder-visualizer\.git#[0-9a-f]{40}$/;
 
 const [packageJson, packageLock, visualizerPackage] = await Promise.all([
   readJson(resolve(frontendRoot, 'package.json')),
@@ -19,7 +19,7 @@ const [packageJson, packageLock, visualizerPackage] = await Promise.all([
 const dependency = packageJson.dependencies?.['ladder-visualizer'];
 assert(
   typeof dependency === 'string' && immutableDependencyPattern.test(dependency),
-  'frontend/package.json must pin ladder-visualizer to a full ControlZebra Git commit.',
+  'frontend/package.json must pin ladder-visualizer to a full IOFabrik Git commit.',
 );
 
 assert(

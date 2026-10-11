@@ -8,27 +8,27 @@
         AllowPromptForPassword="false">
     </Settings>
     <Installer
-        Path="control-zebra"
+        Path="iofabrik"
         Arguments=""
-        InstallLocation="C:\Program Files\ControlZebra\ControlZebra">
+        InstallLocation="C:\Program Files\IOFabrik\IOFabrik">
     </Installer>
     <PackageInformation
-        PackageName="ControlZebra"
-        PackageDisplayName="ControlZebra"
-        PublisherName="CN=ControlZebra"
-        PublisherDisplayName="ControlZebra"
+        PackageName="IOFabrik"
+        PackageDisplayName="IOFabrik"
+        PublisherName="CN=IOFabrik"
+        PublisherDisplayName="IOFabrik"
         Version="0.1.0.0"
-        PackageDescription="ControlZebra">
+        PackageDescription="IOFabrik">
         <Capabilities>
             <Capability Name="runFullTrust" />
             
         </Capabilities>
         <Applications>
             <Application
-                Id="com.controlzebra.controlzebra"
-                Description="ControlZebra"
-                DisplayName="ControlZebra"
-                ExecutableName="control-zebra"
+                Id="com.iofabrik.iofabrik"
+                Description="IOFabrik"
+                DisplayName="IOFabrik"
+                ExecutableName="iofabrik"
                 EntryPoint="Windows.FullTrustApplication">
                 
             </Application>
@@ -41,13 +41,13 @@
         </Dependencies>
         <Properties>
             <Framework>false</Framework>
-            <DisplayName>ControlZebra</DisplayName>
-            <PublisherDisplayName>ControlZebra</PublisherDisplayName>
-            <Description>ControlZebra</Description>
+            <DisplayName>IOFabrik</DisplayName>
+            <PublisherDisplayName>IOFabrik</PublisherDisplayName>
+            <Description>IOFabrik</Description>
             <Logo>Assets\AppIcon.png</Logo>
         </Properties>
     </PackageInformation>
-    <SaveLocation PackagePath="control-zebra.msix" />
+    <SaveLocation PackagePath="iofabrik.msix" />
     <PackageIntegrity>
         <CertificatePath></CertificatePath>
     </PackageIntegrity>

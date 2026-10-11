@@ -4,7 +4,7 @@
 
 ## Overview
 
-GitService is the core of ControlZebra. It wraps every git CLI operation the app needs — from basic status checks to complex merge workflows, bisect, cherry-pick, and lock file management.
+GitService is the core of IOFabrik. It wraps every git CLI operation the app needs — from basic status checks to complex merge workflows, bisect, cherry-pick, and lock file management.
 
 ## Constructor
 

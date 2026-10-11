@@ -18,7 +18,7 @@ import * as $models from "./models.js";
  * CopyToClipboard copies the given text to the system clipboard
  */
 export function CopyToClipboard(text: string): $CancellablePromise<$models.OpenFileResult> {
-    return $Call.ByID(4270447151, text).then(($result: any) => {
+    return $Call.ByID(3850927973, text).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -27,14 +27,14 @@ export function CopyToClipboard(text: string): $CancellablePromise<$models.OpenF
  * GetParentDirectory returns the parent directory of the given path
  */
 export function GetParentDirectory(path: string): $CancellablePromise<string> {
-    return $Call.ByID(2630067680, path);
+    return $Call.ByID(1264526770, path);
 }
 
 /**
  * ListDirectory lists the contents of a directory (excludes hidden files by default)
  */
 export function ListDirectory(path: string): $CancellablePromise<$models.DirectoryContents> {
-    return $Call.ByID(3353852338, path).then(($result: any) => {
+    return $Call.ByID(170834664, path).then(($result: any) => {
         return $$createType1($result);
     });
 }
@@ -44,7 +44,7 @@ export function ListDirectory(path: string): $CancellablePromise<$models.Directo
  * includeHidden: if true, includes hidden files (starting with .)
  */
 export function ListDirectoryWithOptions(path: string, includeHidden: boolean): $CancellablePromise<$models.DirectoryContents> {
-    return $Call.ByID(1676200912, path, includeHidden).then(($result: any) => {
+    return $Call.ByID(987064382, path, includeHidden).then(($result: any) => {
         return $$createType1($result);
     });
 }
@@ -53,7 +53,7 @@ export function ListDirectoryWithOptions(path: string, includeHidden: boolean): 
  * MoveToTrash moves a file or directory to the system trash/recycle bin.
  */
 export function MoveToTrash(path: string): $CancellablePromise<$models.OpenFileResult> {
-    return $Call.ByID(3151689427, path).then(($result: any) => {
+    return $Call.ByID(4190426545, path).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -62,7 +62,7 @@ export function MoveToTrash(path: string): $CancellablePromise<$models.OpenFileR
  * OpenFile opens a file with the default application
  */
 export function OpenFile(path: string): $CancellablePromise<$models.OpenFileResult> {
-    return $Call.ByID(530707657, path).then(($result: any) => {
+    return $Call.ByID(2230494915, path).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -71,7 +71,7 @@ export function OpenFile(path: string): $CancellablePromise<$models.OpenFileResu
  * OpenInTerminal opens a terminal at the specified path
  */
 export function OpenInTerminal(path: string): $CancellablePromise<$models.OpenFileResult> {
-    return $Call.ByID(604884284, path).then(($result: any) => {
+    return $Call.ByID(2960343614, path).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -80,7 +80,7 @@ export function OpenInTerminal(path: string): $CancellablePromise<$models.OpenFi
  * OpenURL opens a URL in the system's default browser
  */
 export function OpenURL(url: string): $CancellablePromise<$models.OpenFileResult> {
-    return $Call.ByID(2926426704, url).then(($result: any) => {
+    return $Call.ByID(2087055134, url).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -92,7 +92,7 @@ export function OpenURL(url: string): $CancellablePromise<$models.OpenFileResult
  * Limit: 50MB max file size.
  */
 export function ReadFileBase64(path: string): $CancellablePromise<$models.ReadFileBase64Result> {
-    return $Call.ByID(894044062, path).then(($result: any) => {
+    return $Call.ByID(1232336280, path).then(($result: any) => {
         return $$createType2($result);
     });
 }
@@ -101,7 +101,7 @@ export function ReadFileBase64(path: string): $CancellablePromise<$models.ReadFi
  * ReadTextFile reads the content of a text file
  */
 export function ReadTextFile(path: string): $CancellablePromise<$models.ReadTextFileResult> {
-    return $Call.ByID(3246798046, path).then(($result: any) => {
+    return $Call.ByID(2530448028, path).then(($result: any) => {
         return $$createType3($result);
     });
 }
@@ -110,7 +110,7 @@ export function ReadTextFile(path: string): $CancellablePromise<$models.ReadText
  * RevealInFinder opens the containing folder in the system file manager and selects the file
  */
 export function RevealInFinder(path: string): $CancellablePromise<$models.OpenFileResult> {
-    return $Call.ByID(3332293609, path).then(($result: any) => {
+    return $Call.ByID(2585242863, path).then(($result: any) => {
         return $$createType0($result);
     });
 }

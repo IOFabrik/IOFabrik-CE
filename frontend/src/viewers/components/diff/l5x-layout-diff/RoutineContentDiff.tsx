@@ -2,7 +2,7 @@ import { memo, useCallback, useMemo, useState } from 'react';
 import { FBDDiffDiagram, RawRoutineViewer, type NormalizedFBDBody, type NormalizedRoutine, type InstructionContext } from 'ladder-visualizer';
 import CodeMirrorTextViewer from '../../text/CodeMirrorTextViewer';
 import { L5XRoutineViewer } from '../../file/l5x/L5XRoutineViewer';
-import { CONTROL_ZEBRA_LADDER_THEME } from '../../file/l5x/theme';
+import { IOFABRIK_LADDER_THEME } from '../../file/l5x/theme';
 import type { L5XDiffRoutineEntity } from './types';
 
 const SourceVersion = memo(function SourceVersion({ label, routine, text, instructionContext }: {
@@ -56,7 +56,7 @@ const FBDRoutineComparison = memo(function FBDRoutineComparison({ entity }: { en
     </div>
     <div className="min-h-0 flex-1">
       {oldBody || newBody ? <FBDDiffDiagram oldBody={oldBody} newBody={newBody} width="100%" height="100%"
-        theme={CONTROL_ZEBRA_LADDER_THEME} className="h-full w-full" onDiagnostics={onDiagnostics} />
+        theme={IOFABRIK_LADDER_THEME} className="h-full w-full" onDiagnostics={onDiagnostics} />
         : <p className="p-4 text-sm text-theme-secondary">FBD comparison content is unavailable. Use Raw to inspect this routine.</p>}
     </div>
   </div>;

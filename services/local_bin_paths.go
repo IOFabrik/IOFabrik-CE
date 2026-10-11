@@ -5,7 +5,7 @@ import (
 )
 
 // LocalBinRootPath returns the managed user-level bin directory.
-// On Windows this resolves to: %LOCALAPPDATA%\ControlZebra\tools\bin
+// On Windows this resolves to: %LOCALAPPDATA%\IOFabrik\tools\bin
 func LocalBinRootPath() string {
 	return GetDataLocationsSnapshot().ToolsBinDir
 }

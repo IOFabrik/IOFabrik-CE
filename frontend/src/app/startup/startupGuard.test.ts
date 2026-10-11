@@ -27,15 +27,15 @@ function installTestMarkup(): void {
 describe('startupGuard helpers', () => {
   it('creates a stable startup reference format', () => {
     const reference = createStartupFailureReference(new Date('2026-03-29T10:11:12.345Z'), 0.123456789);
-    expect(reference).toBe('CZ-STARTUP-2026-03-29T10-11-12-345Z-4FZZZX');
+    expect(reference).toBe('IOFABRIK-STARTUP-2026-03-29T10-11-12-345Z-4FZZZX');
   });
 
   it('formats issues and builds a support payload', () => {
     const issue = formatStartupIssue('[mount-timeout]', 'Shell never became ready.', new Date('2026-03-29T10:11:12.345Z'));
     expect(issue).toContain('2026-03-29T10:11:12.345Z [mount-timeout]');
 
-    const payload = buildStartupReferencePayload('CZ-STARTUP-REF', [issue]);
-    expect(payload).toContain('Reference: CZ-STARTUP-REF');
+    const payload = buildStartupReferencePayload('IOFABRIK-STARTUP-REF', [issue]);
+    expect(payload).toContain('Reference: IOFABRIK-STARTUP-REF');
     expect(payload).toContain('Shell never became ready.');
   });
 
@@ -89,7 +89,7 @@ describe('installStartupGuard', () => {
     expect(document.getElementById('startup-recovery-shell')?.getAttribute('data-visible')).toBe('true');
 
     document.documentElement.dataset.czAppReady = 'true';
-    window.dispatchEvent(new CustomEvent('cz:app-shell-ready'));
+    window.dispatchEvent(new CustomEvent('iofabrik:app-shell-ready'));
 
     expect(document.getElementById('startup-recovery-shell')?.getAttribute('data-visible')).toBe('false');
 

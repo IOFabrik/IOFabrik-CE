@@ -9,14 +9,14 @@ import type {
   GitHubCreateChangeRequestOptions as GitHubCreateChangeRequestOptionsModel,
   GitHubCreateChangeRequestResult as GitHubCreateChangeRequestResultModel,
   ChangeRequestSnapshot as ChangeRequestSnapshotModel,
-} from '../../../../bindings/controlzebra/services/models';
+} from '../../../../bindings/iofabrik/services/models';
 import type { ConflictRegionDecision, ConflictResolutionData } from '../../../features/conflict/types';
 
 /**
  * Type definitions for RepoContext
  * 
  * These types are derived from:
- * - Backend service models (frontend/bindings/controlzebra/services/models.js)
+ * - Backend service models (frontend/bindings/iofabrik/services/models.js)
  * - Component prop types
  * - React state shape analysis
  */

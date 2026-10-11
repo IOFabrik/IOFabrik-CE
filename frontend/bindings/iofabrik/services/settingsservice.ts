@@ -23,14 +23,14 @@ import * as $models from "./models.js";
  * It moves the folder to the front if it already exists
  */
 export function AddRecentFolder(folderPath: string): $CancellablePromise<void> {
-    return $Call.ByID(978828039, folderPath);
+    return $Call.ByID(681015749, folderPath);
 }
 
 /**
  * ClearRecentFolders clears the recent folders list
  */
 export function ClearRecentFolders(): $CancellablePromise<void> {
-    return $Call.ByID(2439245746);
+    return $Call.ByID(2171686160);
 }
 
 /**
@@ -42,10 +42,10 @@ export function ClearRecentFolders(): $CancellablePromise<void> {
  * Priority (write): only writes to local repo config, never touches global
  * 
  * This should be called whenever a repo is opened. The fallbackName and fallbackEmail
- * come from the authenticated ControlZebra user (Supabase session).
+ * come from the authenticated IOFabrik user (Supabase session).
  */
 export function EnsureIdentity(repoPath: string, fallbackName: string, fallbackEmail: string): $CancellablePromise<$models.DetectedIdentity> {
-    return $Call.ByID(918403549, repoPath, fallbackName, fallbackEmail).then(($result: any) => {
+    return $Call.ByID(18674871, repoPath, fallbackName, fallbackEmail).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -54,7 +54,7 @@ export function EnsureIdentity(repoPath: string, fallbackName: string, fallbackE
  * GetAppSettings returns the current app settings
  */
 export function GetAppSettings(): $CancellablePromise<$models.AppSettings> {
-    return $Call.ByID(4098526243).then(($result: any) => {
+    return $Call.ByID(353393977).then(($result: any) => {
         return $$createType1($result);
     });
 }
@@ -63,7 +63,7 @@ export function GetAppSettings(): $CancellablePromise<$models.AppSettings> {
  * GetDataLocations returns the active and legacy data locations for diagnostics.
  */
 export function GetDataLocations(): $CancellablePromise<$models.DataLocations> {
-    return $Call.ByID(939056653).then(($result: any) => {
+    return $Call.ByID(1727710151).then(($result: any) => {
         return $$createType2($result);
     });
 }
@@ -72,7 +72,7 @@ export function GetDataLocations(): $CancellablePromise<$models.DataLocations> {
  * GetRecentFolders returns the list of recently opened folders
  */
 export function GetRecentFolders(): $CancellablePromise<string[]> {
-    return $Call.ByID(4002401493).then(($result: any) => {
+    return $Call.ByID(4037293247).then(($result: any) => {
         return $$createType3($result);
     });
 }
@@ -82,7 +82,7 @@ export function GetRecentFolders(): $CancellablePromise<string[]> {
  * Uses concurrent goroutines to fetch name and email in parallel
  */
 export function GetUserProfile(repoPath: string): $CancellablePromise<$models.UserProfile> {
-    return $Call.ByID(1258519717, repoPath).then(($result: any) => {
+    return $Call.ByID(2278375975, repoPath).then(($result: any) => {
         return $$createType4($result);
     });
 }
@@ -91,21 +91,21 @@ export function GetUserProfile(repoPath: string): $CancellablePromise<$models.Us
  * SaveAppSettings saves the app settings
  */
 export function SaveAppSettings(settings: $models.AppSettings): $CancellablePromise<void> {
-    return $Call.ByID(3159081354, settings);
+    return $Call.ByID(53102504, settings);
 }
 
 /**
  * SetApp sets the application reference (called after app initialization)
  */
 export function SetApp(app: application$0.App | null): $CancellablePromise<void> {
-    return $Call.ByID(1565004562, app);
+    return $Call.ByID(282874992, app);
 }
 
 /**
  * SetUserProfile sets the git user config
  */
 export function SetUserProfile(repoPath: string, profile: $models.UserProfile, global: boolean): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(3284937681, repoPath, profile, global).then(($result: any) => {
+    return $Call.ByID(2126857443, repoPath, profile, global).then(($result: any) => {
         return $$createType5($result);
     });
 }

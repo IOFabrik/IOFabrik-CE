@@ -191,10 +191,21 @@ func cleanSchemaV1Sessions(runner gitAdminPathRunner, store *integrationSessionS
 			}
 			if ref, err := integrationResultRef(record.SessionID); err == nil {
 				runner.RunGit(record.OpenProjectPath, "update-ref", "-d", ref)
+				runner.RunGit(record.OpenProjectPath, "update-ref", "-d", "refs/controlzebra/integration/"+record.SessionID)
 			}
 		}
 		os.Remove(path)
 	}
+	return nil
+}
+
+func deleteIntegrationResultRefs(runner gitAdminPathRunner, repoPath, sessionID string) error {
+	ref, err := integrationResultRef(sessionID)
+	if err != nil {
+		return err
+	}
+	runner.RunGit(repoPath, "update-ref", "-d", ref)
+	runner.RunGit(repoPath, "update-ref", "-d", "refs/controlzebra/integration/"+sessionID)
 	return nil
 }
 
@@ -220,5 +231,5 @@ func integrationResultRef(sessionID string) (string, error) {
 	if !isValidIntegrationSessionID(sessionID) {
 		return "", fmt.Errorf("invalid session id")
 	}
-	return "refs/controlzebra/integration/" + sessionID, nil
+	return "refs/iofabrik/integration/" + sessionID, nil
 }

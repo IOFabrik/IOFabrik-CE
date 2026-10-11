@@ -17,7 +17,7 @@ class ReleaseCLITest(unittest.TestCase):
         self.bin = self.root / 'bin'
         self.bin.mkdir()
         self.out = self.root / 'output'
-        for name in ('control-zebra-windows-amd64.exe', 'control-zebra-amd64-installer.exe'):
+        for name in ('iofabrik-windows-amd64.exe', 'iofabrik-amd64-installer.exe'):
             (self.bin / name).write_bytes(b'fixture')
         # The shell tests exercise fail-closed orchestration. PowerShell's actual
         # signature and checksum checks are covered by test-verify-release.ps1.
@@ -35,7 +35,7 @@ class ReleaseCLITest(unittest.TestCase):
                                '--output', str(self.out), *args], env=self.env, capture_output=True, text=True)
 
     def test_missing_and_wrong_names(self):
-        for name in ('control-zebra-windows-amd64.exe', 'control-zebra-amd64-installer.exe'):
+        for name in ('iofabrik-windows-amd64.exe', 'iofabrik-amd64-installer.exe'):
             with self.subTest(name=name):
                 path = self.bin / name
                 wrong = self.bin / ('wrong-' + name)
@@ -75,8 +75,8 @@ class ReleaseCLITest(unittest.TestCase):
         self.assertEqual(len(calls), 2)
         self.assertIn('-WriteChecksums', calls[0])
         upload = (self.root / 'uploads').read_text()
-        self.assertIn('--repo ControlZebra/controlzebra-oss', upload)
-        for name in ('control-zebra-windows-amd64.exe', 'control-zebra-amd64-installer.exe', 'SHA256SUMS'):
+        self.assertIn('--repo IOFabrik/IOFabrik-CE', upload)
+        for name in ('iofabrik-windows-amd64.exe', 'iofabrik-amd64-installer.exe', 'SHA256SUMS'):
             self.assertIn(name, upload)
         self.assertNotIn('update.json', upload)
 

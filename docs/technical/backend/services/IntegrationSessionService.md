@@ -8,7 +8,7 @@
 > pushes until the user explicitly chooses **Share updated work**. Sharing uses
 > the persisted `ShareRef`, so the local and remote branch names may differ.
 
-> How ControlZebra checks and resolves integration conflicts in an isolated working copy before the user chooses Finish.
+> How IOFabrik checks and resolves integration conflicts in an isolated working copy before the user chooses Finish.
 
 ## Purpose
 
@@ -27,12 +27,12 @@ The workflow is currently enabled only in Developer Mode. The legacy merge workf
 
 | Term | Meaning |
 |---|---|
-| Open project | The working copy the user has open in ControlZebra |
+| Open project | The working copy the user has open in IOFabrik |
 | Source | The saved feature branch the user is working on |
 | Destination | The local branch that will receive the source, usually the shared branch |
 | Session | One readiness check for an exact source revision, destination revision, and merge mode |
-| Isolated workspace | A detached, locked Git worktree owned by ControlZebra |
-| Prepared result | A commit stored under a private ControlZebra ref, not under a user branch |
+| Isolated workspace | A detached, locked Git worktree owned by IOFabrik |
+| Prepared result | A commit stored under a private IOFabrik ref, not under a user branch |
 | Conflict Review | The UI where the user makes decisions for files conflicted in the isolated workspace |
 
 ## Safety Model
@@ -47,7 +47,7 @@ destination revision
 merge mode
 ```
 
-If either branch moves, the existing answer is obsolete. ControlZebra discards it and prepares a new session instead of applying an answer based on old revisions.
+If either branch moves, the existing answer is obsolete. IOFabrik discards it and prepares a new session instead of applying an answer based on old revisions.
 
 The implementation maintains these invariants:
 
@@ -100,7 +100,7 @@ git merge --squash <sourceOID>
 
 8. Classify real unmerged index entries with the same classifier used by `ConflictQueueService`.
 9. If no decisions remain, write the index tree and create the prepared commit with `git commit-tree`.
-10. Store the result at `refs/controlzebra/integration/<sessionID>` and mark the session `ready`.
+10. Store the result at `refs/iofabrik/integration/<sessionID>` and mark the session `ready`.
 
 `git commit-tree` is used because its tree and parent commits are explicit and it does not run project commit hooks. A regular result has destination and source parents. A squash result has only the destination parent.
 
@@ -212,14 +212,14 @@ Completed and cancelled records are removed during startup reconciliation. An ac
 
 Session metadata is stored as one atomically replaced JSON file per session. Directories use mode `0700`; metadata and ownership markers use mode `0600`. Session IDs are 128 random bits encoded as 32 hexadecimal characters and are validated before use in a path.
 
-| Data | Location below the ControlZebra integration directory |
+| Data | Location below the IOFabrik integration directory |
 |---|---|
 | Session records | `sessions/<sessionID>.json` |
 | Detached worktrees | `workspaces/<sessionID>/` |
-| Prepared result | `refs/controlzebra/integration/<sessionID>` inside the repository |
-| Ownership marker | `controlzebra-session.json` inside the worktree administrative directory |
+| Prepared result | `refs/iofabrik/integration/<sessionID>` inside the repository |
+| Ownership marker | `iofabrik-session.json` inside the worktree administrative directory |
 
-Workspace removal verifies ownership and is idempotent. On Windows it retries short-lived file-lock failures. The implementation does not use `git worktree prune`, because pruning could remove a review that ControlZebra still owns.
+Workspace removal verifies ownership and is idempotent. On Windows it retries short-lived file-lock failures. The implementation does not use `git worktree prune`, because pruning could remove a review that IOFabrik still owns.
 
 ## Backend API
 

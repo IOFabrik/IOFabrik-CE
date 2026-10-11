@@ -1,6 +1,6 @@
 # Development Setup
 
-> Get your local environment running for ControlZebra Desktop development.
+> Get your local environment running for IOFabrik Desktop development.
 
 ## Prerequisites
 
@@ -46,8 +46,8 @@ go install github.com/go-task/task/v3/cmd/task@latest
 
 ```bash
 # Clone the repository
-git clone https://github.com/ControlZebra/controlzebra-oss.git
-cd controlzebra-oss
+git clone https://github.com/IOFabrik/IOFabrik-CE.git
+cd IOFabrik-CE
 
 # Install Go dependencies
 go mod download
@@ -122,11 +122,11 @@ The `ladder-visualizer` package is pinned to an immutable upstream Git commit:
 
 ```json
 // frontend/package.json
-"ladder-visualizer": "git+https://github.com/ControlZebra/ladder-visualizer.git#<full-commit>"
+"ladder-visualizer": "git+https://github.com/IOFabrik/ladder-visualizer.git#<full-commit>"
 ```
 
 `npm ci` fetches that exact revision and runs the package's build preparation.
-Normal ControlZebra development does not require a sibling checkout.
+Normal IOFabrik development does not require a sibling checkout.
 
 To test uncommitted `ladder-visualizer` work locally, first build a sibling
 checkout, then replace only the installed package without changing the manifest
@@ -137,7 +137,7 @@ cd ../ladder-visualizer
 npm ci
 npm run build
 
-cd ../controlzebra-oss/frontend
+cd ../IOFabrik-CE/frontend
 npm install --no-save --package-lock=false ../../ladder-visualizer
 ```
 
@@ -156,7 +156,7 @@ Run `npm ci` again to restore the pinned package before validation or committing
 Ensure your Go tooling points to the correct module:
 
 ```
-Module: controlzebra (see go.mod)
+Module: iofabrik (see go.mod)
 ```
 
 ### TypeScript

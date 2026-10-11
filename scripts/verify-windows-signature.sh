@@ -19,7 +19,7 @@ if [[ $# -lt 1 ]]; then
 fi
 
 ARTIFACT="$1"
-ALLOW_SELF_SIGNED="${CZ_WINDOWS_SELF_SIGNED:-false}"
+ALLOW_SELF_SIGNED="${IOFABRIK_WINDOWS_SELF_SIGNED:-false}"
 
 if [[ ! -f "$ARTIFACT" ]]; then
   echo "✗ Artifact not found: $ARTIFACT" >&2

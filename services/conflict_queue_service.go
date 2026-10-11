@@ -1,4 +1,4 @@
-// Package services provides backend functionality for the ControlZebra application.
+// Package services provides backend functionality for the IOFabrik application.
 // This file contains the ConflictQueueService, the authoritative source of the
 // conflicted file queue for the currently open repository.
 package services

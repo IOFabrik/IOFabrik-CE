@@ -10,7 +10,7 @@ CLI Resolver finds the correct paths for `git`, `gh` (GitHub CLI), and `git-lfs`
 
 ```
 1. Platform-local managed binaries
-   └── Windows: %LOCALAPPDATA%\ControlZebra\tools\bin\git.exe
+   └── Windows: %LOCALAPPDATA%\IOFabrik\tools\bin\git.exe
    └── macOS: N/A
 
 2. Bundled app resources

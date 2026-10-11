@@ -19,7 +19,7 @@ func TestSyncWindowsInstallRegistryVersionMissingKeyIsNoOp(t *testing.T) {
 }
 
 func TestSyncWindowsInstallRegistryVersionUpdatesExistingEntry(t *testing.T) {
-	path := fmt.Sprintf(`Software\ControlZebra\UpdaterTests-%d-%d`, os.Getpid(), time.Now().UnixNano())
+	path := fmt.Sprintf(`Software\IOFabrik\UpdaterTests-%d-%d`, os.Getpid(), time.Now().UnixNano())
 	key, _, err := registry.CreateKey(registry.CURRENT_USER, path, registry.QUERY_VALUE|registry.SET_VALUE|registry.WOW64_64KEY)
 	if err != nil {
 		t.Fatal(err)

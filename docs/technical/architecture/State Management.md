@@ -4,7 +4,7 @@
 
 ## Three-Layer Sync Strategy
 
-ControlZebra uses three mechanisms to keep the frontend in sync with the git repository:
+IOFabrik uses three mechanisms to keep the frontend in sync with the git repository:
 
 ```
 Priority 1: Event-Driven (Primary)

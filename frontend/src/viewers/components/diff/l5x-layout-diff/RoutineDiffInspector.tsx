@@ -8,7 +8,7 @@ import {
   type NormalizedRung,
 } from 'ladder-visualizer';
 
-import { CONTROL_ZEBRA_LADDER_THEME } from '../../file/l5x/theme';
+import { IOFABRIK_LADDER_THEME } from '../../file/l5x/theme';
 import { buildRoutineDiffRenderModel, type L5XDiffRoutineRow } from './routine-render-model';
 import type { L5XDiffRoutineEntity } from './types';
 import { RoutineContentDiff } from './RoutineContentDiff';
@@ -60,7 +60,7 @@ function getChangeTone(kind: L5XDiffRoutineEntity['changeKind'] | L5XDiffRoutine
 
 function buildRoutineTheme(): LadderDiagramTheme {
   return {
-    ...CONTROL_ZEBRA_LADDER_THEME,
+    ...IOFABRIK_LADDER_THEME,
     bgPrimary: 'var(--color-ladder-diff-canvas)',
     rowEvenBg: 'var(--color-ladder-diff-canvas)',
     rowOddBg: 'var(--color-ladder-diff-canvas)',

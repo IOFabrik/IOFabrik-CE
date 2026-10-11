@@ -1,6 +1,6 @@
 # Build and Release
 
-> Build and package a local ControlZebra desktop application.
+> Build and package a local IOFabrik desktop application.
 
 ## Prerequisites
 
@@ -96,10 +96,10 @@ $env:APP_VERSION = '1.2.3'
 task windows:build ARCH=amd64
 ```
 
-Sign `bin/control-zebra.exe`, copy that signed file to
-`bin/control-zebra-windows-amd64.exe`, and build the NSIS installer from the
+Sign `bin/iofabrik.exe`, copy that signed file to
+`bin/iofabrik-windows-amd64.exe`, and build the NSIS installer from the
 signed executable with `build/windows/nsis/project.nsi` and the same version.
-Then sign `bin/control-zebra-amd64-installer.exe`. Do not invoke a build task or
+Then sign `bin/iofabrik-amd64-installer.exe`. Do not invoke a build task or
 modify either artifact after this point because that would invalidate its
 signature.
 
@@ -116,7 +116,7 @@ The output is `release/1.2.3/` with the two executables and `SHA256SUMS`.
 Preparation refuses existing output to avoid overwriting reviewed artifacts.
 Validation rejects missing files, unexpected names, invalid signatures, missing
 timestamps, and checksum mismatches. Development self-signed bypass settings do
-not apply. Release publication targets `ControlZebra/controlzebra-oss`.
+not apply. Release publication targets `IOFabrik/IOFabrik-CE`.
 
 
 The native Windows build generates `bin/windows-info-<arch>.json` from the
@@ -161,13 +161,13 @@ Windows archives. The compatibility `download-cli-deps.sh --platform windows-amd
 command uses the same manifest.
 
 When building NSIS directly from an already signed executable, pass
-`-DCZ_TOOLS_DIR="<absolute repository path>/build/deps/windows-amd64"` alongside
+`-DIOFABRIK_TOOLS_DIR="<absolute repository path>/build/deps/windows-amd64"` alongside
 the existing binary and version arguments. NSIS rejects missing tool payloads.
 A package includes one architecture; use the matching tools and application.
 The application never downloads missing tools; users repair an incomplete
 installation by rerunning the full installer.
 
-The default Windows footprint is `%LOCALAPPDATA%\ControlZebra`:
+The default Windows footprint is `%LOCALAPPDATA%\IOFabrik`:
 
 - `app`: application and uninstaller (the installer still permits a custom path).
 - `tools\bin\git`, `tools\bin\gh`, `tools\bin\lfs`: installer-managed tools.
@@ -182,7 +182,7 @@ conflicting historical files are retained. The v2 marker runs even if v1 already
 completed. New settings no longer roam between Windows machines. macOS and Linux
 retain their existing OS-specific config/cache locations. Shared Git identity,
 GitHub CLI authentication/configuration, OS keychain entries, and project folders
-remain in their existing locations; ControlZebra does not take ownership of them.
+remain in their existing locations; IOFabrik does not take ownership of them.
 
 Reinstalling replaces the managed tool bundle. Moving from the former default app
 folder removes only its known app executables/uninstaller and then the empty

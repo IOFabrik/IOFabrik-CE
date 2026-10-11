@@ -49,7 +49,7 @@ function AccountFeatureGate({
             <Lock size={ICON_SIZES.md} className="text-amber-400 shrink-0 mt-0.5" />
             <div>
               <p className="text-sm font-medium text-theme-primary">
-                {isAuthAvailable ? 'ControlZebra account required' : 'Account sign-in unavailable in this build'}
+                {isAuthAvailable ? 'IOFabrik account required' : 'Account sign-in unavailable in this build'}
               </p>
               <p className="text-sm text-theme-muted mt-1">
                 {isAuthAvailable

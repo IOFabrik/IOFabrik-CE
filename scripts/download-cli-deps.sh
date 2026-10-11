@@ -240,7 +240,7 @@ bundle_macos_git() {
 
 echo ""
 echo -e "${BOLD}╔══════════════════════════════════════════════════════╗${NC}"
-echo -e "${BOLD}║  ControlZebra — Download CLI Dependencies           ║${NC}"
+echo -e "${BOLD}║  IOFabrik — Download CLI Dependencies           ║${NC}"
 echo -e "${BOLD}╚══════════════════════════════════════════════════════╝${NC}"
 echo ""
 

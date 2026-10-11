@@ -22,7 +22,7 @@ import * as $models from "./models.js";
  * OpenFolderDialog opens a native folder picker dialog
  */
 export function OpenFolderDialog(): $CancellablePromise<$models.OpenFolderDialogResult> {
-    return $Call.ByID(3212161082).then(($result: any) => {
+    return $Call.ByID(1849735172).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -31,7 +31,7 @@ export function OpenFolderDialog(): $CancellablePromise<$models.OpenFolderDialog
  * SetApp sets the application reference (called after app initialization)
  */
 export function SetApp(app: application$0.App | null): $CancellablePromise<void> {
-    return $Call.ByID(3396417961, app);
+    return $Call.ByID(1237647107, app);
 }
 
 // Private type creation functions

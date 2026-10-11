@@ -21,7 +21,7 @@ const INELIGIBLE_REASON_LABELS: Record<string, string> = {
   'unsupported-encoding': 'This file uses a text format that cannot be reviewed safely here.',
   'unsupported-content': 'This file contains content that cannot be reviewed safely here.',
   'line-ending-mismatch': 'The two versions use incompatible line endings.',
-  'conflict-generation-failed': 'ControlZebra could not separate this file into safe review sections.',
+  'conflict-generation-failed': 'IOFabrik could not separate this file into safe review sections.',
   'output-too-large': 'The resolved file would be too large for section-by-section review.',
 };
 

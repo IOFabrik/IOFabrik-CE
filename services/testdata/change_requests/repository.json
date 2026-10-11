@@ -1,10 +1,10 @@
 {
-  "nameWithOwner": "controlzebra/plant-project",
-  "url": "https://github.com/controlzebra/plant-project",
+  "nameWithOwner": "iofabrik/plant-project",
+  "url": "https://github.com/iofabrik/plant-project",
   "defaultBranchRef": {
     "name": "main"
   },
   "owner": {
-    "login": "controlzebra"
+    "login": "iofabrik"
   }
 }

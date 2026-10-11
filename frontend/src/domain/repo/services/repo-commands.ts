@@ -35,7 +35,7 @@ export {
   CreateBranchFromDetached,
   RemoveAllStaleLocks,
   Pull,
-} from '../../../../bindings/controlzebra/services/gitservice';
+} from '../../../../bindings/iofabrik/services/gitservice';
 
 export {
   AuthLogin,
@@ -46,20 +46,20 @@ export {
   RepoClone,
   RepoCreateFromLocal,
   CreateChangeRequest,
-} from '../../../../bindings/controlzebra/services/githubservice';
+} from '../../../../bindings/iofabrik/services/githubservice';
 
 export {
   InitializeLFS,
   TrackPattern,
-} from '../../../../bindings/controlzebra/services/lfsservice';
+} from '../../../../bindings/iofabrik/services/lfsservice';
 
 export {
   EnsurePortableToolchainIfNeeded,
-} from '../../../../bindings/controlzebra/services/localbinservice';
+} from '../../../../bindings/iofabrik/services/localbinservice';
 
 export {
   SyncWithProgress,
-} from '../../../../bindings/controlzebra/services/progressservice';
+} from '../../../../bindings/iofabrik/services/progressservice';
 
 export {
   GetAppSettings,
@@ -67,17 +67,17 @@ export {
   EnsureIdentity,
   GetUserProfile,
   SetUserProfile,
-} from '../../../../bindings/controlzebra/services/settingsservice';
+} from '../../../../bindings/iofabrik/services/settingsservice';
 
 export {
   WriteRepoLocalConfig,
-  EnsureControlZebraDir,
+  EnsureIOFabrikDir,
   StartBackgroundTasks,
   StopBackgroundTasks,
   ApplyGitignoreTemplate,
-} from '../../../../bindings/controlzebra/services/repositorysettingsservice';
+} from '../../../../bindings/iofabrik/services/repositorysettingsservice';
 
 export {
   RevealInFinder,
   OpenInTerminal,
-} from '../../../../bindings/controlzebra/services/filesystemservice';
+} from '../../../../bindings/iofabrik/services/filesystemservice';

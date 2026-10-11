@@ -6,7 +6,7 @@ import { memo } from 'react';
 import { Download, Trash2 } from 'lucide-react';
 import { ICON_SIZES } from '../../../shared/constants';
 import { Button } from '../../../shared/ui';
-import type { DebugStats } from '../../../../bindings/controlzebra/services/models';
+import type { DebugStats } from '../../../../bindings/iofabrik/services/models';
 
 interface StatsBarProps {
   stats: DebugStats;

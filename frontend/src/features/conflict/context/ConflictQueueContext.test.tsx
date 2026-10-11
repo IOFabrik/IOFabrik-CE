@@ -1,7 +1,7 @@
 import { act, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { ConflictQueueEntry, ConflictQueueSnapshot } from '../../../../bindings/controlzebra/services/models';
+import { ConflictQueueEntry, ConflictQueueSnapshot } from '../../../../bindings/iofabrik/services/models';
 import { ConflictQueueProvider, useConflictQueue } from './ConflictQueueContext';
 
 const { repoStore, bindings, eventBus, integrationStore } = vi.hoisted(() => ({
@@ -30,7 +30,7 @@ vi.mock('../../integration', () => ({
   useIntegrationSession: () => integrationStore.current,
 }));
 
-vi.mock('../../../../bindings/controlzebra/services/conflictqueueservice', () => bindings);
+vi.mock('../../../../bindings/iofabrik/services/conflictqueueservice', () => bindings);
 
 vi.mock('../../../shared/runtime/events', () => ({
   onEvent: (_name: string, handler: (event: { data: unknown }) => void) => {

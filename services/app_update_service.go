@@ -1,4 +1,4 @@
-// Package services provides backend functionality for the ControlZebra application.
+// Package services provides backend functionality for the IOFabrik application.
 package services
 
 import (

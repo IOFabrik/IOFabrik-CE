@@ -67,7 +67,7 @@ func waitForDeviceFile(t *testing.T, path string) {
 
 func TestGitHubDeviceFlowCoalescesStartsAndPreservesSettings(t *testing.T) {
 	dir := t.TempDir()
-	t.Setenv("CZ_DEVICE_FLOW_TEST_DIR", dir)
+	t.Setenv("IOFABRIK_DEVICE_FLOW_TEST_DIR", dir)
 	config := filepath.Join(dir, "config.yml")
 	settings := "clipboard: true\ngit_protocol: https\n"
 	if err := os.WriteFile(config, []byte(settings), 0600); err != nil {
@@ -76,7 +76,7 @@ func TestGitHubDeviceFlowCoalescesStartsAndPreservesSettings(t *testing.T) {
 	t.Setenv("GH_CONFIG_DIR", dir)
 	installFakeGh(t, `#!/usr/bin/python3
 import os, sys, time
-d = os.environ['CZ_DEVICE_FLOW_TEST_DIR']
+d = os.environ['IOFABRIK_DEVICE_FLOW_TEST_DIR']
 with open(d + '/launches', 'a') as f:
     f.write(' '.join(sys.argv[1:]) + '\n')
 while not os.path.exists(d + '/release'):
@@ -114,10 +114,10 @@ time.sleep(60)
 
 func TestGitHubDeviceFlowCancelDuringStartupReapsProcess(t *testing.T) {
 	dir := t.TempDir()
-	t.Setenv("CZ_DEVICE_FLOW_TEST_DIR", dir)
+	t.Setenv("IOFABRIK_DEVICE_FLOW_TEST_DIR", dir)
 	installFakeGh(t, `#!/usr/bin/python3
 import os, time
-with open(os.environ['CZ_DEVICE_FLOW_TEST_DIR'] + '/pid', 'w') as f:
+with open(os.environ['IOFABRIK_DEVICE_FLOW_TEST_DIR'] + '/pid', 'w') as f:
     f.write(str(os.getpid()))
 time.sleep(60)
 `)

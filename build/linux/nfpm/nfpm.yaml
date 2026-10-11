@@ -3,26 +3,26 @@
 #
 # The lines below are called `modelines`. See `:help modeline`
 
-name: "control-zebra"
+name: "iofabrik"
 arch: ${GOARCH}
 platform: "linux"
 version: "v0.0.1"
 section: "default"
 priority: "extra"
 maintainer: ${GIT_COMMITTER_NAME} <${GIT_COMMITTER_EMAIL}>
-description: "ControlZebra"
-vendor: "ControlZebra"
+description: "IOFabrik"
+vendor: "IOFabrik"
 homepage: "https://wails.io"
 license: "MIT"
 release: "1"
 
 contents:
-  - src: "./bin/control-zebra"
-    dst: "/usr/local/bin/control-zebra"
+  - src: "./bin/iofabrik"
+    dst: "/usr/local/bin/iofabrik"
   - src: "./build/appicon.png"
-    dst: "/usr/share/icons/hicolor/128x128/apps/control-zebra.png"
-  - src: "./build/linux/control-zebra.desktop"
-    dst: "/usr/share/applications/control-zebra.desktop"
+    dst: "/usr/share/icons/hicolor/128x128/apps/iofabrik.png"
+  - src: "./build/linux/iofabrik.desktop"
+    dst: "/usr/share/applications/iofabrik.desktop"
 
 # Default dependencies for the GTK4 + WebKitGTK 6.0 stack (Ubuntu 24.04+ / Debian 13+)
 depends:

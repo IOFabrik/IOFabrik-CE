@@ -1,4 +1,4 @@
-// Package services provides backend functionality for the ControlZebra application.
+// Package services provides backend functionality for the IOFabrik application.
 // This file contains the GitHubService which wraps GitHub CLI (gh) operations.
 package services
 
@@ -520,7 +520,7 @@ func (g *GitHubService) ListChangeRequestTargets(repoPath string) GitHubChangeRe
 	if err != nil {
 		return GitHubChangeRequestTargetsResult{
 			Branches:  []GitHubChangeRequestBranch{},
-			Error:     "ControlZebra could not read the project's GitHub branches.",
+			Error:     "IOFabrik could not read the project's GitHub branches.",
 			ErrorCode: GitHubChangeRequestErrorInternal,
 		}
 	}
@@ -747,7 +747,7 @@ func (g *GitHubService) verifyBranchSyncedForChangeRequest(repoPath string, bran
 
 	hasChanges, err := gitSvc.HasChanges(repoPath)
 	if err != nil {
-		return GitHubChangeRequestErrorInternal, "ControlZebra could not read this project's status.", false
+		return GitHubChangeRequestErrorInternal, "IOFabrik could not read this project's status.", false
 	}
 	if hasChanges {
 		return GitHubChangeRequestErrorBranchNotSynced,
@@ -762,7 +762,7 @@ func (g *GitHubService) verifyBranchSyncedForChangeRequest(repoPath string, bran
 	remoteResult := g.runner.forGitOperation().RunGit(repoPath, "ls-remote", "origin", "refs/heads/"+branch)
 	if !remoteResult.Success {
 		return GitHubChangeRequestErrorBranchNotSynced,
-			"ControlZebra could not confirm this branch on GitHub. Sync and retry.", false
+			"IOFabrik could not confirm this branch on GitHub. Sync and retry.", false
 	}
 	remoteFields := strings.Fields(trimOutput(remoteResult.Stdout))
 	if len(remoteFields) < 1 || remoteFields[0] == "" {
@@ -774,7 +774,7 @@ func (g *GitHubService) verifyBranchSyncedForChangeRequest(repoPath string, bran
 	localResult := g.runner.RunGit(repoPath, "rev-parse", "--verify", "refs/heads/"+branch)
 	if !localResult.Success {
 		return GitHubChangeRequestErrorBranchNotSynced,
-			"ControlZebra could not read this branch locally.", false
+			"IOFabrik could not read this branch locally.", false
 	}
 	localOID := trimOutput(localResult.Stdout)
 
@@ -1896,7 +1896,7 @@ func getGHErrorMessage(result CommandResult) string {
 			strings.Contains(lowerErr, "could not read username for 'https://github.com'") ||
 			(strings.Contains(lowerErr, "terminal prompts disabled") && strings.Contains(lowerErr, "github.com")) ||
 			strings.Contains(lowerErr, "/dev/tty") {
-			return "GitHub authentication failed. Connect GitHub in ControlZebra and retry."
+			return "GitHub authentication failed. Connect GitHub in IOFabrik and retry."
 		}
 		return errMsg
 	}

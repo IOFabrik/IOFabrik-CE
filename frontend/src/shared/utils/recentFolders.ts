@@ -5,9 +5,10 @@
  * Stored as a simple array of path strings, most recent first.
  */
 
-import { GetRecentFolders } from '../../../bindings/controlzebra/services/settingsservice';
+import { GetRecentFolders } from '../../../bindings/iofabrik/services/settingsservice';
+import { readMigratedStorage } from './migratedStorage';
 
-const STORAGE_KEY = 'control-zebra-recent-folders';
+const STORAGE_KEY = 'iofabrik-recent-folders';
 const MAX_RECENT = 5;
 
 // Export for UI components to use consistent limit
@@ -19,7 +20,7 @@ export const MAX_RECENT_DISPLAY = MAX_RECENT;
  */
 export function getRecentFolders(): string[] {
   try {
-    const stored = localStorage.getItem(STORAGE_KEY);
+    const stored = readMigratedStorage(STORAGE_KEY, 'control-zebra-recent-folders');
     if (!stored) return [];
     const parsed: unknown = JSON.parse(stored);
     return Array.isArray(parsed) ? parsed : [];
@@ -91,6 +92,7 @@ export function removeRecentFolder(path: string): void {
 export function clearRecentFolders(): void {
   try {
     localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem('control-zebra-recent-folders');
   } catch (err) {
     console.error('Failed to clear recent folders:', err);
   }

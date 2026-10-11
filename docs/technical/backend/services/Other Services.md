@@ -33,7 +33,7 @@ Supabase session persistence via OS keychain. **This is separate from GitHub aut
 
 ```go
 const (
-    keyringService = "com.controlzebra.desktop"
+    keyringService = "com.iofabrik.desktop"
     keyringUser    = "supabase-session"
 )
 ```
@@ -103,9 +103,9 @@ type LocalBinProgress struct {
 ### BusyBox Detection
 
 Detects BusyBox MinGit (which breaks Windows credential helpers) and replaces it with regular MinGit. Configurable download URLs via env vars:
-- `CZ_PORTABLE_GIT_URL`
-- `CZ_PORTABLE_GH_URL`
-- `CZ_PORTABLE_LFS_URL`
+- `IOFABRIK_PORTABLE_GIT_URL`
+- `IOFABRIK_PORTABLE_GH_URL`
+- `IOFABRIK_PORTABLE_LFS_URL`
 
 After installation, calls `RefreshCLIPaths()` on the [CLI Resolver](../../infrastructure/CLI%20Resolver.md) to pick up new binaries.
 

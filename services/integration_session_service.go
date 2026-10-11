@@ -29,15 +29,15 @@ const IntegrationSessionChangedEvent = "integrationSession:changed"
 // integration_session_messages_test.go.
 var integrationSessionOutcomeMessages = map[string]string{
 	integrationStateScheduled:      "Your saved work is waiting for a shared update check. Keep working until the check starts.",
-	integrationStateFetching:       "ControlZebra is checking for shared updates. Keep this project open until the check finishes.",
+	integrationStateFetching:       "IOFabrik is checking for shared updates. Keep this project open until the check finishes.",
 	integrationStateStarting:       "Shared updates are ready to be added to your work. Keep this project open while the update starts.",
 	integrationStateNeedsDecisions: "Some files were changed in both your work and the shared project. Open Conflict Review to choose what to keep in each file.",
-	integrationStateCommitting:     "Your file decisions are complete, and ControlZebra is updating your work. Keep this project open until it finishes.",
+	integrationStateCommitting:     "Your file decisions are complete, and IOFabrik is updating your work. Keep this project open until it finishes.",
 	integrationStateUpdated:        "Your work is up to date with the shared project. Review it, then choose Share updated work when you are ready.",
-	integrationStateSharing:        "ControlZebra is sharing your updated work. Keep this project open until sharing finishes.",
+	integrationStateSharing:        "IOFabrik is sharing your updated work. Keep this project open until sharing finishes.",
 	integrationStateShared:         "Your updated work was shared successfully. You can keep working on this project as usual.",
 	integrationStateBlocked:        "Shared updates could not be added because this project changed. Save or discard those changes, then check again.",
-	integrationStateCancelling:     "ControlZebra is cancelling the update and restoring your work. Keep this project open until restoration finishes.",
+	integrationStateCancelling:     "IOFabrik is cancelling the update and restoring your work. Keep this project open until restoration finishes.",
 	integrationStateCancelled:      "The update was cancelled, and your work was restored. Check your files before continuing.",
 	integrationStateFailed:         "The update could not finish safely. Check your files, then try again or contact support.",
 }
@@ -278,7 +278,7 @@ func (s *IntegrationSessionService) ShareSession(sessionID string) OperationResu
 		return result
 	}
 	if err := s.transition(&session, integrationStateSharing, ""); err != nil {
-		result := failedOp("ControlZebra couldn't start sharing your work. Keep this project open, then try again.")
+		result := failedOp("IOFabrik couldn't start sharing your work. Keep this project open, then try again.")
 		done(result, err)
 		return result
 	}
@@ -293,7 +293,7 @@ func (s *IntegrationSessionService) ShareSession(sessionID string) OperationResu
 	if !push.Success {
 		message := "Your updated work is still saved on this computer. Check your connection and access, then choose Share updated work again."
 		if err := s.transition(&session, integrationStateUpdated, message); err != nil {
-			result := failedOp("ControlZebra couldn't save the sharing status. Keep this project open, then close and reopen ControlZebra.")
+			result := failedOp("IOFabrik couldn't save the sharing status. Keep this project open, then close and reopen IOFabrik.")
 			done(result, err)
 			return result
 		}
@@ -304,7 +304,7 @@ func (s *IntegrationSessionService) ShareSession(sessionID string) OperationResu
 	}
 
 	if err := s.transition(&session, integrationStateShared, ""); err != nil {
-		result := failedOp("Your work was shared, but ControlZebra couldn't save that status. Refresh the project before sharing again.")
+		result := failedOp("Your work was shared, but IOFabrik couldn't save that status. Refresh the project before sharing again.")
 		done(result, err)
 		return result
 	}
@@ -495,7 +495,7 @@ func (s *IntegrationSessionService) updateFeatureFromDestination(repoPath string
 	if !fetchResult.Success {
 		return s.failUpdate(
 			&session,
-			"ControlZebra couldn't check for shared updates. Check your connection and sign-in, then try again.",
+			"IOFabrik couldn't check for shared updates. Check your connection and sign-in, then try again.",
 			fmt.Errorf("fetch shared updates: %s", getErrorMessage(fetchResult)),
 			done,
 		)
@@ -505,7 +505,7 @@ func (s *IntegrationSessionService) updateFeatureFromDestination(repoPath string
 	if !revisionOK {
 		return s.failUpdate(
 			&session,
-			"ControlZebra couldn't read the latest shared work. Check that the shared destination still exists, then try again.",
+			"IOFabrik couldn't read the latest shared work. Check that the shared destination still exists, then try again.",
 			fmt.Errorf("resolve fetched destination %q", target.destinationRef),
 			done,
 		)
@@ -517,7 +517,7 @@ func (s *IntegrationSessionService) updateFeatureFromDestination(repoPath string
 	if err := s.store.save(session); err != nil {
 		return s.failUpdate(
 			&session,
-			"ControlZebra couldn't save the update status. Keep the project open, then close and reopen ControlZebra.",
+			"IOFabrik couldn't save the update status. Keep the project open, then close and reopen IOFabrik.",
 			err,
 			done,
 		)
@@ -531,7 +531,7 @@ func (s *IntegrationSessionService) updateFeatureFromDestination(repoPath string
 		if saveErr := s.store.save(session); saveErr != nil {
 			return s.failUpdate(
 				&session,
-				"ControlZebra couldn't save the update status. Keep the project open, then close and reopen ControlZebra.",
+				"IOFabrik couldn't save the update status. Keep the project open, then close and reopen IOFabrik.",
 				saveErr,
 				done,
 			)
@@ -546,7 +546,7 @@ func (s *IntegrationSessionService) updateFeatureFromDestination(repoPath string
 	if classifyErr != nil {
 		return s.failUpdate(
 			&session,
-			"ControlZebra couldn't inspect the files needing a decision. Close and reopen the project, then try again.",
+			"IOFabrik couldn't inspect the files needing a decision. Close and reopen the project, then try again.",
 			classifyErr,
 			done,
 		)
@@ -557,7 +557,7 @@ func (s *IntegrationSessionService) updateFeatureFromDestination(repoPath string
 		if saveErr := s.store.save(session); saveErr != nil {
 			return s.failUpdate(
 				&session,
-				"ControlZebra couldn't save the conflict review. Keep the project open, then close and reopen ControlZebra.",
+				"IOFabrik couldn't save the conflict review. Keep the project open, then close and reopen IOFabrik.",
 				saveErr,
 				done,
 			)
@@ -582,7 +582,7 @@ func (s *IntegrationSessionService) updateFeatureFromDestination(repoPath string
 	if err := s.store.save(session); err != nil {
 		return s.failUpdate(
 			&session,
-			"ControlZebra couldn't save the completed update status. Keep the project open, then close and reopen ControlZebra.",
+			"IOFabrik couldn't save the completed update status. Keep the project open, then close and reopen IOFabrik.",
 			err,
 			done,
 		)
@@ -700,7 +700,7 @@ func (s *IntegrationSessionService) failedUpdateSnapshot() IntegrationSessionSna
 	return IntegrationSessionSnapshot{
 		State:     integrationStateFailed,
 		Message:   integrationSessionOutcomeMessages[integrationStateFailed],
-		Error:     "ControlZebra couldn't save the update status. Close and reopen ControlZebra, then try again.",
+		Error:     "IOFabrik couldn't save the update status. Close and reopen IOFabrik, then try again.",
 		UpdatedAt: time.Now().Unix(),
 	}
 }
@@ -751,7 +751,7 @@ func (s *IntegrationSessionService) completeUpdate(session *integrationSession) 
 
 	entries, err := classifyConflictQueue(s.git, repo)
 	if err != nil {
-		return fmt.Errorf("ControlZebra couldn't inspect the files needing a decision. Close and reopen the project, then try again.")
+		return fmt.Errorf("IOFabrik couldn't inspect the files needing a decision. Close and reopen the project, then try again.")
 	}
 	if len(entries) > 0 {
 		return fmt.Errorf("some files still need a decision")
@@ -760,7 +760,7 @@ func (s *IntegrationSessionService) completeUpdate(session *integrationSession) 
 	session.State = integrationStateCommitting
 	session.UpdatedAt = time.Now().Unix()
 	if saveErr := s.store.save(*session); saveErr != nil {
-		return fmt.Errorf("ControlZebra couldn't save the update status. Keep the project open, then close and reopen ControlZebra.")
+		return fmt.Errorf("IOFabrik couldn't save the update status. Keep the project open, then close and reopen IOFabrik.")
 	}
 	s.emit(*session)
 
@@ -778,7 +778,7 @@ func (s *IntegrationSessionService) completeUpdate(session *integrationSession) 
 func (s *IntegrationSessionService) finalizeUpdated(session *integrationSession) error {
 	afterOID, ok := s.revision(session.OpenProjectPath, session.SourceRef)
 	if !ok {
-		return fmt.Errorf("ControlZebra couldn't verify the updated work. Close and reopen the project before continuing.")
+		return fmt.Errorf("IOFabrik couldn't verify the updated work. Close and reopen the project before continuing.")
 	}
 	if afterOID == session.FeatureOIDBeforeMerge {
 		containsShared := s.git.RunGit(
@@ -1121,9 +1121,7 @@ func (s *IntegrationSessionService) verifyApplied(session integrationSession, ow
 // discards it, so a crash during cleanup still leaves a trail.
 func (s *IntegrationSessionService) cleanUpAfterFinish(session integrationSession) {
 	removeIntegrationWorkspace(s.git, session.OpenProjectPath, session.SessionID, session.WorkspacePath)
-	if ref, err := integrationResultRef(session.SessionID); err == nil {
-		s.git.RunGit(session.OpenProjectPath, "update-ref", "-d", ref)
-	}
+	deleteIntegrationResultRefs(s.git, session.OpenProjectPath, session.SessionID)
 }
 
 // destinationWorktreePath reports which working directory has destinationRef

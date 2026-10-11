@@ -110,7 +110,7 @@ import {
   GetUserProfile,
   SetUserProfile,
   WriteRepoLocalConfig,
-  EnsureControlZebraDir,
+  EnsureIOFabrikDir,
   StartBackgroundTasks,
   StopBackgroundTasks,
   ApplyGitignoreTemplate,
@@ -119,8 +119,8 @@ import {
 } from '../services/repo-commands';
 import { useStatusPolling } from '../polling/useStatusPolling';
 import { useAuth } from '../../auth/context/AuthContext';
-import { WatchDirectory, StopWatching } from '../../../../bindings/controlzebra/services/filewatcherservice';
-import { IsDefaultBranchSyncEligible } from '../../../../bindings/controlzebra/services/integrationsessionservice';
+import { WatchDirectory, StopWatching } from '../../../../bindings/iofabrik/services/filewatcherservice';
+import { IsDefaultBranchSyncEligible } from '../../../../bindings/iofabrik/services/integrationsessionservice';
 import { onEvent } from '../../../shared/runtime/events';
 import { addRecentFolder } from '../../../shared/utils/recentFolders';
 import { clearViewerCache } from '../../../viewers/registry/viewer-cache';
@@ -233,9 +233,9 @@ const STARTUP_AUTO_PULL_DELAY_MS = 10000;
 const LIVE_CONFLICT_RETRY_DELAY_MS = 150;
 
 // Global UI events consumed by LayoutContext for explorer tab cleanup
-const CLOSE_ALL_PREVIEW_TABS_EVENT = 'cz:explorer-close-all-previews';
-const CLOSE_FILE_PREVIEW_TABS_EVENT = 'cz:explorer-close-file-previews';
-const REPO_OPEN_SUCCESS_EVENT = 'cz:repo-open-success';
+const CLOSE_ALL_PREVIEW_TABS_EVENT = 'iofabrik:explorer-close-all-previews';
+const CLOSE_FILE_PREVIEW_TABS_EVENT = 'iofabrik:explorer-close-file-previews';
+const REPO_OPEN_SUCCESS_EVENT = 'iofabrik:repo-open-success';
 
 interface CachedGitIdentity {
   repoPath: string;
@@ -257,8 +257,8 @@ function getGitIdentityPromptMessage(reason: GitIdentityPromptReason): {
   switch (reason) {
     case 'initial-commit':
       return {
-        successLocal: 'Name and email saved for this project. ControlZebra can make the first saved revision now.',
-        successGlobal: 'Name and email saved for all projects on this device. ControlZebra can make the first saved revision now.',
+        successLocal: 'Name and email saved for this project. IOFabrik can make the first saved revision now.',
+        successGlobal: 'Name and email saved for all projects on this device. IOFabrik can make the first saved revision now.',
         cancel: 'The first saved revision was skipped until a name and email are added.',
       };
     case 'merge-complete':
@@ -269,15 +269,15 @@ function getGitIdentityPromptMessage(reason: GitIdentityPromptReason): {
       };
     case 'branch-save':
       return {
-        successLocal: 'Name and email saved for this project. ControlZebra can save to the new branch now.',
-        successGlobal: 'Name and email saved for all projects on this device. ControlZebra can save to the new branch now.',
+        successLocal: 'Name and email saved for this project. IOFabrik can save to the new branch now.',
+        successGlobal: 'Name and email saved for all projects on this device. IOFabrik can save to the new branch now.',
         cancel: 'Branch save was cancelled until a name and email are added.',
       };
     case 'save':
     default:
       return {
-        successLocal: 'Name and email saved for this project. ControlZebra can save changes now.',
-        successGlobal: 'Name and email saved for all projects on this device. ControlZebra can save changes now.',
+        successLocal: 'Name and email saved for this project. IOFabrik can save changes now.',
+        successGlobal: 'Name and email saved for all projects on this device. IOFabrik can save changes now.',
         cancel: 'Save was cancelled until a name and email are added.',
       };
   }
@@ -643,14 +643,14 @@ export function RepoProvider({ children }: RepoProviderProps) {
     try {
       const result = await EnsurePortableToolchainIfNeeded();
       if (!result.success) {
-        showMessage('error', result.error || result.message || 'Supporting tools could not be prepared. Reinstall ControlZebra using the full installer.');
+        showMessage('error', result.error || result.message || 'Supporting tools could not be prepared. Reinstall IOFabrik using the full installer.');
         return false;
       }
 
       await refreshToolchainStatus();
       return true;
     } catch {
-      showMessage('error', 'Supporting tools could not be checked. Restart ControlZebra and try again.');
+      showMessage('error', 'Supporting tools could not be checked. Restart IOFabrik and try again.');
       return false;
     } finally {
       setIsInstallingPackages(false);
@@ -902,7 +902,7 @@ export function RepoProvider({ children }: RepoProviderProps) {
           const identity = await EnsureIdentity(path, userName || '', userEmail || '');
           cacheGitIdentity(path, identity.name || '', identity.email || '');
           if (identity.wasAutoSet) {
-            console.info('Git identity auto-configured from ControlZebra account:', identity.name, identity.email);
+            console.info('Git identity auto-configured from IOFabrik account:', identity.name, identity.email);
           }
         } catch (err) {
           console.warn('Failed to ensure git identity:', err);
@@ -1033,7 +1033,7 @@ export function RepoProvider({ children }: RepoProviderProps) {
     const trimmedEmail = email.trim();
 
     if (!trimmedName || !trimmedEmail) {
-      showMessage('error', 'Name and email are required before ControlZebra can save changes.');
+      showMessage('error', 'Name and email are required before IOFabrik can save changes.');
       return false;
     }
 
@@ -1154,22 +1154,22 @@ export function RepoProvider({ children }: RepoProviderProps) {
         // Continue even if LFS setup fails
       }
       
-      // Step 3: Create .controlzebra/ directory & ensure local.json is gitignored
+      // Step 3: Create .iofabrik/ directory & ensure local.json is gitignored
       try {
-        const directoryResult = await EnsureControlZebraDir(repoPath);
+        const directoryResult = await EnsureIOFabrikDir(repoPath);
         if (!directoryResult.success) {
           showMessage('error', directoryResult.error || 'Could not prepare the project settings folder. Check the folder\'s permissions and try again.');
           setIsLoading(false);
           return false;
         }
       } catch (err) {
-        console.warn('Failed to ensure .controlzebra directory:', err);
+        console.warn('Failed to ensure .iofabrik directory:', err);
         showMessage('error', 'Could not prepare the project settings folder. Check the folder\'s permissions and try again.');
         setIsLoading(false);
         return false;
       }
       
-      // Step 4: Ensure git identity from ControlZebra account
+      // Step 4: Ensure git identity from IOFabrik account
       try {
         const identity = await EnsureIdentity(repoPath, userName || '', userEmail || '');
         cacheGitIdentity(repoPath, identity.name || '', identity.email || '');
@@ -3389,7 +3389,7 @@ export function RepoProvider({ children }: RepoProviderProps) {
           // Non-fatal: continue without LFS
         }
 
-        // Ensure git identity from ControlZebra account
+        // Ensure git identity from IOFabrik account
         try {
           const identity = await EnsureIdentity(path, userName || '', userEmail || '');
           cacheGitIdentity(path, identity.name || '', identity.email || '');
@@ -3425,7 +3425,7 @@ export function RepoProvider({ children }: RepoProviderProps) {
           };
         }
       } catch (err) {
-        console.warn('Failed to write .controlzebra config:', err);
+        console.warn('Failed to write .iofabrik config:', err);
         return {
           success: false,
           error: 'Could not prepare the project settings folder. Check the folder\'s permissions and try again.',
@@ -3439,7 +3439,7 @@ export function RepoProvider({ children }: RepoProviderProps) {
       if (!hasIdentity) {
         return {
           success: false,
-          error: 'Add the name and email used for saved changes before ControlZebra can create the first revision.',
+          error: 'Add the name and email used for saved changes before IOFabrik can create the first revision.',
         };
       }
 

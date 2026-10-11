@@ -77,12 +77,12 @@ describe('LoginView', () => {
 
     render(<LoginView />);
 
-    fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'user@controlzebra.com' } });
+    fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'user@iofabrik.com' } });
     fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'password123' } });
     fireEvent.click(screen.getByRole('button', { name: 'Sign in' }));
 
     await waitFor(() => {
-      expect(loginWithPassword).toHaveBeenCalledWith('user@controlzebra.com', 'password123');
+      expect(loginWithPassword).toHaveBeenCalledWith('user@iofabrik.com', 'password123');
     });
   });
 
@@ -98,7 +98,7 @@ describe('LoginView', () => {
 
     render(<LoginView />);
 
-    fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'user@controlzebra.com' } });
+    fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'user@iofabrik.com' } });
     fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'wrong' } });
     fireEvent.click(screen.getByRole('button', { name: 'Sign in' }));
 

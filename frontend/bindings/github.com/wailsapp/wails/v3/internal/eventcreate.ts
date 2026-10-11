@@ -8,7 +8,7 @@ import { Create as $Create } from "@wailsio/runtime";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unused imports
-import * as services$0 from "../../../../../controlzebra/services/models.js";
+import * as services$0 from "../../../../../iofabrik/services/models.js";
 
 function configure() {
     Object.freeze(Object.assign($Create.Events, {

@@ -1,17 +1,17 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('../../../../bindings/controlzebra/services/gitservice', () => ({
+vi.mock('../../../../bindings/iofabrik/services/gitservice', () => ({
   GetFileAtRevisionBase64: vi.fn(),
   ReadFileAtRevisionLarge: vi.fn(),
 }));
 
-vi.mock('../../../../bindings/controlzebra/services/filesystemservice', () => ({
+vi.mock('../../../../bindings/iofabrik/services/filesystemservice', () => ({
   ReadFileBase64: vi.fn(),
   ReadTextFile: vi.fn(),
 }));
 
-import { GetFileAtRevisionBase64, ReadFileAtRevisionLarge } from '../../../../bindings/controlzebra/services/gitservice';
-import { ReadFileBase64, ReadTextFile } from '../../../../bindings/controlzebra/services/filesystemservice';
+import { GetFileAtRevisionBase64, ReadFileAtRevisionLarge } from '../../../../bindings/iofabrik/services/gitservice';
+import { ReadFileBase64, ReadTextFile } from '../../../../bindings/iofabrik/services/filesystemservice';
 import {
   loadBinarySide,
   loadTextSide,

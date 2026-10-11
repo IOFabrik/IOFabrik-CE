@@ -14,12 +14,12 @@ import {
   ClearLogs,
   ExportLogs,
   GetStats,
-} from '../../../../bindings/controlzebra/services/debugservice';
+} from '../../../../bindings/iofabrik/services/debugservice';
 import type {
   LogEntry,
   DebugStats,
-} from '../../../../bindings/controlzebra/services/models';
-import { LogFilter } from '../../../../bindings/controlzebra/services/models';
+} from '../../../../bindings/iofabrik/services/models';
+import { LogFilter } from '../../../../bindings/iofabrik/services/models';
 import DebugToggle from '../components/DebugToggle';
 import LogFilterBar from '../components/LogFilterBar';
 import LogEntryRow from '../components/LogEntryRow';

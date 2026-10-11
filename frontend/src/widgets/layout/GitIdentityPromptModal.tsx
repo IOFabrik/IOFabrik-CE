@@ -24,26 +24,26 @@ function getPromptCopy(reason: NonNullable<ReturnType<typeof useRepo>['gitIdenti
     case 'initial-commit':
       return {
         title: 'Add your name and email before the first save',
-        description: 'ControlZebra can work without an account, but Git still needs a name and email to record who made the first saved revision for this project.',
+        description: 'IOFabrik can work without an account, but Git still needs a name and email to record who made the first saved revision for this project.',
         actionLabel: 'Save and continue',
       };
     case 'merge-complete':
       return {
         title: 'Add your name and email before finishing the merge',
-        description: 'Git needs author details to record the merge commit. This is separate from your ControlZebra account.',
+        description: 'Git needs author details to record the merge commit. This is separate from your IOFabrik account.',
         actionLabel: 'Save and finish merge',
       };
     case 'branch-save':
       return {
         title: 'Add your name and email before saving to a new branch',
-        description: 'Git needs author details to record who made the saved revision on the new branch. This is separate from your ControlZebra account.',
+        description: 'Git needs author details to record who made the saved revision on the new branch. This is separate from your IOFabrik account.',
         actionLabel: 'Save and continue',
       };
     case 'save':
     default:
       return {
         title: 'Add your name and email before saving changes',
-        description: 'Git needs author details to record who made each saved revision. This is separate from your ControlZebra account.',
+        description: 'Git needs author details to record who made each saved revision. This is separate from your IOFabrik account.',
         actionLabel: 'Save and continue',
       };
   }

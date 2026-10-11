@@ -1,11 +1,12 @@
 import { useEffect, useRef, type ReactNode } from 'react';
 import { initAnalytics, trackAppLaunched, trackAppClosed } from '../../domain/analytics/analytics';
+import { readMigratedStorage } from '../../shared/utils/migratedStorage';
 
-const REPO_OPEN_SUCCESS_EVENT = 'cz:repo-open-success';
+const REPO_OPEN_SUCCESS_EVENT = 'iofabrik:repo-open-success';
 
-const isFirstLaunch = !localStorage.getItem('cz_has_launched');
+const isFirstLaunch = !readMigratedStorage('iofabrik_has_launched', 'cz_has_launched');
 if (isFirstLaunch) {
-  localStorage.setItem('cz_has_launched', 'true');
+  localStorage.setItem('iofabrik_has_launched', 'true');
 }
 
 function getPlatform(): string {

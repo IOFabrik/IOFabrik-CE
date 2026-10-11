@@ -116,7 +116,7 @@ function ConflictQueue({
         <div className="text-center max-w-md">
           <CheckCircle2 style={iconLg} className="mx-auto mb-4 text-green-400" />
           <p className="text-theme-primary text-lg font-medium mb-2">All decisions are complete</p>
-          <p className="text-theme-secondary text-sm">ControlZebra is updating your work now. Keep this project open.</p>
+          <p className="text-theme-secondary text-sm">IOFabrik is updating your work now. Keep this project open.</p>
         </div>
       </div>
     );

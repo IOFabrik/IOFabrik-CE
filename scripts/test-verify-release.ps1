@@ -5,7 +5,7 @@ Set-StrictMode -Version Latest
 $root = Join-Path ([IO.Path]::GetTempPath()) ([Guid]::NewGuid().ToString())
 $verifierDirectory = Split-Path -Parent $MyInvocation.MyCommand.Path
 $verifier = Join-Path $verifierDirectory 'verify-release.ps1'
-$names = @('control-zebra-windows-amd64.exe', 'control-zebra-amd64-installer.exe')
+$names = @('iofabrik-windows-amd64.exe', 'iofabrik-amd64-installer.exe')
 $script:signatureStatus = 'Valid'
 $script:timestamp = 'test timestamp'
 function Get-AuthenticodeSignature {

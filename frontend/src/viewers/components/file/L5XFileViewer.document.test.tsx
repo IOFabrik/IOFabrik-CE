@@ -2,13 +2,13 @@ import { readFileSync } from 'node:fs';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { EditorView } from '@codemirror/view';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { ReadTextFile } from '../../../../bindings/controlzebra/services/filesystemservice';
+import { ReadTextFile } from '../../../../bindings/iofabrik/services/filesystemservice';
 import { parseDocumentString } from 'ladder-visualizer';
 import { clearViewerCache, getCachedContent } from '../../registry/viewer-cache';
 import { clearAllTabStates } from './l5x/useTabs';
 import L5XFileViewer from './L5XFileViewer';
 
-vi.mock('../../../../bindings/controlzebra/services/filesystemservice', () => ({ ReadTextFile: vi.fn() }));
+vi.mock('../../../../bindings/iofabrik/services/filesystemservice', () => ({ ReadTextFile: vi.fn() }));
 vi.mock('../../../shared/runtime/events', () => ({ onEvent: () => vi.fn() }));
 vi.mock('../shared/ViewerHeader', () => ({ ViewerHeader: ({ extraContent }: { extraContent: React.ReactNode }) => <div>{extraContent}</div> }));
 vi.mock('../shared/L5XProjectOrganizer', () => ({ default: ({ controller }: { controller: { name: string } }) => <div>{controller.name} navigation</div> }));

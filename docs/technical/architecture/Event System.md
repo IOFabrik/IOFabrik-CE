@@ -4,7 +4,7 @@
 
 ## Overview
 
-ControlZebra uses Wails' event system for asynchronous communication from the Go backend to the React frontend. Events are one-directional (backend → frontend) and typed.
+IOFabrik uses Wails' event system for asynchronous communication from the Go backend to the React frontend. Events are one-directional (backend → frontend) and typed.
 
 ## Event Catalog
 

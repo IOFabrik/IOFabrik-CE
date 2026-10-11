@@ -6,7 +6,7 @@ import "golang.org/x/sys/windows"
 
 // Hide only the directory itself, retaining its other attributes and leaving
 // child files and directories untouched.
-func hideControlZebraDirectory(dirPath string) error {
+func hideIOFabrikDirectory(dirPath string) error {
 	path, err := windows.UTF16PtrFromString(dirPath)
 	if err != nil {
 		return err
