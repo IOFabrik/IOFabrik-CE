@@ -10,6 +10,7 @@ import GitHubStatusBanner from './GitHubStatusBanner';
 import NonGitFolderPromptModal from './NonGitFolderPromptModal';
 import AdditionalPackagesModal from './AdditionalPackagesModal';
 import GitIdentityPromptModal from './GitIdentityPromptModal';
+import ProjectDefaultBranchModal from './ProjectDefaultBranchModal';
 import DefaultBranchSyncConfirmModal from './DefaultBranchSyncConfirmModal';
 
 // Mounted only while open so the merge/conflict bundle (including the ladder
@@ -41,6 +42,7 @@ function AppLayoutInner(): JSX.Element {
       <AdditionalPackagesModal />
       <GitIdentityPromptModal />
       <DefaultBranchSyncConfirmModal />
+      <ProjectDefaultBranchModal />
       {explorerMergeModalOpen && (
         <Suspense fallback={null}>
           <ExplorerMergeModal

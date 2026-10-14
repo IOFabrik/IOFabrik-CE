@@ -245,6 +245,14 @@ func (g *GitService) InitRepo(path string) (opResult OperationResult) {
 		}
 	}
 
+	// This is an explicit creation choice, including before the first Save.
+	// Imported repositories never acquire a default from their branch name.
+	settings := NewRepositorySettingsService()
+	settings.runner = g.runner
+	if recorded := settings.recordInitializedDefaultBranch(path, "main"); !recorded.Success {
+		opResult = recorded
+		return
+	}
 	opResult = successOp("Repository initialized successfully")
 	return
 }

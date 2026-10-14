@@ -1,4 +1,6 @@
+import type { ProjectDefaultBranchPrompt } from '../hooks/useProjectDefaultBranch';
 import type {
+  ProjectDefaultBranchResult,
   GitHubChangeRequest as GitHubChangeRequestModel,
   GitHubChangeRequestFile as GitHubChangeRequestFileModel,
   GitHubChangeRequestRepository as GitHubChangeRequestRepositoryModel,
@@ -597,6 +599,18 @@ export interface RepoContextValue {
     fetchTags: boolean;
   } | null;
   refreshRepoSettings: (pathOverride?: string) => Promise<void>;
+
+  projectDefaultBranch: ProjectDefaultBranchResult | null;
+  projectDefaultBranchPrompt: ProjectDefaultBranchPrompt | null;
+  projectDefaultBranchError: string;
+  isLoadingProjectDefaultBranch: boolean;
+  isSavingProjectDefaultBranch: boolean;
+  refreshProjectDefaultBranch: (discover?: boolean, pathOverride?: string) => Promise<ProjectDefaultBranchResult | null>;
+  chooseProjectDefaultBranch: () => Promise<string | null>;
+  ensureProjectDefaultBranch: () => Promise<string | null>;
+  submitProjectDefaultBranch: (branch: string) => Promise<boolean>;
+  cancelProjectDefaultBranchSelection: () => void;
+  useGitHubDefaultBranch: () => Promise<boolean>;
 
   // Progress modal state
   progressModal: ProgressModalState;

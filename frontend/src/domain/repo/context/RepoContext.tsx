@@ -115,6 +115,7 @@ import {
   RevealInFinder,
   OpenInTerminal,
 } from '../services/repo-commands';
+import { useProjectDefaultBranch } from '../hooks/useProjectDefaultBranch';
 import { useStatusPolling } from '../polling/useStatusPolling';
 import { useGitHubAuthStatus } from '../polling/useGitHubAuthStatus';
 import { useAuth } from '../../auth/context/AuthContext';
@@ -383,6 +384,8 @@ export function RepoProvider({ children }: RepoProviderProps) {
   const operationIdCounter = useRef(0);
   const repoOpenTimeRef = useRef<number>(0);
   const repoRefreshSession = useRef<{ path: string | null }>({ path: null });
+  const projectDefaultState = useProjectDefaultBranch(repoPath, repoRefreshSession);
+  const { clearProjectDefaultBranch, refreshProjectDefaultBranch } = projectDefaultState;
   const syncStartTimeRef = useRef<number | null>(null);
   const startupAutoPullDueRef = useRef(false);
   const startupAutoPullDoneRef = useRef(false);
@@ -702,8 +705,8 @@ export function RepoProvider({ children }: RepoProviderProps) {
 
   // Refresh all repository data
   const refreshAll = useCallback(async (): Promise<void> => {
-    await Promise.all([refreshStatus(), refreshCommits()]);
-  }, [refreshStatus, refreshCommits]);
+    await Promise.all([refreshStatus(), refreshCommits(), refreshProjectDefaultBranch()]);
+  }, [refreshStatus, refreshCommits, refreshProjectDefaultBranch]);
 
   // Check if repository has remotes configured
   const refreshRemotes = useCallback(async (): Promise<boolean> => {
@@ -714,6 +717,7 @@ export function RepoProvider({ children }: RepoProviderProps) {
     
     try {
       const remotes = await GetRemotes(repoPath);
+      await refreshProjectDefaultBranch();
       const hasRemoteConfigured = remotes && remotes.length > 0;
       setHasRemote(hasRemoteConfigured);
       return hasRemoteConfigured;
@@ -722,7 +726,7 @@ export function RepoProvider({ children }: RepoProviderProps) {
       setHasRemote(false);
       return false;
     }
-  }, [repoPath]);
+  }, [repoPath, refreshProjectDefaultBranch]);
 
   // Refresh repository-level settings (protected branches, fetch options)
   const refreshRepoSettings = useCallback(async (pathOverride?: string): Promise<void> => {
@@ -775,6 +779,7 @@ export function RepoProvider({ children }: RepoProviderProps) {
   const closeRepo = useCallback(async (): Promise<void> => {
     // Previous-project responses must not repopulate state after closing.
     repoRefreshSession.current = { path: null };
+    clearProjectDefaultBranch();
     // Track repo closed event
     if (repoOpenTimeRef.current > 0) {
       const sessionDuration = Math.round((Date.now() - repoOpenTimeRef.current) / 1000);
@@ -823,7 +828,7 @@ export function RepoProvider({ children }: RepoProviderProps) {
     } catch (err) {
       console.error('Failed to clear settings:', err);
     }
-  }, [clearCachedGitIdentity, clearChangeRequestState, clearConflicts, closeAllExplorerPreviews, repoPath]);
+  }, [clearCachedGitIdentity, clearChangeRequestState, clearConflicts, closeAllExplorerPreviews, repoPath, clearProjectDefaultBranch]);
 
   // Open a folder by path
   const openRepo = useCallback(async (path: string): Promise<boolean> => {
@@ -921,6 +926,7 @@ export function RepoProvider({ children }: RepoProviderProps) {
       // Load repository settings (protected branches, fetch options, etc.)
       if (info.isRepo) {
         await refreshRepoSettings(path);
+        await refreshProjectDefaultBranch(true, path);
 
         // Start background tasks (auto-sync, LFS auto-download, auto-optimization)
         try {
@@ -946,7 +952,7 @@ export function RepoProvider({ children }: RepoProviderProps) {
       setIsLoading(false);
       return false;
     }
-  }, [cacheGitIdentity, clearCachedGitIdentity, closeRepo, isLoading, repoPath, userName, userEmail, showMessage, refreshRepoSettings]);
+  }, [cacheGitIdentity, clearCachedGitIdentity, closeRepo, isLoading, repoPath, userName, userEmail, showMessage, refreshRepoSettings, refreshProjectDefaultBranch]);
 
   /**
    * Open folder entrypoint for user-driven folder selection.
@@ -3808,6 +3814,7 @@ export function RepoProvider({ children }: RepoProviderProps) {
     // Repository settings (protected branches, fetch options)
     repoSettings,
     refreshRepoSettings,
+    ...projectDefaultState,
     
     // Progress modal state
     progressModal,
@@ -3966,7 +3973,7 @@ export function RepoProvider({ children }: RepoProviderProps) {
     gitInstalled, lfsInstalled, isInstallingPackages, packagesInstallMessage, packagesInstallPercent,
     operationInProgress, operationLabel,
     hasRemote, refreshRemotes,
-    repoSettings, refreshRepoSettings,
+    repoSettings, refreshRepoSettings, projectDefaultState,
     progressModal, handleProgressComplete,
     showMessage,
     nonGitFolderPromptPath, dismissNonGitFolderPrompt,

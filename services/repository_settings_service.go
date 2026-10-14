@@ -113,7 +113,8 @@ type RepoLocalConfig struct {
 // RepoPersonalConfig holds personal/machine-specific configuration stored in
 // .iofabrik/local.json. This file is added to .gitignore and NOT committed.
 type RepoPersonalConfig struct {
-	LocalOnlyMode bool `json:"localOnlyMode,omitempty"` // Skip remote sync
+	LocalOnlyMode bool                           `json:"localOnlyMode,omitempty"` // Skip remote sync
+	DefaultBranch ProjectDefaultBranchPreference `json:"defaultBranch,omitempty"`
 }
 
 // BackgroundTaskStatus represents the current status of a background task
@@ -1378,6 +1379,7 @@ const iofabrikDir = ".iofabrik"
 const legacyProjectConfigDir = ".controlzebra"
 const sharedConfigFile = "config.json"
 const personalConfigFile = "local.json"
+const personalConfigTempPattern = "personal-*.tmp"
 
 // GetGitignoreTemplates returns built-in .gitignore templates tailored for
 // industrial automation and design workflows.
@@ -1563,27 +1565,41 @@ func (r *RepositorySettingsService) WriteRepoLocalConfig(repoPath string, config
 // (.iofabrik/local.json) from the repository. This file is gitignored and
 // NOT committed. Returns a zero-value config if the file does not exist.
 func (r *RepositorySettingsService) ReadRepoPersonalConfig(repoPath string) RepoPersonalConfig {
+	config, _ := r.readRepoPersonalConfig(repoPath)
+	return config
+}
+
+func (r *RepositorySettingsService) readRepoPersonalConfig(repoPath string) (RepoPersonalConfig, error) {
 	configPath := filepath.Join(iofabrikDirPath(repoPath), personalConfigFile)
 	data, err := os.ReadFile(configPath)
 	if os.IsNotExist(err) {
 		data, err = os.ReadFile(filepath.Join(repoPath, legacyProjectConfigDir, personalConfigFile))
 	}
+	if os.IsNotExist(err) {
+		return RepoPersonalConfig{}, nil
+	}
 	if err != nil {
-		return RepoPersonalConfig{}
+		return RepoPersonalConfig{}, err
 	}
 
 	var config RepoPersonalConfig
 	if err := json.Unmarshal(data, &config); err != nil {
-		return RepoPersonalConfig{}
+		return RepoPersonalConfig{}, err
 	}
-	return config
+	return config, nil
 }
 
 // WriteRepoPersonalConfig writes the personal/machine-specific config
 // (.iofabrik/local.json) to the repository. Creates the .iofabrik/
-// directory if it does not exist. Also ensures .iofabrik/local.json is
-// listed in the repository's .gitignore so it is never committed.
+// directory if it does not exist. Protects both local.json and atomic-write
+// temporary files with repository ignore rules before creating personal files.
 func (r *RepositorySettingsService) WriteRepoPersonalConfig(repoPath string, config RepoPersonalConfig) OperationResult {
+	projectDefaultBranchMu.Lock()
+	defer projectDefaultBranchMu.Unlock()
+	return r.writeRepoPersonalConfig(repoPath, config)
+}
+
+func (r *RepositorySettingsService) writeRepoPersonalConfig(repoPath string, config RepoPersonalConfig) OperationResult {
 	dirPath := iofabrikDirPath(repoPath)
 	if err := prepareIOFabrikDirectory(dirPath); err != nil {
 		return iofabrikDirectoryFailure(err)
@@ -1591,36 +1607,47 @@ func (r *RepositorySettingsService) WriteRepoPersonalConfig(repoPath string, con
 
 	data, err := json.MarshalIndent(config, "", "  ")
 	if err != nil {
-		return failedOp("Failed to serialize personal config: " + err.Error())
+		return failedOp("Personal settings could not be saved. Try again.")
 	}
 
 	configPath := filepath.Join(dirPath, personalConfigFile)
-	if err := os.WriteFile(configPath, data, 0644); err != nil {
-		return failedOp("Failed to write personal config: " + err.Error())
+	if err := r.ensurePersonalConfigIgnored(repoPath); err != nil {
+		return failedOp("Personal settings could not be saved. Check the project folder permissions and try again.")
 	}
-
-	// Ensure .iofabrik/local.json is in .gitignore
-	r.ensureGitignoreEntry(repoPath, ".iofabrik/local.json")
+	if err := writePersonalConfigAtomic(dirPath, configPath, data, replaceFileAtomic); err != nil {
+		return failedOp("Personal settings could not be saved. Check the project folder permissions and try again.")
+	}
 
 	return successOp("Personal config saved to .iofabrik/local.json")
 }
 
 // EnsureIOFabrikDir creates the .iofabrik/ directory and ensures the
-// personal config file is gitignored. Call this during project initialisation.
+// personal config and temporary files are gitignored. Call this during project initialisation.
 func (r *RepositorySettingsService) EnsureIOFabrikDir(repoPath string) OperationResult {
 	dirPath := iofabrikDirPath(repoPath)
 	if err := prepareIOFabrikDirectory(dirPath); err != nil {
 		return iofabrikDirectoryFailure(err)
 	}
 
-	r.ensureGitignoreEntry(repoPath, ".iofabrik/local.json")
+	r.ensurePersonalConfigIgnored(repoPath)
 
 	return successOp(".iofabrik directory ready")
 }
 
+// Protect both the stored preference and every atomic-write temporary before
+// creating personal files. Save can stage the project while a refresh writes.
+func (r *RepositorySettingsService) ensurePersonalConfigIgnored(repoPath string) error {
+	for _, name := range []string{personalConfigFile, personalConfigTempPattern} {
+		if err := r.ensureGitignoreEntry(repoPath, iofabrikDir+"/"+name); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // ensureGitignoreEntry appends `entry` to the repo's .gitignore if it is not
 // already present. Creates the .gitignore file if it does not exist.
-func (r *RepositorySettingsService) ensureGitignoreEntry(repoPath string, entry string) {
+func (r *RepositorySettingsService) ensureGitignoreEntry(repoPath string, entry string) error {
 	gitignorePath := filepath.Join(repoPath, ".gitignore")
 
 	existing, err := os.ReadFile(gitignorePath)
@@ -1628,24 +1655,29 @@ func (r *RepositorySettingsService) ensureGitignoreEntry(repoPath string, entry 
 		// Check if entry already exists
 		for _, line := range strings.Split(string(existing), "\n") {
 			if strings.TrimSpace(line) == entry {
-				return // Already present
+				return nil // Already present
 			}
 		}
+	} else if !os.IsNotExist(err) {
+		return err
 	}
 
 	// Append entry with a preceding newline to be safe
 	f, err := os.OpenFile(gitignorePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		return
+		return err
 	}
 	defer f.Close()
 
 	// If file had content and didn't end with newline, add one first
 	if len(existing) > 0 && existing[len(existing)-1] != '\n' {
-		_, _ = f.WriteString("\n")
+		if _, err := f.WriteString("\n"); err != nil {
+			return err
+		}
 	}
 
-	_, _ = f.WriteString(entry + "\n")
+	_, err = f.WriteString(entry + "\n")
+	return err
 }
 
 // ============================================================================
