@@ -43,14 +43,15 @@ func (g *GitHubService) ServiceShutdown() error {
 
 // GitHubAuthStatus represents the authentication status for GitHub
 type GitHubAuthStatus struct {
-	LoggedIn    bool   `json:"loggedIn"`
-	Username    string `json:"username,omitempty"`
-	AccountType string `json:"accountType,omitempty"` // "user" or "org"
-	Protocol    string `json:"protocol,omitempty"`    // "https" or "ssh"
-	Host        string `json:"host,omitempty"`        // e.g., "github.com"
-	Token       string `json:"token,omitempty"`       // Masked or partial token
-	Scopes      string `json:"scopes,omitempty"`      // Token scopes
-	Error       string `json:"error,omitempty"`
+	LoggedIn    bool                         `json:"loggedIn"`
+	Username    string                       `json:"username,omitempty"`
+	AccountType string                       `json:"accountType,omitempty"` // "user" or "org"
+	Protocol    string                       `json:"protocol,omitempty"`    // "https" or "ssh"
+	Host        string                       `json:"host,omitempty"`        // e.g., "github.com"
+	Token       string                       `json:"token,omitempty"`       // Masked or partial token
+	Scopes      string                       `json:"scopes,omitempty"`      // Token scopes
+	Error       string                       `json:"error,omitempty"`
+	ErrorCode   GitHubChangeRequestErrorCode `json:"errorCode,omitempty"`
 }
 
 // GitHubChangeRequestErrorCode is the stable error contract for Change Requests.
@@ -1180,72 +1181,85 @@ func (g *GitHubService) AuthLogout() GitHubAuthResult {
 	}
 }
 
-// AuthStatus checks the current authentication status
+// AuthStatus checks the active github.com account. JSON preserves network errors
+// that gh's display output otherwise presents as an invalid token.
 func (g *GitHubService) AuthStatus() GitHubAuthStatus {
 	done := LogMethod("GitHubService.AuthStatus", nil)
 	defer func() { done(nil, nil) }()
 
-	result := g.runner.Run("", GhPath(), "auth", "status")
-
-	status := GitHubAuthStatus{
-		LoggedIn: result.Success,
-		Host:     "github.com",
-	}
-
+	result := g.runner.Run("", GhPath(), "auth", "status", "--active", "--hostname", "github.com", "--json", "hosts")
+	status := GitHubAuthStatus{Host: "github.com"}
 	if !result.Success {
-		// Check if it's a "not logged in" error vs other errors
-		errMsg := result.Stderr
-		if strings.Contains(errMsg, "not logged in") || strings.Contains(errMsg, "no oauth token") {
-			status.Error = "Not logged in to GitHub"
+		status.ErrorCode = githubAuthStatusErrorCode(result)
+	} else {
+		var raw struct {
+			Hosts map[string][]struct {
+				State       string `json:"state"`
+				Error       string `json:"error"`
+				Active      bool   `json:"active"`
+				Login       string `json:"login"`
+				GitProtocol string `json:"gitProtocol"`
+				Scopes      string `json:"scopes"`
+			} `json:"hosts"`
+		}
+		if err := json.Unmarshal([]byte(result.Stdout), &raw); err != nil || raw.Hosts == nil {
+			status.ErrorCode = GitHubChangeRequestErrorInternal
+		} else if len(raw.Hosts["github.com"]) == 0 {
+			status.ErrorCode = GitHubChangeRequestErrorAuthRequired
 		} else {
-			status.Error = getGHErrorMessage(result)
-		}
-		return status
-	}
-
-	// Parse the output to extract user info
-	// Output format varies but typically includes:
-	// ✓ Logged in to github.com account username (keyring)
-	// - Active account: true
-	// - Git operations protocol: https
-	// - Token: gho_****
-	// - Token scopes: gist, read:org, repo, workflow
-	output := result.Stdout + result.Stderr // gh prints to stderr for status
-
-	// Extract username
-	if idx := strings.Index(output, "account "); idx != -1 {
-		afterAccount := output[idx+8:]
-		if spaceIdx := strings.IndexAny(afterAccount, " ()\n"); spaceIdx != -1 {
-			status.Username = strings.TrimSpace(afterAccount[:spaceIdx])
-		}
-	}
-
-	// Extract protocol
-	if strings.Contains(output, "protocol: https") {
-		status.Protocol = "https"
-	} else if strings.Contains(output, "protocol: ssh") {
-		status.Protocol = "ssh"
-	}
-
-	// Extract token (masked)
-	if idx := strings.Index(output, "Token: "); idx != -1 {
-		afterToken := output[idx+7:]
-		if nlIdx := strings.Index(afterToken, "\n"); nlIdx != -1 {
-			status.Token = strings.TrimSpace(afterToken[:nlIdx])
+			status.ErrorCode = GitHubChangeRequestErrorInternal
+			for _, entry := range raw.Hosts["github.com"] {
+				if !entry.Active {
+					continue
+				}
+				switch entry.State {
+				case "success":
+					status.LoggedIn = true
+					status.Username = entry.Login
+					status.Protocol = entry.GitProtocol
+					status.Scopes = entry.Scopes
+					status.ErrorCode = ""
+				case "timeout":
+					status.ErrorCode = GitHubChangeRequestErrorNetworkUnavailable
+				case "error":
+					status.ErrorCode = githubAuthStatusErrorCode(CommandResult{Stderr: entry.Error})
+				}
+				break
+			}
 		}
 	}
 
-	// Extract scopes
-	if idx := strings.Index(output, "Token scopes: "); idx != -1 {
-		afterScopes := output[idx+14:]
-		if nlIdx := strings.Index(afterScopes, "\n"); nlIdx != -1 {
-			status.Scopes = strings.TrimSpace(afterScopes[:nlIdx])
-		} else {
-			status.Scopes = strings.TrimSpace(afterScopes)
-		}
+	switch status.ErrorCode {
+	case "":
+	case GitHubChangeRequestErrorAuthRequired:
+		status.Error = "GitHub authentication required. Authenticate with GitHub to connect."
+	case GitHubChangeRequestErrorNetworkUnavailable:
+		status.Error = "GitHub could not be reached. Check your connection and try again."
+	default:
+		status.Error = "GitHub status could not be checked. Try again shortly."
 	}
-
 	return status
+}
+
+// githubAuthStatusErrorCode keeps connectivity failures separate from credentials.
+// gh can report a failed login for either reason, so check network errors first.
+func githubAuthStatusErrorCode(result CommandResult) GitHubChangeRequestErrorCode {
+	message := strings.ToLower(strings.Join([]string{result.Stderr, result.Stdout, result.Error}, "\n"))
+	code := mapGitHubChangeRequestError(result)
+	switch {
+	case code == GitHubChangeRequestErrorNetworkUnavailable,
+		strings.Contains(message, "error connecting to"),
+		strings.Contains(message, "connection reset"),
+		strings.Contains(message, "context deadline exceeded"),
+		strings.Contains(message, "temporary failure in name resolution"):
+		return GitHubChangeRequestErrorNetworkUnavailable
+	case strings.Contains(message, "not logged into"),
+		strings.Contains(message, "token is invalid"),
+		strings.Contains(message, "token in ") && strings.Contains(message, " is invalid"):
+		return GitHubChangeRequestErrorAuthRequired
+	default:
+		return code
+	}
 }
 
 // ListUserOrganizations returns the authenticated user's username and their organizations
