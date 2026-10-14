@@ -173,7 +173,7 @@ function TextConflictBlock({
                       disabled={disabled}
                       onChange={() => toggleLine(side, index)}
                       aria-label={`${side === 'current' ? 'Current' : 'Incoming'} line ${index + 1}: ${line || 'blank line'}`}
-                      className="mt-0.5 h-4 w-4 shrink-0 accent-blue-500"
+                      className="mt-0.5 h-4 w-4 shrink-0"
                     />
                     <code className="min-w-0 whitespace-pre-wrap break-words text-xs text-theme-secondary">
                       {line || ' '}
