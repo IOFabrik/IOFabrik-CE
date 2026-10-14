@@ -4059,6 +4059,104 @@ export class PresetPattern {
     }
 }
 
+export enum ProjectDefaultBranchAvailability {
+    /**
+     * The Go zero value for the underlying type of the enum.
+     */
+    $zero = "",
+
+    ProjectDefaultReady = "ready",
+    ProjectDefaultNeedsSelection = "needs-selection",
+};
+
+export enum ProjectDefaultBranchMode {
+    /**
+     * The Go zero value for the underlying type of the enum.
+     */
+    $zero = "",
+
+    ProjectDefaultAutomatic = "automatic",
+    ProjectDefaultManual = "manual",
+};
+
+/**
+ * ProjectDefaultBranchPreference is personal to this project. Automatic
+ * results are bound to origin's identity; a manual choice is retained until reset.
+ */
+export class ProjectDefaultBranchPreference {
+    "manualBranch"?: string;
+    "automaticBranch"?: string;
+    "automaticOrigin"?: string;
+    "initializedBranch"?: string;
+
+    /** Creates a new ProjectDefaultBranchPreference instance. */
+    constructor($$source: Partial<ProjectDefaultBranchPreference> = {}) {
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new ProjectDefaultBranchPreference instance from a string or object.
+     */
+    static createFrom($$source: any = {}): ProjectDefaultBranchPreference {
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        return new ProjectDefaultBranchPreference($$parsedSource as Partial<ProjectDefaultBranchPreference>);
+    }
+}
+
+/**
+ * ProjectDefaultBranchResult separates usable local identity from discovery
+ * diagnostics. Consumers must check Availability, not whether lookup succeeded.
+ */
+export class ProjectDefaultBranchResult {
+    "effectiveBranch": string;
+    "mode": ProjectDefaultBranchMode;
+    "availability": ProjectDefaultBranchAvailability;
+    "originRepository": string;
+    "lookupStatus": string;
+    "lookupMessage": string;
+    "choices": string[];
+
+    /** Creates a new ProjectDefaultBranchResult instance. */
+    constructor($$source: Partial<ProjectDefaultBranchResult> = {}) {
+        if (!("effectiveBranch" in $$source)) {
+            this["effectiveBranch"] = "";
+        }
+        if (!("mode" in $$source)) {
+            this["mode"] = ProjectDefaultBranchMode.$zero;
+        }
+        if (!("availability" in $$source)) {
+            this["availability"] = ProjectDefaultBranchAvailability.$zero;
+        }
+        if (!("originRepository" in $$source)) {
+            this["originRepository"] = "";
+        }
+        if (!("lookupStatus" in $$source)) {
+            this["lookupStatus"] = "";
+        }
+        if (!("lookupMessage" in $$source)) {
+            this["lookupMessage"] = "";
+        }
+        if (!("choices" in $$source)) {
+            this["choices"] = [];
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new ProjectDefaultBranchResult instance from a string or object.
+     */
+    static createFrom($$source: any = {}): ProjectDefaultBranchResult {
+        const $$createField6_0 = $$createType0;
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        if ("choices" in $$parsedSource) {
+            $$parsedSource["choices"] = $$createField6_0($$parsedSource["choices"]);
+        }
+        return new ProjectDefaultBranchResult($$parsedSource as Partial<ProjectDefaultBranchResult>);
+    }
+}
+
 /**
  * RawDiffResult contains raw unified diff text for react-diff-view parsing
  */
@@ -4478,6 +4576,7 @@ export class RepoPersonalConfig {
      * Skip remote sync
      */
     "localOnlyMode"?: boolean;
+    "defaultBranch"?: ProjectDefaultBranchPreference;
 
     /** Creates a new RepoPersonalConfig instance. */
     constructor($$source: Partial<RepoPersonalConfig> = {}) {
@@ -4489,7 +4588,11 @@ export class RepoPersonalConfig {
      * Creates a new RepoPersonalConfig instance from a string or object.
      */
     static createFrom($$source: any = {}): RepoPersonalConfig {
+        const $$createField1_0 = $$createType40;
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        if ("defaultBranch" in $$parsedSource) {
+            $$parsedSource["defaultBranch"] = $$createField1_0($$parsedSource["defaultBranch"]);
+        }
         return new RepoPersonalConfig($$parsedSource as Partial<RepoPersonalConfig>);
     }
 }
@@ -4550,7 +4653,7 @@ export class RepoStatus {
      * Creates a new RepoStatus instance from a string or object.
      */
     static createFrom($$source: any = {}): RepoStatus {
-        const $$createField3_0 = $$createType41;
+        const $$createField3_0 = $$createType42;
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         if ("changedFiles" in $$parsedSource) {
             $$parsedSource["changedFiles"] = $$createField3_0($$parsedSource["changedFiles"]);
@@ -4638,12 +4741,12 @@ export class RepositorySettings {
      * Creates a new RepositorySettings instance from a string or object.
      */
     static createFrom($$source: any = {}): RepositorySettings {
-        const $$createField2_0 = $$createType42;
-        const $$createField3_0 = $$createType42;
-        const $$createField4_0 = $$createType42;
-        const $$createField5_0 = $$createType43;
-        const $$createField6_0 = $$createType44;
-        const $$createField7_0 = $$createType45;
+        const $$createField2_0 = $$createType43;
+        const $$createField3_0 = $$createType43;
+        const $$createField4_0 = $$createType43;
+        const $$createField5_0 = $$createType44;
+        const $$createField6_0 = $$createType45;
+        const $$createField7_0 = $$createType46;
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         if ("fetchTask" in $$parsedSource) {
             $$parsedSource["fetchTask"] = $$createField2_0($$parsedSource["fetchTask"]);
@@ -4954,9 +5057,10 @@ const $$createType36 = $Create.Array($$createType35);
 const $$createType37 = GitHubRepo.createFrom;
 const $$createType38 = $Create.Array($$createType37);
 const $$createType39 = LogDetails.createFrom;
-const $$createType40 = FileStatus.createFrom;
-const $$createType41 = $Create.Array($$createType40);
-const $$createType42 = BackgroundTaskConfig.createFrom;
-const $$createType43 = FetchSettings.createFrom;
-const $$createType44 = LFSSettings.createFrom;
-const $$createType45 = MaintenanceSettings.createFrom;
+const $$createType40 = ProjectDefaultBranchPreference.createFrom;
+const $$createType41 = FileStatus.createFrom;
+const $$createType42 = $Create.Array($$createType41);
+const $$createType43 = BackgroundTaskConfig.createFrom;
+const $$createType44 = FetchSettings.createFrom;
+const $$createType45 = LFSSettings.createFrom;
+const $$createType46 = MaintenanceSettings.createFrom;

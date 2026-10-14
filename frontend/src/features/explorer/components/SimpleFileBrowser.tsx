@@ -1486,7 +1486,7 @@ function SimpleFileBrowser({ repoPath }: SimpleFileBrowserProps) {
     owner: '',
   });
   
-  const { repoStatus, syncRepo, isSyncing } = useRepo();
+  const { repoStatus, syncRepo, isSyncing, refreshProjectDefaultBranch } = useRepo();
   const { openExplorerTab } = useLayout();
 
   const isOwnLockByName = useMemo(() => {
@@ -1778,7 +1778,8 @@ function SimpleFileBrowser({ repoPath }: SimpleFileBrowserProps) {
   // Handle refresh
   const handleRefresh = useCallback(() => {
     setRefreshTrigger(prev => prev + 1);
-  }, []);
+    void refreshProjectDefaultBranch(true);
+  }, [refreshProjectDefaultBranch]);
 
   const handleSync = useCallback(async () => {
     await syncRepo();

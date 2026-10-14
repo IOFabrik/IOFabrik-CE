@@ -72,6 +72,13 @@ const {
   },
 }));
 
+vi.mock('../../../../bindings/iofabrik/services/repositorysettingsservice', () => ({
+  GetProjectDefaultBranch: vi.fn().mockResolvedValue({ effectiveBranch: '', mode: 'automatic', availability: 'needs-selection', choices: [] }),
+  RefreshProjectDefaultBranch: vi.fn().mockResolvedValue({ effectiveBranch: '', mode: 'automatic', availability: 'needs-selection', choices: [] }),
+  SetProjectDefaultBranch: vi.fn(),
+  UseGitHubDefault: vi.fn(),
+}));
+
 vi.mock('../services/repo-queries', () => ({
   DetectRepo,
   Status,

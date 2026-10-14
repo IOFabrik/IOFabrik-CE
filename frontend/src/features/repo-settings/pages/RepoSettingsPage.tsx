@@ -55,6 +55,7 @@ import {
   Switch,
   Badge,
 } from '../../../shared/ui';
+import ProjectDefaultBranchCard from '../components/ProjectDefaultBranchCard';
 import RewindConfirmModal from '../../../widgets/layout/RewindConfirmModal';
 import {
   GetSettings,
@@ -2142,6 +2143,7 @@ function RepoSettingsPage(): JSX.Element {
           )}
         </div>
         
+        {repoPath && repoInfo?.isRepo && <ProjectDefaultBranchCard />}
         {/* Category content */}
         {renderCategoryContent()}
       </div>

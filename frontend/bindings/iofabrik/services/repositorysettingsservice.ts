@@ -128,11 +128,21 @@ export function GetGitignoreTemplates(): $CancellablePromise<$models.GitignoreTe
 }
 
 /**
+ * GetProjectDefaultBranch validates persisted identity locally without network
+ * access. Use it at action entry points; discovery is reserved for open/refresh.
+ */
+export function GetProjectDefaultBranch(repoPath: string): $CancellablePromise<$models.ProjectDefaultBranchResult> {
+    return $Call.ByID(1015358339, repoPath).then(($result: any) => {
+        return $$createType6($result);
+    });
+}
+
+/**
  * GetReflog returns recent reflog entries for recovery purposes
  */
 export function GetReflog(repoPath: string, limit: number): $CancellablePromise<$models.ReflogEntry[]> {
     return $Call.ByID(1134520352, repoPath, limit).then(($result: any) => {
-        return $$createType7($result);
+        return $$createType8($result);
     });
 }
 
@@ -141,7 +151,7 @@ export function GetReflog(repoPath: string, limit: number): $CancellablePromise<
  */
 export function GetRemotes(repoPath: string): $CancellablePromise<$models.GitRemoteInfo[]> {
     return $Call.ByID(3656968264, repoPath).then(($result: any) => {
-        return $$createType9($result);
+        return $$createType10($result);
     });
 }
 
@@ -159,7 +169,7 @@ export function GetSettings(repoPath: string): $CancellablePromise<$models.Repos
  */
 export function GetTaskStatuses(): $CancellablePromise<{ [_ in string]?: $models.BackgroundTaskStatus | null }> {
     return $Call.ByID(3070104342).then(($result: any) => {
-        return $$createType12($result);
+        return $$createType13($result);
     });
 }
 
@@ -170,7 +180,7 @@ export function GetTaskStatuses(): $CancellablePromise<{ [_ in string]?: $models
  */
 export function ReadRepoLocalConfig(repoPath: string): $CancellablePromise<$models.RepoLocalConfig> {
     return $Call.ByID(325679112, repoPath).then(($result: any) => {
-        return $$createType13($result);
+        return $$createType14($result);
     });
 }
 
@@ -181,7 +191,7 @@ export function ReadRepoLocalConfig(repoPath: string): $CancellablePromise<$mode
  */
 export function ReadRepoPersonalConfig(repoPath: string): $CancellablePromise<$models.RepoPersonalConfig> {
     return $Call.ByID(2896515293, repoPath).then(($result: any) => {
-        return $$createType14($result);
+        return $$createType15($result);
     });
 }
 
@@ -209,6 +219,16 @@ export function RecoverToReflogEntry(repoPath: string, hash: string, createBranc
 export function RecreateRemote(repoPath: string, remoteName: string, url: string): $CancellablePromise<$models.OperationResult> {
     return $Call.ByID(4195568260, repoPath, remoteName, url).then(($result: any) => {
         return $$createType0($result);
+    });
+}
+
+/**
+ * RefreshProjectDefaultBranch explicitly discovers origin's GitHub default and
+ * retains the last successful result for offline use. Manual choices survive it.
+ */
+export function RefreshProjectDefaultBranch(repoPath: string): $CancellablePromise<$models.ProjectDefaultBranchResult> {
+    return $Call.ByID(1621847776, repoPath).then(($result: any) => {
+        return $$createType6($result);
     });
 }
 
@@ -287,6 +307,16 @@ export function SetApp(app: application$0.App | null): $CancellablePromise<void>
  */
 export function SetGitConfig(repoPath: string, key: string, value: string): $CancellablePromise<$models.OperationResult> {
     return $Call.ByID(103690093, repoPath, key, value).then(($result: any) => {
+        return $$createType0($result);
+    });
+}
+
+/**
+ * SetProjectDefaultBranch stores an exact manual selection after the UI's
+ * confirmation. It changes neither the checkout nor GitHub's default.
+ */
+export function SetProjectDefaultBranch(repoPath: string, branch: string): $CancellablePromise<$models.OperationResult> {
+    return $Call.ByID(4059472151, repoPath, branch).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -373,6 +403,16 @@ export function UpdateMaintenanceSettings(repoPath: string, maintenanceSettings:
 }
 
 /**
+ * UseGitHubDefault switches modes only when discovery or the stored automatic
+ * result is usable. Failure leaves the manual preference untouched.
+ */
+export function UseGitHubDefault(repoPath: string): $CancellablePromise<$models.OperationResult> {
+    return $Call.ByID(417987002, repoPath).then(($result: any) => {
+        return $$createType0($result);
+    });
+}
+
+/**
  * WriteRepoLocalConfig writes the shared config (.iofabrik/config.json) to
  * the repository. Creates the .iofabrik/ directory if it does not exist.
  */
@@ -401,12 +441,13 @@ const $$createType2 = $Create.Map($Create.Any, $Create.Any);
 const $$createType3 = $models.RepositorySettings.createFrom;
 const $$createType4 = $models.GitignoreTemplateOption.createFrom;
 const $$createType5 = $Create.Array($$createType4);
-const $$createType6 = $models.ReflogEntry.createFrom;
-const $$createType7 = $Create.Array($$createType6);
-const $$createType8 = $models.GitRemoteInfo.createFrom;
-const $$createType9 = $Create.Array($$createType8);
-const $$createType10 = $models.BackgroundTaskStatus.createFrom;
-const $$createType11 = $Create.Nullable($$createType10);
-const $$createType12 = $Create.Map($Create.Any, $$createType11);
-const $$createType13 = $models.RepoLocalConfig.createFrom;
-const $$createType14 = $models.RepoPersonalConfig.createFrom;
+const $$createType6 = $models.ProjectDefaultBranchResult.createFrom;
+const $$createType7 = $models.ReflogEntry.createFrom;
+const $$createType8 = $Create.Array($$createType7);
+const $$createType9 = $models.GitRemoteInfo.createFrom;
+const $$createType10 = $Create.Array($$createType9);
+const $$createType11 = $models.BackgroundTaskStatus.createFrom;
+const $$createType12 = $Create.Nullable($$createType11);
+const $$createType13 = $Create.Map($Create.Any, $$createType12);
+const $$createType14 = $models.RepoLocalConfig.createFrom;
+const $$createType15 = $models.RepoPersonalConfig.createFrom;

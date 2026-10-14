@@ -14,6 +14,7 @@ vi.mock('./MainArea', () => ({ default: () => <main data-testid="main-area" /> }
 vi.mock('./NonGitFolderPromptModal', () => ({ default: () => null }));
 vi.mock('./AdditionalPackagesModal', () => ({ default: () => null }));
 vi.mock('./GitIdentityPromptModal', () => ({ default: () => null }));
+vi.mock('./ProjectDefaultBranchModal', () => ({ default: () => null }));
 vi.mock('./DefaultBranchSyncConfirmModal', () => ({ default: () => null }));
 
 import AppLayout from './AppLayout';

@@ -51,7 +51,7 @@ vi.mock('@wailsio/runtime', async (importOriginal) => ({
 }));
 
 vi.mock('../../../context', () => ({
-  useRepo: () => ({ repoStatus: mocks.repoStatus, syncRepo: mocks.syncRepo, isSyncing: false }),
+  useRepo: () => ({ repoStatus: mocks.repoStatus, syncRepo: mocks.syncRepo, isSyncing: false, refreshProjectDefaultBranch: vi.fn() }),
   useLayout: () => ({ openExplorerTab: mocks.openExplorerTab }),
 }));
 

@@ -206,6 +206,10 @@ vi.mock('../../../../bindings/iofabrik/services/filewatcherservice', () => ({
 }));
 
 vi.mock('../../../../bindings/iofabrik/services/repositorysettingsservice', () => ({
+  GetProjectDefaultBranch: vi.fn().mockResolvedValue({ effectiveBranch: '', mode: 'automatic', availability: 'needs-selection', choices: [] }),
+  RefreshProjectDefaultBranch: vi.fn().mockResolvedValue({ effectiveBranch: '', mode: 'automatic', availability: 'needs-selection', choices: [] }),
+  SetProjectDefaultBranch: vi.fn(),
+  UseGitHubDefault: vi.fn(),
   GetRemotes,
   WriteRepoLocalConfig: vi.fn(),
   EnsureIOFabrikDir,
