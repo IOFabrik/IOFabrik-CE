@@ -81,7 +81,7 @@ func TestRepositorySettingsServiceProjectConfig(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got := string(data); got != "existing-pattern\n.iofabrik/local.json\n" {
+	if got := string(data); got != "existing-pattern\n.iofabrik/local.json\n.iofabrik/personal-*.tmp\n" {
 		t.Errorf("ignore rules changed unexpectedly: %q", got)
 	}
 }

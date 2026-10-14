@@ -104,7 +104,9 @@ Settings that should be shared with collaborators are stored inside the repo:
 
 Reads fall back to `.controlzebra/config.json` and `.controlzebra/local.json`
 when the corresponding IOFabrik file is absent. Existing IOFabrik files take
-precedence. Writes use `.iofabrik/` and add `.iofabrik/local.json` to `.gitignore`.
+precedence. Writes use `.iofabrik/` and add `.iofabrik/local.json` and
+`.iofabrik/personal-*.tmp` to `.gitignore` before creating personal files. This
+also protects atomic-write temporary files from a simultaneous Save.
 The legacy shared files remain available for older clients.
 
 ## Project Default Branch
@@ -134,7 +136,10 @@ retain the previous preference.
 check `availability` (`ready` or `needs-selection`) independently of lookup status.
 A stored branch can remain ready offline if its local branch or origin-tracking
 ref exists. No conventional branch names or other remotes determine identity.
-Branch names preserve case.
+Branch names preserve case. Every discovery outcome revalidates the current
+origin and local refs before returning readiness, including failed lookups and
+missing metadata. A connection or branch change during discovery cannot retain
+the previous identity as ready.
 
 The personal `DefaultBranch` preference in `.iofabrik/local.json` contains the
 manual override, the last successful automatic branch and origin identity, and

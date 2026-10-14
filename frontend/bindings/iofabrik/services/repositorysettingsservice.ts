@@ -75,7 +75,7 @@ export function DiagnoseRepository(repoPath: string): $CancellablePromise<$model
 
 /**
  * EnsureIOFabrikDir creates the .iofabrik/ directory and ensures the
- * personal config file is gitignored. Call this during project initialisation.
+ * personal config and temporary files are gitignored. Call this during project initialisation.
  */
 export function EnsureIOFabrikDir(repoPath: string): $CancellablePromise<$models.OperationResult> {
     return $Call.ByID(4063749091, repoPath).then(($result: any) => {
@@ -425,8 +425,8 @@ export function WriteRepoLocalConfig(repoPath: string, config: $models.RepoLocal
 /**
  * WriteRepoPersonalConfig writes the personal/machine-specific config
  * (.iofabrik/local.json) to the repository. Creates the .iofabrik/
- * directory if it does not exist. Also ensures .iofabrik/local.json is
- * listed in the repository's .gitignore so it is never committed.
+ * directory if it does not exist. Protects both local.json and atomic-write
+ * temporary files with repository ignore rules before creating personal files.
  */
 export function WriteRepoPersonalConfig(repoPath: string, config: $models.RepoPersonalConfig): $CancellablePromise<$models.OperationResult> {
     return $Call.ByID(3121693460, repoPath, config).then(($result: any) => {

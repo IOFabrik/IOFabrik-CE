@@ -162,10 +162,10 @@ func (r *RepositorySettingsService) RefreshProjectDefaultBranch(repoPath string)
 	return r.projectDefaultBranch(repoPath, true)
 }
 
-func (r *RepositorySettingsService) projectDefaultBranch(repoPath string, refresh bool) ProjectDefaultBranchResult {
+func (r *RepositorySettingsService) projectDefaultBranch(repoPath string, refresh bool) (result ProjectDefaultBranchResult) {
 	config, err := r.readRepoPersonalConfig(repoPath)
 	origin, repository := r.projectDefaultOrigin(repoPath)
-	result := r.resolveProjectDefault(repoPath, config, origin, repository)
+	result = r.resolveProjectDefault(repoPath, config, origin, repository)
 	if err != nil {
 		result.LookupStatus = "settings-error"
 		result.LookupMessage = "Personal settings could not be read. Check the project folder and try again."
@@ -174,6 +174,15 @@ func (r *RepositorySettingsService) projectDefaultBranch(repoPath string, refres
 	if !refresh {
 		return result
 	}
+	// Discovery may outlive changes to origin or the available refs. Revalidate
+	// on every refresh exit, including unavailable tools, failed requests and
+	// unusable metadata, while keeping lookup diagnostics separate from readiness.
+	defer func() {
+		status, message := result.LookupStatus, result.LookupMessage
+		currentOrigin, currentRepository := r.projectDefaultOrigin(repoPath)
+		result = r.resolveProjectDefault(repoPath, config, currentOrigin, currentRepository)
+		result.LookupStatus, result.LookupMessage = status, message
+	}()
 	if repository == "" {
 		result.LookupStatus = "not-github"
 		result.LookupMessage = "Choose a default branch for this project."
@@ -198,16 +207,15 @@ func (r *RepositorySettingsService) projectDefaultBranch(repoPath string, refres
 		result.LookupMessage = "GitHub did not provide a default branch. Choose a branch or try refreshing."
 		return result
 	}
-	config.DefaultBranch.AutomaticBranch = metadata.Repository.DefaultBranch
-	config.DefaultBranch.AutomaticOrigin = repository
-	if saved := r.writeRepoPersonalConfig(repoPath, config); !saved.Success {
+	updated := config
+	updated.DefaultBranch.AutomaticBranch = metadata.Repository.DefaultBranch
+	updated.DefaultBranch.AutomaticOrigin = repository
+	if saved := r.writeRepoPersonalConfig(repoPath, updated); !saved.Success {
 		result.LookupStatus, result.LookupMessage = "settings-error", saved.Error
 		return result
 	}
-	// The remote may have changed while discovery was in flight. The cache is
-	// bound to the queried origin, but availability must reflect the current one.
-	origin, repository = r.projectDefaultOrigin(repoPath)
-	result = r.resolveProjectDefault(repoPath, config, origin, repository)
+	// Failed persistence must continue to resolve the previous stored preference.
+	config = updated
 	result.LookupStatus = "github"
 	return result
 }
@@ -259,8 +267,8 @@ func (r *RepositorySettingsService) recordInitializedDefaultBranch(repoPath, bra
 	return r.writeRepoPersonalConfig(repoPath, config)
 }
 
-func writePersonalConfigAtomic(directory, destination string, data []byte) error {
-	file, err := os.CreateTemp(directory, "personal-*.tmp")
+func writePersonalConfigAtomic(directory, destination string, data []byte, replace func(string, string) error) error {
+	file, err := os.CreateTemp(directory, personalConfigTempPattern)
 	if err != nil {
 		return err
 	}
@@ -275,5 +283,5 @@ func writePersonalConfigAtomic(directory, destination string, data []byte) error
 	if err := file.Close(); err != nil {
 		return err
 	}
-	return replaceFileAtomic(file.Name(), destination)
+	return replace(file.Name(), destination)
 }
