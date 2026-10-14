@@ -606,8 +606,8 @@ export interface RepoContextValue {
   isLoadingProjectDefaultBranch: boolean;
   isSavingProjectDefaultBranch: boolean;
   refreshProjectDefaultBranch: (discover?: boolean, pathOverride?: string) => Promise<ProjectDefaultBranchResult | null>;
-  chooseProjectDefaultBranch: () => Promise<string | null>;
-  ensureProjectDefaultBranch: () => Promise<string | null>;
+  chooseProjectDefaultBranch: (pathOverride?: string) => Promise<string | null>;
+  ensureProjectDefaultBranch: (pathOverride?: string) => Promise<string | null>;
   submitProjectDefaultBranch: (branch: string) => Promise<boolean>;
   cancelProjectDefaultBranchSelection: () => void;
   useGitHubDefaultBranch: () => Promise<boolean>;

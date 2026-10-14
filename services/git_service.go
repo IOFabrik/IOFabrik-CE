@@ -600,6 +600,9 @@ func (g *GitService) CommitAll(repoPath string, message string) (opResult Operat
 		opResult = failedOp("Commit message is required")
 		return
 	}
+	if readiness := g.requireSaveReady(repoPath); !readiness.Success {
+		return readiness
+	}
 
 	// Check if there are any changes to commit
 	hasChanges, err := g.HasChanges(repoPath)
@@ -953,6 +956,9 @@ func (g *GitService) Commit(repoPath string, message string) (opResult Operation
 	if message == "" {
 		opResult = failedOp("Commit message is required")
 		return
+	}
+	if readiness := g.requireSaveReady(repoPath); !readiness.Success {
+		return readiness
 	}
 	result := g.runner.RunGit(repoPath, "commit", "-m", message)
 	if !result.Success {

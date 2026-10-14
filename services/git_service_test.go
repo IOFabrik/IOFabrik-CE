@@ -40,6 +40,25 @@ func createTestRepo(t *testing.T) string {
 	return tmpDir
 }
 
+// Save fixtures explicitly select their default; imported-repository fixtures
+// keep using createTestRepo and must exercise the chooser contract themselves.
+func createSaveTestRepo(t *testing.T) string {
+	t.Helper()
+	repo := createTestRepo(t)
+	runGitCmd(t, repo, "symbolic-ref", "HEAD", "refs/heads/main")
+	if result := NewRepositorySettingsService().SetProjectDefaultBranch(repo, "main"); !result.Success {
+		t.Fatal(result.Error)
+	}
+	// Keep fixture metadata out of file-count and empty-project assertions.
+	if err := os.Remove(filepath.Join(repo, ".gitignore")); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(repo, ".git", "info", "exclude"), []byte("/.iofabrik/local.json\n/.iofabrik/.local-*.tmp\n"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	return repo
+}
+
 // cleanupTestRepo removes a temporary test repository
 func cleanupTestRepo(t *testing.T, path string) {
 	t.Helper()
@@ -514,7 +533,7 @@ func TestStatus_WithChanges(t *testing.T) {
 }
 
 func TestStatus_AfterPushWithUpstream_NoPendingSnapshots(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	remotePath := createBareRemoteAndLink(t, repoPath)
@@ -554,7 +573,7 @@ func TestStatus_AfterPushWithUpstream_NoPendingSnapshots(t *testing.T) {
 // remote-tracking ref exists for the feature branch and `@{u}` fails. The status
 // must still report the branch as published with no pending snapshots.
 func TestStatus_PublishedBranchWithRestrictedRefspec(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	remotePath := createBareRemoteAndLink(t, repoPath)
@@ -612,7 +631,7 @@ func TestStatus_PublishedBranchWithRestrictedRefspec(t *testing.T) {
 }
 
 func TestCommitAll_Success(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	// Create a file
@@ -636,7 +655,7 @@ func TestCommitAll_Success(t *testing.T) {
 }
 
 func TestCommitAll_NoChanges(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -651,7 +670,7 @@ func TestCommitAll_NoChanges(t *testing.T) {
 }
 
 func TestCommitAll_EmptyMessage(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	// Create a file
@@ -672,7 +691,7 @@ func TestCommitAll_EmptyMessage(t *testing.T) {
 }
 
 func TestGetRecentCommits_WithCommits(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	// Create and commit a file
@@ -748,7 +767,7 @@ func TestPush_NoRemote(t *testing.T) {
 }
 
 func TestStatus_MultipleFileTypes(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -835,7 +854,7 @@ func TestSupportsRestore(t *testing.T) {
 }
 
 func TestShowCommit_Success(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -905,7 +924,7 @@ func TestShowCommit_EmptyHash(t *testing.T) {
 }
 
 func TestDiffWorking_ModifiedFile(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -964,7 +983,7 @@ func TestDiffWorking_UntrackedFile(t *testing.T) {
 }
 
 func TestDiffCommitFileRaw_Success(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -1003,7 +1022,7 @@ func TestDiffCommitFileRaw_InvalidHash(t *testing.T) {
 }
 
 func TestDiffWorkingRaw_ReturnsLFSPointerError(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -1030,7 +1049,7 @@ func TestDiffWorkingRaw_ReturnsLFSPointerError(t *testing.T) {
 }
 
 func TestDiffCommitFileRaw_ReturnsLFSPointerError(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -1117,7 +1136,7 @@ index 111..222 100644
 }
 
 func TestBranches_Success(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -1157,7 +1176,7 @@ func TestBranches_Success(t *testing.T) {
 }
 
 func TestCreateBranchAndCheckout_Success(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -1184,7 +1203,7 @@ func TestCreateBranchAndCheckout_Success(t *testing.T) {
 }
 
 func TestCreateBranchAndCheckout_WithUncommittedChanges(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -1229,7 +1248,7 @@ func TestCreateBranchAndCheckout_EmptyName(t *testing.T) {
 }
 
 func TestCreateBranchAndCheckout_InvalidName(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -1252,7 +1271,7 @@ func TestCreateBranchAndCheckout_InvalidName(t *testing.T) {
 }
 
 func TestCheckoutBranch_Success(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -1291,7 +1310,7 @@ func TestCheckoutBranch_Success(t *testing.T) {
 }
 
 func TestCheckoutBranch_WithUncommittedChanges(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -1324,7 +1343,7 @@ func TestCheckoutBranch_WithUncommittedChanges(t *testing.T) {
 }
 
 func TestCheckoutBranch_NonExistent(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -1347,7 +1366,7 @@ func TestCheckoutBranch_NonExistent(t *testing.T) {
 }
 
 func TestRenameBranch_Success_LocalAndRemote(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -1396,7 +1415,7 @@ func TestRenameBranch_Success_LocalAndRemote(t *testing.T) {
 }
 
 func TestRenameBranch_ProtectedBranchBlocked(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -1439,7 +1458,7 @@ func TestRenameBranch_RequiresConfirmation(t *testing.T) {
 }
 
 func TestDeleteBranch_Success_LocalAndRemote(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -1479,7 +1498,7 @@ func TestDeleteBranch_Success_LocalAndRemote(t *testing.T) {
 }
 
 func TestDeleteBranch_BlocksCurrentAndProtected(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -1528,7 +1547,7 @@ func TestDeleteBranch_RequiresConfirmation(t *testing.T) {
 // ============================================================================
 
 func TestResetHardHead_Success(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -1604,7 +1623,7 @@ func TestResetHardHead_WithoutConfirmation(t *testing.T) {
 }
 
 func TestResetHardHead_NoChanges(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -1632,7 +1651,7 @@ func TestResetHardHead_NoChanges(t *testing.T) {
 // ============================================================================
 
 func TestResetSoftHead_Success(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -1676,7 +1695,7 @@ func TestResetSoftHead_Success(t *testing.T) {
 }
 
 func TestResetSoftHead_WithoutConfirmation(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -1700,7 +1719,7 @@ func TestResetSoftHead_WithoutConfirmation(t *testing.T) {
 }
 
 func TestResetSoftHead_NotEnoughCommits(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -1724,7 +1743,7 @@ func TestResetSoftHead_NotEnoughCommits(t *testing.T) {
 }
 
 func TestDiscardAll_Success(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -1795,7 +1814,7 @@ func TestDiscardAll_WithoutConfirmation(t *testing.T) {
 }
 
 func TestDiscardAll_NoChanges(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -1819,7 +1838,7 @@ func TestDiscardAll_NoChanges(t *testing.T) {
 }
 
 func TestDiscardFile_Success(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -1911,7 +1930,7 @@ func TestDiscardFile_WithoutConfirmation(t *testing.T) {
 }
 
 func TestDiffCommitFileRaw_WithModification(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -1949,7 +1968,7 @@ func TestDiffCommitFileRaw_WithModification(t *testing.T) {
 // ============================================================================
 
 func TestStashPush_Success(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -1981,7 +2000,7 @@ func TestStashPush_Success(t *testing.T) {
 }
 
 func TestStashPush_NoChanges(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -2002,7 +2021,7 @@ func TestStashPush_NoChanges(t *testing.T) {
 }
 
 func TestStashList_Success(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -2044,7 +2063,7 @@ func TestStashList_Success(t *testing.T) {
 
 // TestStashList_MultipleStashes verifies correct index parsing with multiple stashes
 func TestStashList_MultipleStashes(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -2087,7 +2106,7 @@ func TestStashList_MultipleStashes(t *testing.T) {
 }
 
 func TestStashPop_Success(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -2120,7 +2139,7 @@ func TestStashPop_Success(t *testing.T) {
 }
 
 func TestStashPop_NoStashes(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -2141,7 +2160,7 @@ func TestStashPop_NoStashes(t *testing.T) {
 }
 
 func TestStashDrop_Success(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -2190,7 +2209,7 @@ func TestStashDrop_RequiresConfirmation(t *testing.T) {
 }
 
 func TestStashAndSwitchBranch_Success(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -2228,7 +2247,7 @@ func TestStashAndSwitchBranch_Success(t *testing.T) {
 }
 
 func TestStashAndSwitchBranch_NoChanges(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -2259,7 +2278,7 @@ func TestStashAndSwitchBranch_NoChanges(t *testing.T) {
 // ============================================================================
 
 func TestGetMergeState_NoMerge(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -2285,7 +2304,7 @@ func TestGetMergeState_NoMerge(t *testing.T) {
 }
 
 func TestGetConflictedFiles_NoConflicts(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -2308,7 +2327,7 @@ func TestGetConflictedFiles_NoConflicts(t *testing.T) {
 
 // TestMergeConflict_RealConflict creates a real merge conflict and tests detection + resolution
 func TestMergeConflict_RealConflict(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -2997,7 +3016,7 @@ func TestResolveConflictKeepOursStagesBothDeletedConflict(t *testing.T) {
 
 // TestMergeConflict_AbortMerge tests aborting a merge in progress
 func TestMergeConflict_AbortMerge(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -3061,7 +3080,7 @@ func TestMergeConflict_AbortMerge(t *testing.T) {
 }
 
 func TestAbortMerge_NoMergeInProgress(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -3084,7 +3103,7 @@ func TestAbortMerge_NoMergeInProgress(t *testing.T) {
 }
 
 func TestCompleteMerge_NoMergeInProgress(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -3104,7 +3123,7 @@ func TestCompleteMerge_NoMergeInProgress(t *testing.T) {
 }
 
 func TestCompleteMerge_LocalOnlyBypassesPush_RegularMerge(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -3138,7 +3157,7 @@ func TestCompleteMerge_LocalOnlyBypassesPush_RegularMerge(t *testing.T) {
 }
 
 func TestCompleteMerge_LocalOnlyBypassesPush_SquashMerge(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -3213,7 +3232,7 @@ func TestResolveConflictKeepTheirs_EmptyPath(t *testing.T) {
 
 // TestGetParentBranch_NoParent tests that GetParentBranch fails gracefully in a fresh repo
 func TestGetParentBranch_NoParent(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -3234,7 +3253,7 @@ func TestGetParentBranch_NoParent(t *testing.T) {
 
 // TestGetParentBranch_WithParent tests parent detection when on a feature branch
 func TestGetParentBranch_WithParent(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -3268,7 +3287,7 @@ func TestGetParentBranch_WithParent(t *testing.T) {
 
 // TestCheckBranchConflicts_AutoDetectParent tests that empty parent branch triggers auto-detection
 func TestCheckBranchConflicts_AutoDetectParent(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -3312,7 +3331,7 @@ func TestCheckBranchConflicts_AutoDetectParent(t *testing.T) {
 
 // TestCheckBranchConflicts_NoConflicts tests conflict detection when branches can merge cleanly
 func TestCheckBranchConflicts_NoConflicts(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -3349,7 +3368,7 @@ func TestCheckBranchConflicts_NoConflicts(t *testing.T) {
 
 // TestCheckBranchConflicts_WithConflicts tests conflict detection when branches have conflicting changes
 func TestCheckBranchConflicts_WithConflicts(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -3391,7 +3410,7 @@ func TestCheckBranchConflicts_WithConflicts(t *testing.T) {
 
 // TestCheckBranchConflicts_NonExistentBranch tests error handling for non-existent branch
 func TestCheckBranchConflicts_NonExistentBranch(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -3412,7 +3431,7 @@ func TestCheckBranchConflicts_NonExistentBranch(t *testing.T) {
 }
 
 func TestStartMergeWithOptions_UsesUpdatedOriginTargetForConflicts(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -3491,7 +3510,7 @@ func TestStartMergeWithOptions_UsesUpdatedOriginTargetForConflicts(t *testing.T)
 }
 
 func TestStartMergeWithOptions_PreflightUpdatesStaleTargetFromOrigin(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -3547,7 +3566,7 @@ func TestStartMergeWithOptions_PreflightUpdatesStaleTargetFromOrigin(t *testing.
 }
 
 func TestStartMergeWithOptions_PreflightBypassesRemoteForLocalOnlyRepo(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -3578,7 +3597,7 @@ func TestStartMergeWithOptions_PreflightBypassesRemoteForLocalOnlyRepo(t *testin
 }
 
 func TestStartMergeWithOptions_PreflightUsesPreferredRemoteWhenOriginMissing(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -3635,7 +3654,7 @@ func TestStartMergeWithOptions_PreflightUsesPreferredRemoteWhenOriginMissing(t *
 }
 
 func TestStartMergeWithOptions_PreflightDivergedTargetFailsAndRestoresBranch(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -3688,7 +3707,7 @@ func TestStartMergeWithOptions_PreflightDivergedTargetFailsAndRestoresBranch(t *
 }
 
 func TestListMergeReviewFiles_ReturnsStatusesAndRename(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -3738,7 +3757,7 @@ func TestListMergeReviewFiles_ReturnsStatusesAndRename(t *testing.T) {
 }
 
 func TestDiffMergeReviewFileRaw_ReturnsDiff(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -3764,7 +3783,7 @@ func TestDiffMergeReviewFileRaw_ReturnsDiff(t *testing.T) {
 }
 
 func TestDiffMergeReviewFileRaw_ReturnsLFSPointerError(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -3789,7 +3808,7 @@ func TestDiffMergeReviewFileRaw_ReturnsLFSPointerError(t *testing.T) {
 }
 
 func TestStartMergeWithOptions_Selective_EmptySelectionFails(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -3816,7 +3835,7 @@ func TestStartMergeWithOptions_Selective_EmptySelectionFails(t *testing.T) {
 }
 
 func TestStartMergeWithOptions_SelectiveFalse_BackwardCompatible(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -3845,7 +3864,7 @@ func TestStartMergeWithOptions_SelectiveFalse_BackwardCompatible(t *testing.T) {
 }
 
 func TestStartMergeWithOptions_Selective_CleanMergeKeepsOnlySelectedFiles(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -3888,7 +3907,7 @@ func TestStartMergeWithOptions_Selective_CleanMergeKeepsOnlySelectedFiles(t *tes
 }
 
 func TestStartMergeWithOptions_Selective_ConflictMergeKeepsOnlySelectedConflicts(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -3946,7 +3965,7 @@ func TestStartMergeWithOptions_Selective_ConflictMergeKeepsOnlySelectedConflicts
 // ============================================================================
 
 func TestReadFileAtRevision_Success(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -3970,7 +3989,7 @@ func TestReadFileAtRevision_Success(t *testing.T) {
 }
 
 func TestReadFileAtRevision_MultipleRevisions(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -4007,7 +4026,7 @@ func TestReadFileAtRevision_MultipleRevisions(t *testing.T) {
 }
 
 func TestReadFileAtRevision_FileDoesNotExist(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -4029,7 +4048,7 @@ func TestReadFileAtRevision_FileDoesNotExist(t *testing.T) {
 }
 
 func TestReadFileAtRevision_InvalidRevision(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -4069,7 +4088,7 @@ func TestReadFileAtRevision_EmptyParams(t *testing.T) {
 }
 
 func TestReadFileAtRevision_SubdirectoryFile(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()
@@ -4093,7 +4112,7 @@ func TestReadFileAtRevision_SubdirectoryFile(t *testing.T) {
 }
 
 func TestReadFileAtRevision_HeadTildeNotation(t *testing.T) {
-	repoPath := createTestRepo(t)
+	repoPath := createSaveTestRepo(t)
 	defer cleanupTestRepo(t, repoPath)
 
 	svc := NewGitService()

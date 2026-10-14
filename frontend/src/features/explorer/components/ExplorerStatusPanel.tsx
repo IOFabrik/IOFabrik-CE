@@ -26,7 +26,6 @@ import {
 } from 'lucide-react';
 import { ICON_STYLES } from '../../../shared/utils/gitHelpers';
 import { getFolderNameFromPath } from '../../../shared/utils/path';
-import { MAIN_BRANCHES } from '../../../shared/constants';
 import { 
   Button, 
 } from '../../../shared/ui';
@@ -56,6 +55,7 @@ interface ExplorerStatusPanelProps {
   status: StatusType;
   folderName?: string;
   branchName?: string;
+  effectiveDefaultBranch?: string;
   repoPath?: string;
   ahead?: number;
   hasUpstream?: boolean;
@@ -153,6 +153,7 @@ function ExplorerStatusPanel({
   status,
   folderName,
   branchName,
+  effectiveDefaultBranch,
   repoPath,
   ahead = 0,
   hasUpstream = true,
@@ -186,7 +187,7 @@ function ExplorerStatusPanel({
 }: ExplorerStatusPanelProps): JSX.Element {
   const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
   const needsTrackingPackages = !gitInstalled || !lfsInstalled;
-  const canShowMergeAction = Boolean(branchName && !MAIN_BRANCHES.includes(branchName.toLowerCase()));
+  const canShowMergeAction = Boolean(branchName && effectiveDefaultBranch && branchName !== effectiveDefaultBranch);
 
   const trackingButtonLabel = needsTrackingPackages
     ? 'Check supporting tools'

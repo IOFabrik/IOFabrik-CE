@@ -64,8 +64,8 @@ vi.mock('./SidebarCommitPanel', () => ({
 }));
 
 vi.mock('./ExplorerStatusPanel', () => ({
-  default: ({ onOpenCombineChanges }: { onOpenCombineChanges: () => void }) => (
-    <button type="button" onClick={onOpenCombineChanges}>
+  default: ({ onOpenCombineChanges, status, branchName }: { onOpenCombineChanges: () => void; status: string; branchName?: string }) => (
+    <button type="button" data-status={status} data-branch={branchName || ''} onClick={onOpenCombineChanges}>
       Open merge modal
     </button>
   ),
@@ -98,6 +98,7 @@ function createRepoValue(overrides: Record<string, unknown> = {}) {
   return {
     repoPath: '/tmp/repo',
     repoInfo: { isRepo: true },
+    projectDefaultBranch: { availability: 'ready', effectiveBranch: 'main' },
     repoStatus: {
       changedFiles: [],
       ahead: 0,
@@ -161,6 +162,31 @@ describe('ExplorerView', () => {
     layoutStore.current = null;
     integrationStore.current.session = null;
     integrationStore.current.entries = [];
+  });
+
+  it.each([
+    ['release/2026', 'release/2026', 'synced'],
+    ['main', 'release/2026', 'featureBranch'],
+    ['master', 'trunk', 'featureBranch'],
+    ['Release/2026', 'release/2026', 'featureBranch'],
+    ['', 'trunk', 'synced'],
+  ])('classifies %s against %s without inventing a current branch', (branch, effectiveBranch, status) => {
+    repoStore.current = createRepoValue({
+      projectDefaultBranch: { availability: 'ready', effectiveBranch },
+      repoStatus: { branch, changedFiles: [], ahead: 0, hasUpstream: true, totalLocalCommits: 0 },
+    });
+    layoutStore.current = createLayoutValue();
+    render(<ExplorerView />);
+    expect(screen.getByRole('button', { name: 'Open merge modal' })).toHaveAttribute('data-status', status);
+    expect(screen.getByRole('button', { name: 'Open merge modal' })).toHaveAttribute('data-branch', branch);
+  });
+
+  it('keeps an unknown branch unknown while showing unsaved work', () => {
+    repoStore.current = createRepoValue({ repoStatus: { changedFiles: [{ path: 'logic.L5X', status: 'modified' }] } });
+    layoutStore.current = createLayoutValue();
+    render(<ExplorerView />);
+    expect(screen.getByTestId('sidebar-commit-panel')).toHaveTextContent('Commit panel for');
+    expect(screen.getByTestId('sidebar-commit-panel')).not.toHaveTextContent('main');
   });
 
   it('keeps the merge modal mounted when merge start changes the panel to has changes', () => {

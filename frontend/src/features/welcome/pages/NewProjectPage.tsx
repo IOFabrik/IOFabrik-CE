@@ -305,7 +305,7 @@ function NewProjectPage({ prefillPath = '', onPrefillApplied }: NewProjectPagePr
 
           setValidation({
             type: 'already-repo',
-            branch: info.branch || 'main',
+            branch: info.branch || '',
             remoteUrl,
           });
         }

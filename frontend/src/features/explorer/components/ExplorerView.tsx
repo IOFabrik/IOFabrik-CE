@@ -12,7 +12,7 @@
 import { memo, useState, useCallback, useMemo, useEffect } from 'react';
 import { toast } from 'sonner';
 import { useLayout } from '../../../context';
-import { MAIN_BRANCHES, VIEWS } from '../../../shared/constants';
+import { VIEWS } from '../../../shared/constants';
 import { useRepo, type FileStatus } from '../../../context';
 import { getFolderNameFromPath } from '../../../shared/utils/path';
 import SidebarCommitPanel from './SidebarCommitPanel';
@@ -57,6 +57,7 @@ function ExplorerView(): JSX.Element {
   const { 
     repoPath, 
     repoInfo,
+    projectDefaultBranch,
     repoStatus, 
     graphCommits,
     startTracking,
@@ -116,8 +117,9 @@ function ExplorerView(): JSX.Element {
     const ahead = repoStatus?.ahead || 0;
     const hasUpstream = repoStatus?.hasUpstream ?? true;
     const totalLocalCommits = repoStatus?.totalLocalCommits || 0;
-    const branchName = repoStatus?.branch || 'main';
-    const isMainBranch = MAIN_BRANCHES.includes(branchName.toLowerCase());
+    const branchName = repoStatus?.branch || '';
+    const isDefaultBranch = projectDefaultBranch?.availability === 'ready'
+      && branchName === projectDefaultBranch.effectiveBranch;
     const needsPush = ahead > 0 || (!hasUpstream && totalLocalCommits > 0);
 
     if (reviewSession) {
@@ -129,11 +131,11 @@ function ExplorerView(): JSX.Element {
     if (needsPush) {
       return { type: 'push', ahead, hasUpstream, totalLocalCommits };
     }
-    if (!isMainBranch) {
+    if (branchName && projectDefaultBranch?.availability === 'ready' && !isDefaultBranch) {
       return { type: 'featureBranch', branchName };
     }
     return { type: 'synced' };
-  }, [repoPath, repoInfo?.isRepo, repoStatus, reviewSession]);
+  }, [repoPath, repoInfo?.isRepo, repoStatus, reviewSession, projectDefaultBranch]);
 
   const handleRewind = useCallback(async (): Promise<boolean> => {
     setIsRewinding(true);
@@ -316,6 +318,7 @@ function ExplorerView(): JSX.Element {
   if (panelState.type === 'hasChanges') {
     primaryPanel = (
       <SidebarCommitPanel
+        key={repoPath}
         changedFiles={panelState.changedFiles}
         onCommit={commitChanges}
         onBranchAndCommit={branchAndCommit}
@@ -324,6 +327,7 @@ function ExplorerView(): JSX.Element {
         currentBranch={panelState.branchName}
         repoPath={repoPath || undefined}
         isCommitting={isCommitting}
+        isFirstSave={repoStatus?.hasUpstream === false && repoStatus.totalLocalCommits === 0}
         isRewinding={isRewinding}
         operationInProgress={operationInProgress}
       />
@@ -334,6 +338,7 @@ function ExplorerView(): JSX.Element {
         status={panelState.type}
         folderName={panelState.type === 'noRepo' ? panelState.folderName : undefined}
         branchName={repoStatus?.branch}
+        effectiveDefaultBranch={projectDefaultBranch?.availability === 'ready' ? projectDefaultBranch.effectiveBranch : undefined}
         repoPath={repoPath || undefined}
         ahead={panelState.type === 'push' ? panelState.ahead : undefined}
         hasUpstream={panelState.type === 'push' ? panelState.hasUpstream : undefined}
