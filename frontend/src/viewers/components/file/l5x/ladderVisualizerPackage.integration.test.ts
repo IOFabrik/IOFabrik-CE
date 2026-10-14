@@ -11,7 +11,7 @@ import {
   TagTable,
   type PlcDocument,
 } from 'ladder-visualizer';
-import { CONTROL_ZEBRA_LADDER_THEME } from './theme';
+import { IOFABRIK_LADDER_THEME } from './theme';
 
 const FBD_WITH_DECORATED_BLOCK_DATA = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <RSLogix5000Content SchemaRevision="1.0" SoftwareRevision="35.01" TargetName="GenericBlocks" TargetType="Program" ContainsContext="true" ExportOptions="References NoRawData L5KData DecoratedData Context">
@@ -112,7 +112,7 @@ describe('pinned ladder-visualizer package', () => {
       sheets: [{ elements: [{ kind: 'modified', categories: ['presentation'] }] }],
     });
 
-    render(createElement(FBDDiffDiagram, { oldBody, newBody, theme: CONTROL_ZEBRA_LADDER_THEME }));
+    render(createElement(FBDDiffDiagram, { oldBody, newBody, theme: IOFABRIK_LADDER_THEME }));
     expect(screen.getByRole('button', { name: 'Overlay' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Side by side' }));
     expect(screen.getByRole('button', { name: 'Side by side' })).toHaveAttribute('aria-pressed', 'true');

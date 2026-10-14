@@ -1,6 +1,6 @@
 ---
 name: user-facing-language
-description: Use when writing or editing any user-facing string — button labels, toasts, modals, error messages. ControlZebra users are non-technical PLC/HMI engineers who don't know Git.
+description: Use when writing or editing any user-facing string — button labels, toasts, modals, error messages. IOFabrik users are non-technical PLC/HMI engineers who don't know Git.
 ---
 
 # User-facing language rules

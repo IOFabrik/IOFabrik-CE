@@ -106,7 +106,7 @@ func (s *LocalBinService) EnsurePortableToolchain() OperationResult {
 	result := NewCommandRunner().Run("", GitPath(), "lfs", "install", "--skip-repo")
 	if !result.Success {
 		log.Printf("[LocalBinService] LFS initialization failed: %s %s", result.Error, result.Stderr)
-		return failedOp("File support could not be prepared. Restart ControlZebra or reinstall it using the full installer.")
+		return failedOp("File support could not be prepared. Restart IOFabrik or reinstall it using the full installer.")
 	}
 	s.initialized = true
 	s.emitProgress(LocalBinProgress{Component: "toolchain", Phase: "done", Message: "Portable toolchain ready", Percent: 100, Success: true})
@@ -115,7 +115,7 @@ func (s *LocalBinService) EnsurePortableToolchain() OperationResult {
 
 func validateInstalledToolchain(status LocalBinStatus, busyBox bool) error {
 	if !status.HasGit || !status.HasGh || !status.HasLfs || busyBox {
-		return fmt.Errorf("Required supporting tools are missing or incomplete. Reinstall ControlZebra using the full installer.")
+		return fmt.Errorf("Required supporting tools are missing or incomplete. Reinstall IOFabrik using the full installer.")
 	}
 	return nil
 }

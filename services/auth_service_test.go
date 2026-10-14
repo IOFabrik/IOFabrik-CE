@@ -3,12 +3,13 @@ package services
 import (
 	"encoding/json"
 	"testing"
+
+	"github.com/zalando/go-keyring"
 )
 
 // TestAuthServiceRoundTrip verifies save → load → clear lifecycle.
-// NOTE: This test interacts with the real OS keychain. On CI you may need to
-// set the KEYRING_MOCK_KEYRING=true env var or use the go-keyring mock backend.
 func TestAuthServiceRoundTrip(t *testing.T) {
+	keyring.MockInit()
 	svc := NewAuthService()
 
 	// Clean slate
@@ -59,10 +60,37 @@ func TestAuthServiceRoundTrip(t *testing.T) {
 
 // TestAuthServiceSaveEmptyRejects verifies that empty session data is rejected.
 func TestAuthServiceSaveEmptyRejects(t *testing.T) {
+	keyring.MockInit()
 	svc := NewAuthService()
 
 	err := svc.SaveSession("")
 	if err == nil {
 		t.Fatal("expected error when saving empty session, got nil")
+	}
+}
+
+func TestAuthServiceMigratesLegacySessionAndClearsBothNames(t *testing.T) {
+	keyring.MockInit()
+	if err := keyring.Set(legacyKeyringService, keyringUser, "legacy-session"); err != nil {
+		t.Fatal(err)
+	}
+	svc := NewAuthService()
+	if got, err := svc.LoadSession(); err != nil || got != "legacy-session" {
+		t.Fatalf("legacy session was not recovered: %q, %v", got, err)
+	}
+	if got, err := keyring.Get(keyringService, keyringUser); err != nil || got != "legacy-session" {
+		t.Fatalf("session was not stored under the new name: %q, %v", got, err)
+	}
+	if err := svc.SaveSession("current-session"); err != nil {
+		t.Fatal(err)
+	}
+	if got, err := svc.LoadSession(); err != nil || got != "current-session" {
+		t.Fatalf("legacy session replaced the current session: %q, %v", got, err)
+	}
+	if err := svc.ClearSession(); err != nil {
+		t.Fatal(err)
+	}
+	if got, err := svc.LoadSession(); err != nil || got != "" {
+		t.Fatalf("logout recovered an old session: %q, %v", got, err)
 	}
 }

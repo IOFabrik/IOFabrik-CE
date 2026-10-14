@@ -309,7 +309,7 @@ func (s *SettingsService) SetUserProfile(repoPath string, profile UserProfile, g
 // Priority (write): only writes to local repo config, never touches global
 //
 // This should be called whenever a repo is opened. The fallbackName and fallbackEmail
-// come from the authenticated ControlZebra user (Supabase session).
+// come from the authenticated IOFabrik user (Supabase session).
 func (s *SettingsService) EnsureIdentity(repoPath string, fallbackName string, fallbackEmail string) DetectedIdentity {
 	done := LogMethod("SettingsService.EnsureIdentity", map[string]interface{}{"repoPath": repoPath})
 	defer func() { done(nil, nil) }()

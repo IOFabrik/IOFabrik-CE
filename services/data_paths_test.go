@@ -115,6 +115,46 @@ func TestDataLayoutMigrationPreservesSettingsAndRerunsAfterV1(t *testing.T) {
 	}
 }
 
+func TestIOFabrikMigrationPreservesLegacyReviewWorkspace(t *testing.T) {
+	root := t.TempDir()
+	locations := resolveDataLocationsFor("windows", func(key string) string { return filepath.Join(root, key) })
+	locations.LegacyLogsDir = filepath.Join(root, "old-logs")
+	previous := filepath.Join(root, "LOCALAPPDATA", "ControlZebra")
+	workspace := filepath.Join(previous, "integration", "workspaces", "review")
+	fixtures := map[string]string{
+		filepath.Join(previous, "config", "settings.json"):                        "previous-local",
+		filepath.Join(root, "APPDATA", "ControlZebra", "config", "settings.json"): "previous-roaming",
+		filepath.Join(previous, "logs", "debug.log"):                              "previous-log",
+		filepath.Join(previous, "cache", "cached-file"):                           "previous-cache",
+		filepath.Join(previous, "webview2", "profile"):                            "previous-browser",
+		filepath.Join(previous, "integration", "sessions", "review.json"):         workspace,
+		filepath.Join(workspace, "decision.txt"):                                  "retained-decision",
+		filepath.Join(previous, "migrations", "data-layout-v2.json"):              "{}",
+	}
+	for path, content := range fixtures {
+		writeMigrationFixture(t, path, content)
+	}
+	if err := runDataLayoutMigration(locations); err != nil {
+		t.Fatal(err)
+	}
+	for path, want := range map[string]string{
+		locations.SettingsFile:                                             "previous-local",
+		filepath.Join(locations.LogsDir, "debug.log"):                      "previous-log",
+		filepath.Join(locations.CacheDir, "cached-file"):                   "previous-cache",
+		filepath.Join(locations.WebView2Dir, "profile"):                    "previous-browser",
+		filepath.Join(locations.IntegrationDir, "sessions", "review.json"): workspace,
+		filepath.Join(workspace, "decision.txt"):                           "retained-decision",
+	} {
+		got, err := os.ReadFile(path)
+		if err != nil || string(got) != want {
+			t.Fatalf("migration changed retained data: %s: %q, %v", path, got, err)
+		}
+	}
+	if _, err := os.Stat(filepath.Join(locations.IntegrationDir, "workspaces", "review")); !os.IsNotExist(err) {
+		t.Fatalf("registered workspace moved: %v", err)
+	}
+}
+
 func TestDataLayoutMigrationKeepsCurrentSettings(t *testing.T) {
 	root := t.TempDir()
 	locations := resolveDataLocationsFor("windows", func(key string) string { return filepath.Join(root, key) })

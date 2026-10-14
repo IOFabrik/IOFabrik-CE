@@ -10,11 +10,11 @@ vars:
   # TIMESTAMP_SERVER: "http://timestamp.digicert.com"
   #
   # Password is stored securely in system keychain. Run: wails3 setup signing
-  SIGN_CERTIFICATE: '{{.SIGN_CERTIFICATE | default (env "CZ_WINDOWS_SIGN_CERTIFICATE") | default ""}}'
-  SIGN_THUMBPRINT: '{{.SIGN_THUMBPRINT | default (env "CZ_WINDOWS_SIGN_THUMBPRINT") | default ""}}'
-  TIMESTAMP_SERVER: '{{.TIMESTAMP_SERVER | default (env "CZ_WINDOWS_TIMESTAMP_SERVER") | default "http://timestamp.digicert.com"}}'
-  SELF_SIGNED: '{{.SELF_SIGNED | default (env "CZ_WINDOWS_SELF_SIGNED") | default "false"}}'
-  SELF_SIGNED_CERT_DIR: '{{.SELF_SIGNED_CERT_DIR | default (env "CZ_WINDOWS_SELF_SIGNED_CERT_DIR") | default "build/certs/windows/selfsigned"}}'
+  SIGN_CERTIFICATE: '{{.SIGN_CERTIFICATE | default (env "IOFABRIK_WINDOWS_SIGN_CERTIFICATE") | default ""}}'
+  SIGN_THUMBPRINT: '{{.SIGN_THUMBPRINT | default (env "IOFABRIK_WINDOWS_SIGN_THUMBPRINT") | default ""}}'
+  TIMESTAMP_SERVER: '{{.TIMESTAMP_SERVER | default (env "IOFABRIK_WINDOWS_TIMESTAMP_SERVER") | default "http://timestamp.digicert.com"}}'
+  SELF_SIGNED: '{{.SELF_SIGNED | default (env "IOFABRIK_WINDOWS_SELF_SIGNED") | default "false"}}'
+  SELF_SIGNED_CERT_DIR: '{{.SELF_SIGNED_CERT_DIR | default (env "IOFABRIK_WINDOWS_SELF_SIGNED_CERT_DIR") | default "build/certs/windows/selfsigned"}}'
 
   # Docker image for cross-compilation with CGO (used when CGO_ENABLED=1 on non-Windows)
   CROSS_IMAGE: wails-cross
@@ -133,9 +133,9 @@ tasks:
       - task: prepare:tools
       - | 
         {{if eq OS "windows"}}
-        makensis -DCZ_TOOLS_DIR="{{.ROOT_DIR}}/build/deps/windows-{{.ARCH}}" -DINFO_PRODUCTVERSION="{{.APP_VERSION}}" -DARG_WAILS_{{.ARG_FLAG}}_BINARY="{{.ROOT_DIR}}\{{.BIN_DIR}}\{{.APP_NAME}}.exe" project.nsi
+        makensis -DIOFABRIK_TOOLS_DIR="{{.ROOT_DIR}}/build/deps/windows-{{.ARCH}}" -DINFO_PRODUCTVERSION="{{.APP_VERSION}}" -DARG_WAILS_{{.ARG_FLAG}}_BINARY="{{.ROOT_DIR}}\{{.BIN_DIR}}\{{.APP_NAME}}.exe" project.nsi
         {{else}}
-        makensis -DCZ_TOOLS_DIR="{{.ROOT_DIR}}/build/deps/windows-{{.ARCH}}" -DINFO_PRODUCTVERSION="{{.APP_VERSION}}" -DARG_WAILS_{{.ARG_FLAG}}_BINARY="{{.ROOT_DIR}}/{{.BIN_DIR}}/{{.APP_NAME}}.exe" project.nsi
+        makensis -DIOFABRIK_TOOLS_DIR="{{.ROOT_DIR}}/build/deps/windows-{{.ARCH}}" -DINFO_PRODUCTVERSION="{{.APP_VERSION}}" -DARG_WAILS_{{.ARG_FLAG}}_BINARY="{{.ROOT_DIR}}/{{.BIN_DIR}}/{{.APP_NAME}}.exe" project.nsi
         {{end}}
     vars:
       ARCH: '{{.ARCH | default ARCH}}'
@@ -199,24 +199,24 @@ tasks:
     desc: |
       Signs the provided artifact path with Authenticode.
       Usage example:
-        task windows:sign:artifact INPUT=bin/control-zebra-windows-arm64.exe
+        task windows:sign:artifact INPUT=bin/iofabrik-windows-arm64.exe
     cmds:
       - |
         {{if eq .SELF_SIGNED "true"}}
-        CZ_WINDOWS_SELF_SIGNED=true \
-        CZ_WINDOWS_SELF_SIGNED_CERT_DIR="{{.SELF_SIGNED_CERT_DIR}}" \
-        CZ_WINDOWS_TIMESTAMP_SERVER="{{.TIMESTAMP_SERVER}}" \
+        IOFABRIK_WINDOWS_SELF_SIGNED=true \
+        IOFABRIK_WINDOWS_SELF_SIGNED_CERT_DIR="{{.SELF_SIGNED_CERT_DIR}}" \
+        IOFABRIK_WINDOWS_TIMESTAMP_SERVER="{{.TIMESTAMP_SERVER}}" \
         bash scripts/sign-windows-artifact.sh "{{.INPUT}}"
         {{else}}
         wails3 tool sign --input {{.INPUT}} {{if .SIGN_CERTIFICATE}}--certificate {{.SIGN_CERTIFICATE}}{{end}} {{if .SIGN_THUMBPRINT}}--thumbprint {{.SIGN_THUMBPRINT}}{{end}} {{if .TIMESTAMP_SERVER}}--timestamp {{.TIMESTAMP_SERVER}}{{end}}
         {{end}}
     preconditions:
       - sh: '[ -n "{{.INPUT}}" ]'
-        msg: "INPUT is required. Example: task windows:sign:artifact INPUT=bin/control-zebra-windows-amd64.exe"
+        msg: "INPUT is required. Example: task windows:sign:artifact INPUT=bin/iofabrik-windows-amd64.exe"
       - sh: '[ -f "{{.INPUT}}" ]'
         msg: "Input artifact not found: {{.INPUT}}"
       - sh: '[ "{{.SELF_SIGNED}}" = "true" ] || [ -n "{{.SIGN_CERTIFICATE}}" ] || [ -n "{{.SIGN_THUMBPRINT}}" ]'
-        msg: "Set CZ_WINDOWS_SELF_SIGNED=true for local self-signed signing, or configure SIGN_CERTIFICATE/SIGN_THUMBPRINT for CA-issued signing."
+        msg: "Set IOFABRIK_WINDOWS_SELF_SIGNED=true for local self-signed signing, or configure SIGN_CERTIFICATE/SIGN_THUMBPRINT for CA-issued signing."
 
   sign:installer:
     summary: Signs the NSIS installer
@@ -254,11 +254,11 @@ tasks:
     summary: Verifies Authenticode signature and timestamp for one artifact
     cmds:
       - |
-        CZ_WINDOWS_SELF_SIGNED="{{.SELF_SIGNED}}" \
+        IOFABRIK_WINDOWS_SELF_SIGNED="{{.SELF_SIGNED}}" \
         bash scripts/verify-windows-signature.sh "{{.INPUT}}"
     preconditions:
       - sh: '[ -n "{{.INPUT}}" ]'
-        msg: "INPUT is required. Example: task windows:verify:artifact INPUT=bin/control-zebra-windows-amd64.exe"
+        msg: "INPUT is required. Example: task windows:verify:artifact INPUT=bin/iofabrik-windows-amd64.exe"
       - sh: '[ -f "{{.INPUT}}" ]'
         msg: "Input artifact not found: {{.INPUT}}"
 

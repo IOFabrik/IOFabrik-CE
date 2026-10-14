@@ -126,7 +126,7 @@ describe('ReviewsPage', () => {
       number: 42,
       title: 'Update mixer sequence',
       body: 'Adds the requested mixer interlock.',
-      url: 'https://github.com/controlzebra/plant-project/pull/42',
+      url: 'https://github.com/iofabrik/plant-project/pull/42',
       state: 'OPEN',
       isDraft: false,
       author: { login: 'operator' },
@@ -156,7 +156,7 @@ describe('ReviewsPage', () => {
       number: 42,
       title: 'Update mixer sequence',
       body: 'Adds the requested mixer interlock.',
-      url: 'https://github.com/controlzebra/plant-project/pull/42',
+      url: 'https://github.com/iofabrik/plant-project/pull/42',
       author: { login: 'operator' },
       headRefName: 'work/mixer-interlock',
       baseRefName: 'main',
@@ -234,14 +234,14 @@ describe('ReviewsPage', () => {
     repoState.changeRequestError = null;
     repoState.selectedChangeRequest = {
       number: 42,
-      url: 'https://github.com/controlzebra/plant-project/pull/42',
+      url: 'https://github.com/iofabrik/plant-project/pull/42',
     } as GitHubChangeRequest;
 
     render(<ReviewsPage />);
 
     fireEvent.click(screen.getByRole('button', { name: 'Open on GitHub' }));
 
-    expect(openExternalUrl).toHaveBeenCalledWith('https://github.com/controlzebra/plant-project/pull/42');
+    expect(openExternalUrl).toHaveBeenCalledWith('https://github.com/iofabrik/plant-project/pull/42');
   });
 
   it('reports a failed Change Request open instead of silently staying on the list', () => {
@@ -289,8 +289,8 @@ describe('ReviewsPage', () => {
     repoState.changeRequestFiles = [{ path: 'logic/Mixer.L5X', status: 'modified', additions: 1, deletions: 0 }];
     repoState.changeRequestSnapshot = {
       number: 42,
-      headRef: 'refs/controlzebra/change-requests/42/head',
-      baseRef: 'refs/controlzebra/change-requests/42/base',
+      headRef: 'refs/iofabrik/change-requests/42/head',
+      baseRef: 'refs/iofabrik/change-requests/42/base',
       headOid: 'head-oid',
       baseOid: 'base-oid',
       baseTipOid: 'tip-oid',
@@ -299,13 +299,13 @@ describe('ReviewsPage', () => {
     render(<ReviewsPage />);
 
     const renderer = await screen.findByTestId('diff-renderer');
-    expect(renderer).toHaveAttribute('data-old-ref', 'refs/controlzebra/change-requests/42/base');
-    expect(renderer).toHaveAttribute('data-new-ref', 'refs/controlzebra/change-requests/42/head');
+    expect(renderer).toHaveAttribute('data-old-ref', 'refs/iofabrik/change-requests/42/base');
+    expect(renderer).toHaveAttribute('data-new-ref', 'refs/iofabrik/change-requests/42/head');
     expect(ensureFileContent).toHaveBeenCalledWith(
       '/tmp/plant-project',
-      'refs/controlzebra/change-requests/42/base',
+      'refs/iofabrik/change-requests/42/base',
       'logic/Mixer.L5X',
-      'refs/controlzebra/change-requests/42/head',
+      'refs/iofabrik/change-requests/42/head',
       'logic/Mixer.L5X',
     );
   });
@@ -317,8 +317,8 @@ describe('ReviewsPage', () => {
     repoState.changeRequestFiles = [{ path: 'models/plant.step', status: 'modified', additions: 0, deletions: 0 }];
     repoState.changeRequestSnapshot = {
       number: 42,
-      headRef: 'refs/controlzebra/change-requests/42/head',
-      baseRef: 'refs/controlzebra/change-requests/42/base',
+      headRef: 'refs/iofabrik/change-requests/42/head',
+      baseRef: 'refs/iofabrik/change-requests/42/base',
     } as ChangeRequestSnapshot;
     ensureFileContent.mockResolvedValue({ comparable: false, errorCode: 'content_too_large' });
 

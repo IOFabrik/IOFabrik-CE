@@ -99,7 +99,7 @@ describe('ExplorerStatusPanel update workflow', () => {
         {...baseProps}
         review={{
           state: 'fetching',
-          message: 'ControlZebra is checking for shared updates.',
+          message: 'IOFabrik is checking for shared updates.',
           conflictCount: 0,
         }}
       />,

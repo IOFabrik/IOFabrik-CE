@@ -1,4 +1,4 @@
-// Package services provides backend functionality for the ControlZebra application.
+// Package services provides backend functionality for the IOFabrik application.
 // This file contains the FileWatcherService which watches directories for changes
 // and emits events to the frontend for event-based UI refresh.
 package services

@@ -1,6 +1,6 @@
-# ControlZebra — AI Agent Skills Guide
+# IOFabrik — AI Agent Skills Guide
 
-This document defines the skills, guardrails, and domain knowledge an AI coding agent needs to work effectively on ControlZebra. It focuses on three pillars: **UX consistency**, **backend performance/reliability**, and **product-level ease of use** for non-technical Git users.
+This document defines the skills, guardrails, and domain knowledge an AI coding agent needs to work effectively on IOFabrik. It focuses on three pillars: **UX consistency**, **backend performance/reliability**, and **product-level ease of use** for non-technical Git users.
 
 ---
 
@@ -8,7 +8,7 @@ This document defines the skills, guardrails, and domain knowledge an AI coding 
 
 ### Who Uses This
 
-ControlZebra is for **industrial automation engineers** — people who configure PLCs, HMIs, and actuator systems. They are experts in their field, not in software development. They work with:
+IOFabrik is for **industrial automation engineers** — people who configure PLCs, HMIs, and actuator systems. They are experts in their field, not in software development. They work with:
 - Large binary files (PLC project archives, CAD models, PDFs)
 - Proprietary file formats (Rockwell L5X/L5K, Siemens TIA Portal exports)
 - Shared network drives and legacy workflows (zip-and-email, USB sticks)
@@ -103,7 +103,7 @@ Every error shown to the user must follow this pattern:
 
 1. **Hide console windows.** All CLI processes use `SysProcAttr` from `sysproc_windows.go` to prevent command prompt flashes.
 2. **Sanitize environment.** `CommandRunner.buildCommandEnv()` removes `GIT_ASKPASS`, `SSH_ASKPASS`, `VSCODE_GIT_ASKPASS_*` and sets `GIT_TERMINAL_PROMPT=0` to prevent interactive prompts that would hang the app.
-3. **Portable toolchain.** On Windows, NSIS installs checksum-verified MinGit + gh + git-lfs under `%LOCALAPPDATA%\ControlZebra\tools\bin`. `LocalBinService` validates and initializes these tools without downloading. The managed tool directories are prepended to PATH in every command execution.
+3. **Portable toolchain.** On Windows, NSIS installs checksum-verified MinGit + gh + git-lfs under `%LOCALAPPDATA%\IOFabrik\tools\bin`. `LocalBinService` validates and initializes these tools without downloading. The managed tool directories are prepended to PATH in every command execution.
 4. **Path separators.** Use `filepath.Join()` in Go and normalize paths when passing between backend and frontend.
 
 ### Error Handling Patterns

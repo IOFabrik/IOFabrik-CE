@@ -4,7 +4,7 @@
 
 ## Overview
 
-CommandRunner is the single point of CLI execution in ControlZebra. Every call to `git`, `gh`, `git-lfs`, or any external binary goes through this layer. It centralizes timeout management, environment sanitization, debug logging, and platform-specific behavior.
+CommandRunner is the single point of CLI execution in IOFabrik. Every call to `git`, `gh`, `git-lfs`, or any external binary goes through this layer. It centralizes timeout management, environment sanitization, debug logging, and platform-specific behavior.
 
 ## Constructor
 

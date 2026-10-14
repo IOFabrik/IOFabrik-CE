@@ -13,7 +13,7 @@ PRIVATE_PREFIXES = (
     'docs/technical/archive/', 'docs/Product Docs/',
 )
 PRIVATE_PATHS = {
-    'changeme', 'controlzebra', 'services.test.exe', 'v2-frontend-ux-plan.md',
+    'changeme', 'iofabrik', 'controlzebra', 'services.test.exe', 'v2-frontend-ux-plan.md',
     'docs/Untitled.md', 'docs/product/ROADMAP.md',
     'docs/processes/Release Process.md', 'docs/processes/Incident Response.md',
     'GitStuckStates.md', '.github/frontend.md',

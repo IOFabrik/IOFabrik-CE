@@ -32,7 +32,7 @@ while [[ $# -gt 0 ]]; do
 done
 [[ "$VERSION" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]] || die 'Use a stable version such as 1.2.3 (without v).'
 OUTPUT_DIR="${OUTPUT_DIR:-release/$VERSION}"
-ASSETS=(control-zebra-windows-amd64.exe control-zebra-amd64-installer.exe)
+ASSETS=(iofabrik-windows-amd64.exe iofabrik-amd64-installer.exe)
 SCRIPT_DIR="$(cd -- "$(dirname -- "$0")" && pwd)"
 
 if $VALIDATE_ONLY; then
@@ -51,7 +51,7 @@ if [[ "$NOTES" == @* ]]; then
   [[ -f "${NOTES#@}" ]] || die "Release notes file not found: ${NOTES#@}"
   NOTES="$(cat -- "${NOTES#@}")"
 fi
-NOTES="${NOTES:-ControlZebra v$VERSION}"
+NOTES="${NOTES:-IOFabrik v$VERSION}"
 
 # Pass paths as arguments, never interpolate them into PowerShell source.
 windows_path() {
@@ -74,8 +74,8 @@ if $UPLOAD; then
   NOTES_FILE="$(mktemp)"
   trap 'rm -f -- "$NOTES_FILE"' EXIT
   printf '%s\n' "$NOTES" > "$NOTES_FILE"
-  gh release create "v$VERSION" --repo ControlZebra/controlzebra-oss \
-    --verify-tag --title "ControlZebra v$VERSION" --notes-file "$NOTES_FILE" \
+  gh release create "v$VERSION" --repo IOFabrik/IOFabrik-CE \
+    --verify-tag --title "IOFabrik v$VERSION" --notes-file "$NOTES_FILE" \
     "$OUTPUT_DIR/${ASSETS[0]}" "$OUTPUT_DIR/${ASSETS[1]}" "$OUTPUT_DIR/SHA256SUMS"
 fi
 printf 'Validated release v%s: %s\n' "$VERSION" "$OUTPUT_DIR"

@@ -13,8 +13,8 @@ import {
   DialogTitle,
 } from '../../shared/ui';
 
-const DOCUMENTATION_URL = 'https://controlzebra.com/docs/';
-const COMMUNITY_FORUM_URL = 'https://github.com/orgs/ControlZebra/discussions';
+const DOCUMENTATION_URL = 'https://iofabrik.com/docs/';
+const COMMUNITY_FORUM_URL = 'https://github.com/orgs/IOFabrik/discussions';
 const iconStyle: CSSProperties = { width: ICON_SIZES.md, height: ICON_SIZES.md };
 const externalLinkIconStyle: CSSProperties = { width: ICON_SIZES.sm, height: ICON_SIZES.sm };
 
@@ -78,7 +78,7 @@ function ResourcesModal({ open, onOpenChange }: ResourcesModalProps): JSX.Elemen
         <DialogHeader className="border-b border-theme-default">
           <DialogTitle>Resources</DialogTitle>
           <DialogDescription>
-            Learn more about ControlZebra or connect with the community.
+            Learn more about IOFabrik or connect with the community.
           </DialogDescription>
         </DialogHeader>
 
@@ -97,7 +97,7 @@ function ResourcesModal({ open, onOpenChange }: ResourcesModalProps): JSX.Elemen
           />
           <ResourceOption
             title="Guided tour"
-            description="Take a quick tour of the ControlZebra workflow."
+            description="Take a quick tour of the IOFabrik workflow."
             Icon={Map}
             comingSoon
           />

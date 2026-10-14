@@ -21,7 +21,7 @@ func TestValidateInstalledToolchain(t *testing.T) {
 			if (err == nil) != tt.valid {
 				t.Fatalf("unexpected validation: %v", err)
 			}
-			if err != nil && !strings.Contains(err.Error(), "Reinstall ControlZebra") {
+			if err != nil && !strings.Contains(err.Error(), "Reinstall IOFabrik") {
 				t.Fatal("missing offline recovery action")
 			}
 		})

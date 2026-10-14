@@ -37,7 +37,7 @@ const dataType: NormalizedDataType = {
 };
 
 describe('DataTypeTable', () => {
-  it('matches the shared component behavior using ControlZebra table styling', () => {
+  it('matches the shared component behavior using IOFabrik table styling', () => {
     const onDataTypeSelect = vi.fn();
 
     render(

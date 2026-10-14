@@ -352,7 +352,7 @@ func (g *GitService) resolveConflictWithDecisions(repoPath string, filePath stri
 
 	segments, mergedOutput, err := g.generateConflictSegments(repoPath, resolutionToken, blobs)
 	if err != nil {
-		return failedOp("ControlZebra could not rebuild the conflict sections. Reload the conflict and try again.")
+		return failedOp("IOFabrik could not rebuild the conflict sections. Reload the conflict and try again.")
 	}
 	if len(mergedOutput) > conflictOutputSizeLimit {
 		return failedOp("Resolved content is too large")
@@ -601,7 +601,7 @@ func writeResolvedConflictFile(destination string, content []byte, mode os.FileM
 	if info, statErr := os.Lstat(destination); statErr == nil && info.Mode()&os.ModeSymlink != 0 {
 		return fmt.Errorf("cannot replace a symbolic link while resolving a conflict")
 	}
-	temporary, err := os.CreateTemp(filepath.Dir(destination), ".controlzebra-conflict-*")
+	temporary, err := os.CreateTemp(filepath.Dir(destination), ".iofabrik-conflict-*")
 	if err != nil {
 		return err
 	}
@@ -726,7 +726,7 @@ func conflictResolutionToken(path string, entries map[int]conflictStageEntry) st
 }
 
 func (g *GitService) generateConflictSegments(repoPath string, resolutionToken string, blobs conflictBlobSet) ([]ConflictSegment, string, error) {
-	temporaryDir, err := os.MkdirTemp("", "controlzebra-merge-file-*")
+	temporaryDir, err := os.MkdirTemp("", "iofabrik-merge-file-*")
 	if err != nil {
 		return nil, "", err
 	}
@@ -746,9 +746,9 @@ func (g *GitService) generateConflictSegments(repoPath string, resolutionToken s
 	}
 
 	labelToken := resolutionToken[:16]
-	currentLabel := "CONTROLZEBRA_CURRENT_" + labelToken
-	baseLabel := "CONTROLZEBRA_BASE_" + labelToken
-	incomingLabel := "CONTROLZEBRA_INCOMING_" + labelToken
+	currentLabel := "IOFABRIK_CURRENT_" + labelToken
+	baseLabel := "IOFABRIK_BASE_" + labelToken
+	incomingLabel := "IOFABRIK_INCOMING_" + labelToken
 	for _, content := range []string{blobs.base.Content, blobs.current.Content, blobs.incoming.Content} {
 		if strings.Contains(content, currentLabel) || strings.Contains(content, baseLabel) || strings.Contains(content, incomingLabel) {
 			return nil, "", fmt.Errorf("conflict marker collision")

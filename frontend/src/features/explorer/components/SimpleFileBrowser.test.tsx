@@ -1,7 +1,7 @@
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Call } from '@wailsio/runtime';
-import { FileEntry } from '../../../../bindings/controlzebra/services/models';
+import { FileEntry } from '../../../../bindings/iofabrik/services/models';
 
 const mocks = vi.hoisted(() => ({
   listDirectory: vi.fn(),
@@ -25,7 +25,7 @@ const mocks = vi.hoisted(() => ({
   repoStatus: { changedFiles: [] as Array<{ path: string; status: string }> },
 }));
 
-vi.mock('../../../../bindings/controlzebra/services/filesystemservice', () => ({
+vi.mock('../../../../bindings/iofabrik/services/filesystemservice', () => ({
   ListDirectoryWithOptions: mocks.listDirectory,
   OpenFile: mocks.openFile,
   RevealInFinder: mocks.revealInFinder,
@@ -33,11 +33,11 @@ vi.mock('../../../../bindings/controlzebra/services/filesystemservice', () => ({
   MoveToTrash: mocks.moveToTrash,
 }));
 
-vi.mock('../../../../bindings/controlzebra/services/gitservice', () => ({
+vi.mock('../../../../bindings/iofabrik/services/gitservice', () => ({
   GetRemoteURL: mocks.getRemoteURL,
 }));
 
-vi.mock('../../../../bindings/controlzebra/services/lfsservice', () => ({
+vi.mock('../../../../bindings/iofabrik/services/lfsservice', () => ({
   GetGitUser: mocks.getGitUser,
   LFSLsFiles: mocks.lfsLsFiles,
   LFSLock: mocks.lfsLock,

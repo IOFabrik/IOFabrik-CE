@@ -20,13 +20,13 @@ import {
   ResolveSessionConflictWithSide,
   ShareSession,
   UpdateFeatureFromDestination,
-} from '../../../../bindings/controlzebra/services/integrationsessionservice';
+} from '../../../../bindings/iofabrik/services/integrationsessionservice';
 import type {
   ConflictQueueEntry,
   IntegrationSessionSnapshot,
   OperationResult,
   SessionConflictSnapshot,
-} from '../../../../bindings/controlzebra/services/models';
+} from '../../../../bindings/iofabrik/services/models';
 import { useRepo } from '../../../context';
 import { onEvent } from '../../../shared/runtime/events';
 import {

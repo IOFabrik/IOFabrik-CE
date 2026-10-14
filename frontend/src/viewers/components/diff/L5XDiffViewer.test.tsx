@@ -2,16 +2,16 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { DiffRenderer } from '../shared/DiffRenderer';
 import { buildChangeRequestDiffRequest, buildCommitDiffRequest, buildMergeReviewDiffRequest, buildWorkingTreeDiffRequest } from '../../registry/diff-request-adapters';
-import { DiffCommitFileRaw, DiffMergeReviewFileRaw, DiffWorkingRaw, ReadFileAtRevisionLarge } from '../../../../bindings/controlzebra/services/gitservice';
-import { OpenFile, ReadTextFile } from '../../../../bindings/controlzebra/services/filesystemservice';
+import { DiffCommitFileRaw, DiffMergeReviewFileRaw, DiffWorkingRaw, ReadFileAtRevisionLarge } from '../../../../bindings/iofabrik/services/gitservice';
+import { OpenFile, ReadTextFile } from '../../../../bindings/iofabrik/services/filesystemservice';
 
 const events = vi.hoisted(() => ({ listener: undefined as undefined | ((event: unknown) => void) }));
 vi.mock('../../../shared/runtime/events', () => ({ onEvent: (_name: string, handler: (event: unknown) => void) => { events.listener = handler; return vi.fn(); } }));
 vi.mock('./l5x-layout-diff/L5XLayoutDiffViewer', () => ({ default: () => <div>Cannot generate L5X diff</div> }));
-vi.mock('../../../../bindings/controlzebra/services/gitservice', () => ({
+vi.mock('../../../../bindings/iofabrik/services/gitservice', () => ({
   DiffCommitFileRaw: vi.fn(), DiffMergeReviewFileRaw: vi.fn(), DiffWorkingRaw: vi.fn(), ReadFileAtRevisionLarge: vi.fn(),
 }));
-vi.mock('../../../../bindings/controlzebra/services/filesystemservice', () => ({ ReadTextFile: vi.fn(), OpenFile: vi.fn() }));
+vi.mock('../../../../bindings/iofabrik/services/filesystemservice', () => ({ ReadTextFile: vi.fn(), OpenFile: vi.fn() }));
 
 const patch = 'diff --git a/Main.L5X b/Main.L5X\n--- a/Main.L5X\n+++ b/Main.L5X\n@@ -1 +1 @@\n-old XML\n+new XML\n';
 const result = { path: 'Main.L5X', status: 'modified', binary: false, rawDiff: patch, hasError: false };
@@ -34,7 +34,7 @@ describe('L5X diff mode through the shared renderer', () => {
     const request = context === 'working' ? buildWorkingTreeDiffRequest({ ...input, absoluteFilePath: `${input.repoPath}/Main.L5X` })
       : context === 'history' ? buildCommitDiffRequest({ ...input, commitHash: 'abc123', parentHash: 'deadbeef' })
       : context === 'merge' ? buildMergeReviewDiffRequest({ ...input, targetRef: 'main', sourceRef: 'feature' })
-      : buildChangeRequestDiffRequest({ ...input, baseRef: 'refs/controlzebra/base', headRef: 'refs/controlzebra/head' });
+      : buildChangeRequestDiffRequest({ ...input, baseRef: 'refs/iofabrik/base', headRef: 'refs/iofabrik/head' });
     render(<DiffRenderer {...request} />);
     await screen.findByText('Cannot generate L5X diff');
     expect(ReadFileAtRevisionLarge).not.toHaveBeenCalled();
@@ -46,7 +46,7 @@ describe('L5X diff mode through the shared renderer', () => {
     if (context === 'working') expect(DiffWorkingRaw).toHaveBeenCalledWith(input.repoPath, input.filePath);
     if (context === 'history') expect(DiffCommitFileRaw).toHaveBeenCalledWith(input.repoPath, 'abc123', input.filePath);
     if (context === 'merge') expect(DiffMergeReviewFileRaw).toHaveBeenCalledWith(input.repoPath, 'main', 'feature', input.filePath);
-    if (context === 'change request') expect(DiffMergeReviewFileRaw).toHaveBeenCalledWith(input.repoPath, 'refs/controlzebra/base', 'refs/controlzebra/head', input.filePath);
+    if (context === 'change request') expect(DiffMergeReviewFileRaw).toHaveBeenCalledWith(input.repoPath, 'refs/iofabrik/base', 'refs/iofabrik/head', input.filePath);
     fireEvent.click(screen.getByRole('button', { name: 'Pretty' }));
     expect(screen.getByText('Cannot generate L5X diff')).toBeVisible();
   });

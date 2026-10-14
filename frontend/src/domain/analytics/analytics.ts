@@ -1,5 +1,5 @@
 /**
- * PostHog Analytics Module for ControlZebra
+ * PostHog Analytics Module for IOFabrik
  *
  * Provides centralized analytics tracking functions with consent-level filtering.
  * Event categories and consent behavior are documented below.

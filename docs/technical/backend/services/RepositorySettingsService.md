@@ -32,7 +32,7 @@ func generateRepoID(repoPath string) string {
 }
 ```
 
-Settings stored at: `<config>/repositories/<repoID>/settings.json`
+Settings stored at: `<config>/repositories/<repoID>.json`
 
 ### RepositorySettings Structure
 
@@ -97,10 +97,15 @@ type BackgroundTaskStatus struct {
 Settings that should be shared with collaborators are stored inside the repo:
 
 ```
-.controlzebra/
+.iofabrik/
 ├── config.json    ← Shared (committed): CreatedAt, CreatedBy, AppVersion
 └── local.json     ← Personal (gitignored): LocalOnlyMode
 ```
+
+Reads fall back to `.controlzebra/config.json` and `.controlzebra/local.json`
+when the corresponding IOFabrik file is absent. Existing IOFabrik files take
+precedence. Writes use `.iofabrik/` and add `.iofabrik/local.json` to `.gitignore`.
+The legacy shared files remain available for older clients.
 
 ## Diagnostics
 

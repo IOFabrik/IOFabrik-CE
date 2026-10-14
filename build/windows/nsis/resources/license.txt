@@ -1,16 +1,16 @@
-CONTROLZEBRA BETA SOFTWARE LICENSE AGREEMENT
+IOFABRIK BETA SOFTWARE LICENSE AGREEMENT
 Version: 0.1.0
 Effective Date: February 15, 2026
 
 IMPORTANT: PLEASE READ THIS AGREEMENT CAREFULLY. BY SELECTING "I ACCEPT" OR INSTALLING, COPYING, ACCESSING, OR USING THE SOFTWARE, YOU AGREE TO BE LEGALLY BOUND BY THIS AGREEMENT. IF YOU DO NOT AGREE, SELECT "I DO NOT ACCEPT" AND DO NOT INSTALL OR USE THE SOFTWARE.
 
-This Beta Software License Agreement ("Agreement") is entered into between ControlZebra ("ControlZebra", "we", "us", or "our") and you ("you" or "Licensee").
+This Beta Software License Agreement ("Agreement") is entered into between IOFabrik ("IOFabrik", "we", "us", or "our") and you ("you" or "Licensee").
 
 1. BETA STATUS AND RISK ACKNOWLEDGEMENT
 The software is pre-release beta software ("Beta Software") and is not final, production-ready software. Beta Software may contain defects, bugs, design flaws, data corruption risks, security vulnerabilities, and other issues that could cause failures, downtime, or loss of data. You assume all risks arising from installation or use of the Beta Software.
 
 2. LICENSE GRANT
-Subject to your compliance with this Agreement, ControlZebra grants you a limited, personal, revocable, non-transferable, non-sublicensable, non-exclusive license to install and use the Beta Software solely for internal testing and evaluation purposes.
+Subject to your compliance with this Agreement, IOFabrik grants you a limited, personal, revocable, non-transferable, non-sublicensable, non-exclusive license to install and use the Beta Software solely for internal testing and evaluation purposes.
 
 3. LICENSE RESTRICTIONS
 Except as expressly permitted in this Agreement or by applicable law, you must not:
@@ -21,21 +21,21 @@ Except as expressly permitted in this Agreement or by applicable law, you must n
 (e) use the Beta Software in violation of any law, regulation, or third-party rights.
 
 4. FEEDBACK
-If you provide suggestions, comments, bug reports, feature requests, or other feedback regarding the Beta Software ("Feedback"), you grant ControlZebra a worldwide, perpetual, irrevocable, royalty-free, fully paid-up license to use, reproduce, modify, distribute, and otherwise exploit that Feedback for any purpose without restriction or compensation to you.
+If you provide suggestions, comments, bug reports, feature requests, or other feedback regarding the Beta Software ("Feedback"), you grant IOFabrik a worldwide, perpetual, irrevocable, royalty-free, fully paid-up license to use, reproduce, modify, distribute, and otherwise exploit that Feedback for any purpose without restriction or compensation to you.
 
 5. CONFIDENTIALITY
-The Beta Software, including non-public features, performance, behavior, and documentation, is confidential information of ControlZebra. You agree not to disclose, demonstrate, benchmark publicly, or provide access to the Beta Software or related confidential information to any third party without prior written consent from ControlZebra.
+The Beta Software, including non-public features, performance, behavior, and documentation, is confidential information of IOFabrik. You agree not to disclose, demonstrate, benchmark publicly, or provide access to the Beta Software or related confidential information to any third party without prior written consent from IOFabrik.
 
 6. NO WARRANTY
-TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THE BETA SOFTWARE IS PROVIDED "AS IS" AND "AS AVAILABLE," WITH ALL FAULTS, AND WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, WHETHER EXPRESS, IMPLIED, STATUTORY, OR OTHERWISE. CONTROLZEBRA SPECIFICALLY DISCLAIMS ALL IMPLIED WARRANTIES, INCLUDING MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, NON-INFRINGEMENT, ACCURACY, QUIET ENJOYMENT, AND THAT THE BETA SOFTWARE WILL BE UNINTERRUPTED, ERROR-FREE, OR SECURE.
+TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THE BETA SOFTWARE IS PROVIDED "AS IS" AND "AS AVAILABLE," WITH ALL FAULTS, AND WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, WHETHER EXPRESS, IMPLIED, STATUTORY, OR OTHERWISE. IOFABRIK SPECIFICALLY DISCLAIMS ALL IMPLIED WARRANTIES, INCLUDING MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, NON-INFRINGEMENT, ACCURACY, QUIET ENJOYMENT, AND THAT THE BETA SOFTWARE WILL BE UNINTERRUPTED, ERROR-FREE, OR SECURE.
 
 7. LIMITATION OF LIABILITY
-TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT WILL CONTROLZEBRA OR ITS AFFILIATES, OFFICERS, DIRECTORS, EMPLOYEES, LICENSORS, OR SUPPLIERS BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, EXEMPLARY, OR PUNITIVE DAMAGES, OR ANY LOSS OF PROFITS, REVENUE, GOODWILL, BUSINESS, DATA, OR USE, ARISING OUT OF OR RELATED TO THIS AGREEMENT OR THE BETA SOFTWARE, WHETHER BASED ON CONTRACT, TORT (INCLUDING NEGLIGENCE), STRICT LIABILITY, OR ANY OTHER THEORY, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT WILL IOFABRIK OR ITS AFFILIATES, OFFICERS, DIRECTORS, EMPLOYEES, LICENSORS, OR SUPPLIERS BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, EXEMPLARY, OR PUNITIVE DAMAGES, OR ANY LOSS OF PROFITS, REVENUE, GOODWILL, BUSINESS, DATA, OR USE, ARISING OUT OF OR RELATED TO THIS AGREEMENT OR THE BETA SOFTWARE, WHETHER BASED ON CONTRACT, TORT (INCLUDING NEGLIGENCE), STRICT LIABILITY, OR ANY OTHER THEORY, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
 
-TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, CONTROLZEBRA'S TOTAL AGGREGATE LIABILITY ARISING OUT OF OR RELATED TO THIS AGREEMENT OR THE BETA SOFTWARE WILL NOT EXCEED TEN U.S. DOLLARS (US $10.00).
+TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IOFABRIK'S TOTAL AGGREGATE LIABILITY ARISING OUT OF OR RELATED TO THIS AGREEMENT OR THE BETA SOFTWARE WILL NOT EXCEED TEN U.S. DOLLARS (US $10.00).
 
 8. TERM AND TERMINATION
-This Agreement is effective when you accept it and continues until terminated. ControlZebra may suspend or terminate this Agreement and/or your access to the Beta Software at any time, with or without notice, for any reason. This Agreement will also terminate automatically upon general commercial release of the software unless otherwise stated by ControlZebra.
+This Agreement is effective when you accept it and continues until terminated. IOFabrik may suspend or terminate this Agreement and/or your access to the Beta Software at any time, with or without notice, for any reason. This Agreement will also terminate automatically upon general commercial release of the software unless otherwise stated by IOFabrik.
 
 Upon termination, all rights granted to you under this Agreement immediately end, and you must cease all use of the Beta Software and delete all copies in your possession or control.
 
@@ -43,10 +43,10 @@ Upon termination, all rights granted to you under this Agreement immediately end
 You agree to comply with all applicable export control and sanctions laws and regulations. You represent that you are not located in, under the control of, or a national or resident of any country or party to which export is prohibited.
 
 10. GOVERNING LAW
-This Agreement is governed by the laws of the jurisdiction where ControlZebra is organized, excluding conflict-of-law rules. You agree that any disputes arising out of or relating to this Agreement will be brought in courts of competent jurisdiction in that jurisdiction, unless applicable law requires otherwise.
+This Agreement is governed by the laws of the jurisdiction where IOFabrik is organized, excluding conflict-of-law rules. You agree that any disputes arising out of or relating to this Agreement will be brought in courts of competent jurisdiction in that jurisdiction, unless applicable law requires otherwise.
 
 11. ENTIRE AGREEMENT; SEVERABILITY
-This Agreement is the entire agreement between you and ControlZebra regarding the Beta Software and supersedes prior or contemporaneous communications on this subject. If any provision is held unenforceable, the remaining provisions will remain in full force and effect.
+This Agreement is the entire agreement between you and IOFabrik regarding the Beta Software and supersedes prior or contemporaneous communications on this subject. If any provision is held unenforceable, the remaining provisions will remain in full force and effect.
 
 12. CONTACT
-For questions regarding this Agreement, contact ControlZebra support through official project channels.
+For questions regarding this Agreement, contact IOFabrik support through official project channels.

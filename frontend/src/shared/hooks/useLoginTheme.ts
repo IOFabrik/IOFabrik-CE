@@ -10,14 +10,15 @@
  * user authenticates.
  */
 import { useState, useEffect, useCallback } from 'react';
+import { readMigratedStorage } from '../utils/migratedStorage';
 
 type Theme = 'light' | 'dark' | 'system';
 
-const STORAGE_KEY = 'cz_theme';
+const STORAGE_KEY = 'iofabrik_theme';
 
 export function useLoginTheme() {
   const [theme, setThemeState] = useState<Theme>(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
+    const stored = readMigratedStorage(STORAGE_KEY, 'cz_theme');
     if (stored === 'light' || stored === 'dark' || stored === 'system') return stored;
     return 'system';
   });

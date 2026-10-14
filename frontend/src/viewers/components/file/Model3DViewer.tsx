@@ -18,7 +18,7 @@ import { memo, useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { AlertCircle, Loader2, Box } from 'lucide-react';
 import { onEvent } from '../../../shared/runtime/events';
 import { ICON_SIZES } from '../../../shared/constants';
-import { ReadFileBase64 } from '../../../../bindings/controlzebra/services/filesystemservice';
+import { ReadFileBase64 } from '../../../../bindings/iofabrik/services/filesystemservice';
 import type { ViewerProps } from '../../registry/viewer-registry';
 import { base64ToFile } from './model3d-utils';
 import { getPathFileName } from '../shared/path-utils';

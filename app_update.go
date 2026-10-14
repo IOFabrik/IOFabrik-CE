@@ -11,7 +11,7 @@ import (
 
 func newAppUpdaterConfig(version string) (updater.Config, error) {
 	provider, err := githubupdater.New(githubupdater.Config{
-		Repository:    "ControlZebra/controlzebra-oss",
+		Repository:    "IOFabrik/IOFabrik-CE",
 		Prerelease:    false,
 		ChecksumAsset: "SHA256SUMS",
 	})
@@ -25,7 +25,7 @@ func newAppUpdaterConfig(version string) (updater.Config, error) {
 	}, nil
 }
 
-// Wails beta.16 treats a missing checksum asset as optional. ControlZebra's
+// Wails beta.16 treats a missing checksum asset as optional. IOFabrik's
 // release contract requires SHA256SUMS, including on the manual update path.
 type checksumRequiredProvider struct{ updater.Provider }
 
@@ -36,7 +36,7 @@ func (p checksumRequiredProvider) Check(ctx context.Context, request updater.Che
 	}
 	verification := release.Verification
 	if verification == nil || verification.DigestAlgo != "sha256" || len(verification.Digest) != sha256.Size {
-		return nil, errors.New("This update is missing valid verification information.\nKeep using your current version and contact ControlZebra support.")
+		return nil, errors.New("This update is missing valid verification information.\nKeep using your current version and contact IOFabrik support.")
 	}
 	return release, nil
 }

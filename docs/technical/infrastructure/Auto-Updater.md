@@ -1,8 +1,8 @@
 # Auto-Updater
 
-> How ControlZebra discovers, verifies, installs, releases, and tests application updates.
+> How IOFabrik discovers, verifies, installs, releases, and tests application updates.
 
-ControlZebra uses Wails v3's built-in updater in production Windows x64 builds.
+IOFabrik uses Wails v3's built-in updater in production Windows x64 builds.
 `services/app_update_service.go` exposes `GetCurrentVersion()` and
 `CheckForUpdates()`. Development builds, macOS, Linux, and Windows ARM64 do not
 perform self-updates. Updater-enabled releases use the native Windows build
@@ -10,7 +10,7 @@ tasks; the Docker Windows build is outside this support scope.
 
 ## Checking and installing
 
-`main.go` uses `app_update.go` to configure the GitHub provider for `ControlZebra/controlzebra-oss`,
+`main.go` uses `app_update.go` to configure the GitHub provider for `IOFabrik/IOFabrik-CE`,
 with `Prerelease: false`, `ChecksumAsset: "SHA256SUMS"`, and the built-in window.
 The current version comes from `main.Version`, with surrounding whitespace and
 one leading `v` removed.
@@ -34,8 +34,8 @@ context, stops the timer, and removes the lifecycle subscription.
 
 Stable releases use a `vX.Y.Z` tag and these exact assets:
 
-- `control-zebra-windows-amd64.exe`: signed executable for in-place updates.
-- `control-zebra-amd64-installer.exe`: signed NSIS installer for first installation.
+- `iofabrik-windows-amd64.exe`: signed executable for in-place updates.
+- `iofabrik-amd64-installer.exe`: signed NSIS installer for first installation.
 - `SHA256SUMS`: SHA-256 hashes of exactly those two files, with their unversioned names.
 
 Wails excludes installer assets when selecting the executable. Our provider wrapper
@@ -53,16 +53,21 @@ after validation. See [Build and Release](../guides/Build%20and%20Release.md).
 
 ## Windows installation metadata
 
-NSIS installs per user under `%LOCALAPPDATA%\Programs\ControlZebra`. It removes
+NSIS installs per user under `%LOCALAPPDATA%\IOFabrik\app`. It removes
 any legacy `cz-updater.exe` on installation. The application updates
 `DisplayVersion` in the per-user uninstall entry at startup after an update;
 a missing entry is a no-op. Generated NSIS metadata uses
-`Software\Microsoft\Windows\CurrentVersion\Uninstall\ControlZebraControlZebra`.
+`Software\Microsoft\Windows\CurrentVersion\Uninstall\IOFabrikIOFabrik`.
 Wails derives that final key component by joining the configured company name
-and product name. Both values are `ControlZebra`, so the repeated name is the
-expected generated key and is retained for compatibility with installed builds.
-This key and the version synchronization were confirmed during the Windows x64
-0.0.1 to 0.0.2 end-to-end update test.
+and product name. Both values are `IOFabrik`, so the repeated name is the
+expected generated key. Version synchronization also checks the legacy
+`ControlZebraControlZebra` key for copies updated in place. Only the entry whose
+`DisplayIcon` matches the running executable receives the new version. Running the new
+installer retires previous shortcuts and registered installs at the known
+ControlZebra default locations; custom install locations remain intact.
+
+The previous branding passed a Windows x64 0.0.1 to 0.0.2 update test.
+The IOFabrik installer and upgrade still require a native Windows smoke test.
 
 ## Verification
 

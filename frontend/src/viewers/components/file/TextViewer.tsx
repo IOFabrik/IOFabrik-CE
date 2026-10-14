@@ -1,6 +1,6 @@
 import { lazy, memo, Suspense, useCallback, useEffect } from 'react';
 import { AlertCircle } from 'lucide-react';
-import { ReadTextFile } from '../../../../bindings/controlzebra/services/filesystemservice';
+import { ReadTextFile } from '../../../../bindings/iofabrik/services/filesystemservice';
 import { onEvent } from '../../../shared/runtime/events';
 import { ICON_SIZES } from '../../../shared/constants';
 import type { ViewerProps } from '../../registry/viewer-registry';

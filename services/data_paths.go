@@ -13,7 +13,8 @@ import (
 )
 
 const (
-	canonicalAppDirName   = "ControlZebra"
+	canonicalAppDirName   = "IOFabrik"
+	previousAppDirName    = "ControlZebra"
 	legacyAppDirName      = "control-zebra"
 	configSubDirName      = "config"
 	repositoriesSubDir    = "repositories"
@@ -24,10 +25,10 @@ const (
 	binSubDirName         = "bin"
 	webview2SubDirName    = "webview2"
 	migrationSubDirName   = "migrations"
-	migrationMarkerNameV2 = "data-layout-v2.json"
+	migrationMarkerNameV3 = "data-layout-v3.json"
 )
 
-// DataLocations describes where ControlZebra stores app data by class.
+// DataLocations describes where IOFabrik stores app data by class.
 // RoamingConfigDir retains its binding name; on Windows config is now local.
 type DataLocations struct {
 	RoamingConfigDir       string `json:"roamingConfigDir"`
@@ -107,7 +108,7 @@ func resolveDataLocationsFor(goos string, getenv func(string) string) DataLocati
 		IntegrationDir:         filepath.Join(localDataDir, integrationSubDirName),
 		ToolsBinDir:            filepath.Join(localDataDir, toolsSubDirName, binSubDirName),
 		WebView2Dir:            filepath.Join(localDataDir, webview2SubDirName),
-		MigrationMarkerFile:    filepath.Join(localDataDir, migrationSubDirName, migrationMarkerNameV2),
+		MigrationMarkerFile:    filepath.Join(localDataDir, migrationSubDirName, migrationMarkerNameV3),
 		LegacyRoamingConfigDir: filepath.Join(roamingBase, legacyAppDirName),
 		LegacySettingsFile:     filepath.Join(roamingBase, legacyAppDirName, "settings.json"),
 		LegacyRepoSettingsDir:  filepath.Join(roamingBase, legacyAppDirName, repositoriesSubDir),
@@ -150,7 +151,28 @@ func runDataLayoutMigration(locations DataLocations) error {
 		return fmt.Errorf("failed to ensure migration marker directory: %w", err)
 	}
 
-	// Prefer the previous canonical settings over the older control-zebra layout.
+	// Keep registered review workspaces in place. Their records contain absolute
+	// paths, and Git also records those paths in the project's worktree registry.
+	previousLocal := filepath.Join(filepath.Dir(locations.LocalDataDir), previousAppDirName)
+	for _, subdir := range []string{configSubDirName, logsSubDirName, cacheSubDirName, webview2SubDirName, filepath.Join(integrationSubDirName, integrationSessionsSubDir)} {
+		if err := mergeDirectoryContents(filepath.Join(previousLocal, subdir), filepath.Join(locations.LocalDataDir, subdir)); err != nil {
+			return fmt.Errorf("failed to migrate previous app data: %w", err)
+		}
+	}
+	if !fileExists(filepath.Join(locations.ToolsBinDir, "manifest.json")) {
+		for _, subdir := range []string{filepath.Join(toolsSubDirName, binSubDirName), binSubDirName} {
+			if err := mergeDirectoryContents(filepath.Join(previousLocal, subdir), locations.ToolsBinDir); err != nil {
+				return fmt.Errorf("failed to migrate previous portable tools: %w", err)
+			}
+		}
+	}
+
+	// Prefer previous local settings, then previous roaming settings, then the
+	// oldest control-zebra layout. Current destination files always win.
+	previousRoamingConfig := filepath.Join(filepath.Dir(locations.LegacyRoamingConfigDir), previousAppDirName, configSubDirName)
+	if err := mergeDirectoryContents(previousRoamingConfig, locations.RoamingConfigDir); err != nil {
+		return fmt.Errorf("failed to migrate previous roaming config: %w", err)
+	}
 	previousConfig := filepath.Join(filepath.Dir(locations.LegacyRoamingConfigDir), canonicalAppDirName, configSubDirName)
 	if previousConfig != locations.RoamingConfigDir {
 		if err := mergeDirectoryContents(previousConfig, locations.RoamingConfigDir); err != nil {
@@ -180,7 +202,7 @@ func runDataLayoutMigration(locations DataLocations) error {
 	}
 
 	marker := map[string]interface{}{
-		"version":    2,
+		"version":    3,
 		"migratedAt": time.Now().UTC().Format(time.RFC3339),
 	}
 	payload, err := json.MarshalIndent(marker, "", "  ")

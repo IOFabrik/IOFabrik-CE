@@ -3,17 +3,17 @@
 #
 # Creates a local self-signed code-signing certificate bundle for Windows signing.
 # Outputs:
-#   <cert-dir>/controlzebra-selfsigned.key
-#   <cert-dir>/controlzebra-selfsigned.crt
-#   <cert-dir>/controlzebra-selfsigned.cer
-#   <cert-dir>/controlzebra-selfsigned.pfx
+#   <cert-dir>/iofabrik-selfsigned.key
+#   <cert-dir>/iofabrik-selfsigned.crt
+#   <cert-dir>/iofabrik-selfsigned.cer
+#   <cert-dir>/iofabrik-selfsigned.pfx
 #   <cert-dir>/password.txt
 
 set -euo pipefail
 
 CERT_DIR="build/certs/windows/selfsigned"
 FORCE=false
-SUBJECT="/CN=ControlZebra Local Beta/O=ControlZebra/OU=Engineering/L=Remote/ST=NA/C=US"
+SUBJECT="/CN=IOFabrik Local Beta/O=IOFabrik/OU=Engineering/L=Remote/ST=NA/C=US"
 DAYS="825"
 
 while [[ $# -gt 0 ]]; do
@@ -41,7 +41,7 @@ Usage: setup-self-signed-windows-cert.sh [options]
 Options:
   --cert-dir <dir>   Output directory (default: build/certs/windows/selfsigned)
   --force            Regenerate even if files already exist
-  --subject <dn>     OpenSSL subject DN (default: ControlZebra local beta)
+  --subject <dn>     OpenSSL subject DN (default: IOFabrik local beta)
   --days <n>         Validity days (default: 825)
 EOF
       exit 0
@@ -60,10 +60,10 @@ fi
 
 mkdir -p "$CERT_DIR"
 
-KEY_PATH="$CERT_DIR/controlzebra-selfsigned.key"
-CRT_PATH="$CERT_DIR/controlzebra-selfsigned.crt"
-CER_PATH="$CERT_DIR/controlzebra-selfsigned.cer"
-PFX_PATH="$CERT_DIR/controlzebra-selfsigned.pfx"
+KEY_PATH="$CERT_DIR/iofabrik-selfsigned.key"
+CRT_PATH="$CERT_DIR/iofabrik-selfsigned.crt"
+CER_PATH="$CERT_DIR/iofabrik-selfsigned.cer"
+PFX_PATH="$CERT_DIR/iofabrik-selfsigned.pfx"
 PASSWORD_PATH="$CERT_DIR/password.txt"
 
 if [[ -f "$PFX_PATH" && "$FORCE" != "true" ]]; then

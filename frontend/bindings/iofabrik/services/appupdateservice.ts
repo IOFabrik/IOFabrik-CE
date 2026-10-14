@@ -17,12 +17,12 @@ import { Call as $Call, CancellablePromise as $CancellablePromise, Create as $Cr
  * Unsupported and development builds intentionally treat the call as a no-op.
  */
 export function CheckForUpdates(): $CancellablePromise<void> {
-    return $Call.ByID(1969794563);
+    return $Call.ByID(3460686177);
 }
 
 /**
  * GetCurrentVersion returns the normalized version configured at build time.
  */
 export function GetCurrentVersion(): $CancellablePromise<string> {
-    return $Call.ByID(4003058871);
+    return $Call.ByID(979445409);
 }

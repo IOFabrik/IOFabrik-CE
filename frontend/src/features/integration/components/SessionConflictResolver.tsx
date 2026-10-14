@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ConflictKind,
   type ConflictQueueEntry,
-} from '../../../../bindings/controlzebra/services/models';
+} from '../../../../bindings/iofabrik/services/models';
 import type { ResolutionStrategy } from '../../../domain/repo/context/RepoContext.types';
 import ConflictQueue, {
   type ConflictQueueFile,

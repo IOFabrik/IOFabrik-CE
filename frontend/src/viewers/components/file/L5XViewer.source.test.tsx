@@ -3,7 +3,7 @@ import { act, fireEvent, render, screen, waitFor, within } from '@testing-librar
 import { EditorView } from '@codemirror/view';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { parseDocumentString } from 'ladder-visualizer';
-import { ReadTextFile } from '../../../../bindings/controlzebra/services/filesystemservice';
+import { ReadTextFile } from '../../../../bindings/iofabrik/services/filesystemservice';
 import { onEvent } from '../../../shared/runtime/events';
 import { clearViewerCache } from '../../registry/viewer-cache';
 import { clearAllTabStates, getCachedTabState } from './l5x/useTabs';
@@ -12,7 +12,7 @@ import L5XDocumentStatus from '../shared/L5XDocumentStatus';
 import { parseL5XDocument } from '../shared/l5x-document';
 import L5XFileViewer from './L5XFileViewer';
 
-vi.mock('../../../../bindings/controlzebra/services/filesystemservice', () => ({ ReadTextFile: vi.fn() }));
+vi.mock('../../../../bindings/iofabrik/services/filesystemservice', () => ({ ReadTextFile: vi.fn() }));
 vi.mock('../../../shared/runtime/events', () => ({ onEvent: vi.fn(() => vi.fn()) }));
 vi.mock('../shared/ViewerHeader', () => ({ ViewerHeader: ({ extraContent }: { extraContent: React.ReactNode }) => <div>{extraContent}</div> }));
 vi.mock('ladder-visualizer', async importOriginal => {

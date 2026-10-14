@@ -1,4 +1,4 @@
-// Package services provides backend functionality for the ControlZebra application.
+// Package services provides backend functionality for the IOFabrik application.
 // This file contains the GitService which wraps git CLI operations.
 package services
 
@@ -638,7 +638,7 @@ func getErrorMessage(result CommandResult) string {
 		strings.Contains(lowerErr, "could not read username for 'https://github.com'") ||
 		(strings.Contains(lowerErr, "terminal prompts disabled") && strings.Contains(lowerErr, "github.com")) ||
 		strings.Contains(lowerErr, "/dev/tty") {
-		return "GitHub authentication failed. Connect GitHub in ControlZebra and retry."
+		return "GitHub authentication failed. Connect GitHub in IOFabrik and retry."
 	}
 
 	return errMsg
@@ -4115,7 +4115,7 @@ func (g *GitService) resolveBranchRef(repoPath string, branch string, preferRemo
 	}
 
 	// A fully-qualified ref is already unambiguous. Change Request snapshots pass
-	// refs/controlzebra/... names here, and prefixing them with a remote would
+	// refs/iofabrik/... names here, and prefixing them with a remote would
 	// only work by accident through the fallback below.
 	if strings.HasPrefix(branch, "refs/") {
 		if g.runner.RunGit(repoPath, "rev-parse", "--verify", branch).Success {

@@ -22,7 +22,7 @@ import * as $models from "./models.js";
  * AbortCherryPick aborts an in-progress cherry-pick
  */
 export function AbortCherryPick(repoPath: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(513082069, repoPath).then(($result: any) => {
+    return $Call.ByID(124913119, repoPath).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -31,7 +31,7 @@ export function AbortCherryPick(repoPath: string): $CancellablePromise<$models.O
  * AbortMerge aborts an in-progress merge
  */
 export function AbortMerge(repoPath: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(1963077227, repoPath).then(($result: any) => {
+    return $Call.ByID(1798273861, repoPath).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -41,7 +41,7 @@ export function AbortMerge(repoPath: string): $CancellablePromise<$models.Operat
  * repository's .gitignore file.
  */
 export function ApplyGitignoreTemplate(repoPath: string, templateID: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(3196960797, repoPath, templateID).then(($result: any) => {
+    return $Call.ByID(1786191911, repoPath, templateID).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -50,7 +50,7 @@ export function ApplyGitignoreTemplate(repoPath: string, templateID: string): $C
  * ClearCredentialCache clears cached credentials
  */
 export function ClearCredentialCache(repoPath: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(4114535611, repoPath).then(($result: any) => {
+    return $Call.ByID(367077021, repoPath).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -59,7 +59,7 @@ export function ClearCredentialCache(repoPath: string): $CancellablePromise<$mod
  * DeleteSettings removes settings for a repository
  */
 export function DeleteSettings(repoPath: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(321219863, repoPath).then(($result: any) => {
+    return $Call.ByID(1031712797, repoPath).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -68,17 +68,17 @@ export function DeleteSettings(repoPath: string): $CancellablePromise<$models.Op
  * DiagnoseRepository runs diagnostics on the repository to identify issues
  */
 export function DiagnoseRepository(repoPath: string): $CancellablePromise<$models.RecoveryDiagnostics> {
-    return $Call.ByID(2470451349, repoPath).then(($result: any) => {
+    return $Call.ByID(66607119, repoPath).then(($result: any) => {
         return $$createType1($result);
     });
 }
 
 /**
- * EnsureControlZebraDir creates the .controlzebra/ directory and ensures the
+ * EnsureIOFabrikDir creates the .iofabrik/ directory and ensures the
  * personal config file is gitignored. Call this during project initialisation.
  */
-export function EnsureControlZebraDir(repoPath: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(3276428263, repoPath).then(($result: any) => {
+export function EnsureIOFabrikDir(repoPath: string): $CancellablePromise<$models.OperationResult> {
+    return $Call.ByID(4063749091, repoPath).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -87,7 +87,7 @@ export function EnsureControlZebraDir(repoPath: string): $CancellablePromise<$mo
  * FixRemoteURL updates the remote URL (useful when remote has moved or credentials changed)
  */
 export function FixRemoteURL(repoPath: string, remoteName: string, newURL: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(1910755015, repoPath, remoteName, newURL).then(($result: any) => {
+    return $Call.ByID(1262483621, repoPath, remoteName, newURL).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -96,7 +96,7 @@ export function FixRemoteURL(repoPath: string, remoteName: string, newURL: strin
  * GetAllGitConfigs returns all local git config values for the repository
  */
 export function GetAllGitConfigs(repoPath: string): $CancellablePromise<{ [_ in string]?: string }> {
-    return $Call.ByID(4287591701, repoPath).then(($result: any) => {
+    return $Call.ByID(4259755347, repoPath).then(($result: any) => {
         return $$createType2($result);
     });
 }
@@ -105,7 +105,7 @@ export function GetAllGitConfigs(repoPath: string): $CancellablePromise<{ [_ in 
  * GetDefaultSettings returns the default settings for a new repository
  */
 export function GetDefaultSettings(repoPath: string): $CancellablePromise<$models.RepositorySettings> {
-    return $Call.ByID(2433052277, repoPath).then(($result: any) => {
+    return $Call.ByID(645351299, repoPath).then(($result: any) => {
         return $$createType3($result);
     });
 }
@@ -114,7 +114,7 @@ export function GetDefaultSettings(repoPath: string): $CancellablePromise<$model
  * GetGitConfig returns a git config value for the repository
  */
 export function GetGitConfig(repoPath: string, key: string): $CancellablePromise<string> {
-    return $Call.ByID(1643918023, repoPath, key);
+    return $Call.ByID(3247104257, repoPath, key);
 }
 
 /**
@@ -122,7 +122,7 @@ export function GetGitConfig(repoPath: string, key: string): $CancellablePromise
  * industrial automation and design workflows.
  */
 export function GetGitignoreTemplates(): $CancellablePromise<$models.GitignoreTemplateOption[]> {
-    return $Call.ByID(4112029254).then(($result: any) => {
+    return $Call.ByID(2670976308).then(($result: any) => {
         return $$createType5($result);
     });
 }
@@ -131,7 +131,7 @@ export function GetGitignoreTemplates(): $CancellablePromise<$models.GitignoreTe
  * GetReflog returns recent reflog entries for recovery purposes
  */
 export function GetReflog(repoPath: string, limit: number): $CancellablePromise<$models.ReflogEntry[]> {
-    return $Call.ByID(2145591474, repoPath, limit).then(($result: any) => {
+    return $Call.ByID(1134520352, repoPath, limit).then(($result: any) => {
         return $$createType7($result);
     });
 }
@@ -140,7 +140,7 @@ export function GetReflog(repoPath: string, limit: number): $CancellablePromise<
  * GetRemotes returns all remotes for a repository
  */
 export function GetRemotes(repoPath: string): $CancellablePromise<$models.GitRemoteInfo[]> {
-    return $Call.ByID(3735676250, repoPath).then(($result: any) => {
+    return $Call.ByID(3656968264, repoPath).then(($result: any) => {
         return $$createType9($result);
     });
 }
@@ -149,7 +149,7 @@ export function GetRemotes(repoPath: string): $CancellablePromise<$models.GitRem
  * GetSettings retrieves settings for a repository
  */
 export function GetSettings(repoPath: string): $CancellablePromise<$models.RepositorySettings> {
-    return $Call.ByID(1622511282, repoPath).then(($result: any) => {
+    return $Call.ByID(674322656, repoPath).then(($result: any) => {
         return $$createType3($result);
     });
 }
@@ -158,29 +158,29 @@ export function GetSettings(repoPath: string): $CancellablePromise<$models.Repos
  * GetTaskStatuses returns the current status of all background tasks
  */
 export function GetTaskStatuses(): $CancellablePromise<{ [_ in string]?: $models.BackgroundTaskStatus | null }> {
-    return $Call.ByID(4181591900).then(($result: any) => {
+    return $Call.ByID(3070104342).then(($result: any) => {
         return $$createType12($result);
     });
 }
 
 /**
- * ReadRepoLocalConfig reads the shared config (.controlzebra/config.json) from
+ * ReadRepoLocalConfig reads the shared config (.iofabrik/config.json) from
  * the repository. This file is committed and shared with collaborators.
  * Returns a zero-value config if the file does not exist.
  */
 export function ReadRepoLocalConfig(repoPath: string): $CancellablePromise<$models.RepoLocalConfig> {
-    return $Call.ByID(1032641254, repoPath).then(($result: any) => {
+    return $Call.ByID(325679112, repoPath).then(($result: any) => {
         return $$createType13($result);
     });
 }
 
 /**
  * ReadRepoPersonalConfig reads the personal/machine-specific config
- * (.controlzebra/local.json) from the repository. This file is gitignored and
+ * (.iofabrik/local.json) from the repository. This file is gitignored and
  * NOT committed. Returns a zero-value config if the file does not exist.
  */
 export function ReadRepoPersonalConfig(repoPath: string): $CancellablePromise<$models.RepoPersonalConfig> {
-    return $Call.ByID(1468831583, repoPath).then(($result: any) => {
+    return $Call.ByID(2896515293, repoPath).then(($result: any) => {
         return $$createType14($result);
     });
 }
@@ -189,7 +189,7 @@ export function ReadRepoPersonalConfig(repoPath: string): $CancellablePromise<$m
  * RecoverFromDetachedHead creates a new branch from detached HEAD or switches to an existing branch
  */
 export function RecoverFromDetachedHead(repoPath: string, newBranchName: string, switchToExisting: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(1468557391, repoPath, newBranchName, switchToExisting).then(($result: any) => {
+    return $Call.ByID(1208879669, repoPath, newBranchName, switchToExisting).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -198,7 +198,7 @@ export function RecoverFromDetachedHead(repoPath: string, newBranchName: string,
  * RecoverToReflogEntry recovers the repository to a specific reflog entry
  */
 export function RecoverToReflogEntry(repoPath: string, hash: string, createBranch: boolean, branchName: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(3900879145, repoPath, hash, createBranch, branchName).then(($result: any) => {
+    return $Call.ByID(3716644711, repoPath, hash, createBranch, branchName).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -207,7 +207,7 @@ export function RecoverToReflogEntry(repoPath: string, hash: string, createBranc
  * RecreateRemote removes and re-adds a remote
  */
 export function RecreateRemote(repoPath: string, remoteName: string, url: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(3375817834, repoPath, remoteName, url).then(($result: any) => {
+    return $Call.ByID(4195568260, repoPath, remoteName, url).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -216,7 +216,7 @@ export function RecreateRemote(repoPath: string, remoteName: string, url: string
  * RemoveStaleLocks removes stale lock files that may be blocking Git operations
  */
 export function RemoveStaleLocks(repoPath: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(370009294, repoPath).then(($result: any) => {
+    return $Call.ByID(1208087108, repoPath).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -225,7 +225,7 @@ export function RemoveStaleLocks(repoPath: string): $CancellablePromise<$models.
  * RepairRepository attempts to repair common repository issues
  */
 export function RepairRepository(repoPath: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(2192220352, repoPath).then(($result: any) => {
+    return $Call.ByID(499381074, repoPath).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -234,7 +234,7 @@ export function RepairRepository(repoPath: string): $CancellablePromise<$models.
  * ResetHard performs a hard reset to a specific ref (use with caution)
  */
 export function ResetHard(repoPath: string, ref: string, confirm: boolean): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(1245348181, repoPath, ref, confirm).then(($result: any) => {
+    return $Call.ByID(2040807579, repoPath, ref, confirm).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -243,7 +243,7 @@ export function ResetHard(repoPath: string, ref: string, confirm: boolean): $Can
  * ResetToDefaults resets all settings for a repository to defaults
  */
 export function ResetToDefaults(repoPath: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(4086126579, repoPath).then(($result: any) => {
+    return $Call.ByID(3360372025, repoPath).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -252,7 +252,7 @@ export function ResetToDefaults(repoPath: string): $CancellablePromise<$models.O
  * RestartBackgroundTasks restarts all background tasks for a repository
  */
 export function RestartBackgroundTasks(repoPath: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(1786410722, repoPath).then(($result: any) => {
+    return $Call.ByID(4182864748, repoPath).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -261,7 +261,7 @@ export function RestartBackgroundTasks(repoPath: string): $CancellablePromise<$m
  * RunTaskNow runs a background task immediately
  */
 export function RunTaskNow(repoPath: string, taskType: $models.BackgroundTaskType): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(362636249, repoPath, taskType).then(($result: any) => {
+    return $Call.ByID(4207439747, repoPath, taskType).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -270,7 +270,7 @@ export function RunTaskNow(repoPath: string, taskType: $models.BackgroundTaskTyp
  * SaveSettings saves settings for a repository
  */
 export function SaveSettings(settings: $models.RepositorySettings): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(294414573, settings).then(($result: any) => {
+    return $Call.ByID(1931696859, settings).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -279,14 +279,14 @@ export function SaveSettings(settings: $models.RepositorySettings): $Cancellable
  * SetApp sets the application reference (called after app initialization)
  */
 export function SetApp(app: application$0.App | null): $CancellablePromise<void> {
-    return $Call.ByID(499575534, app);
+    return $Call.ByID(3378718192, app);
 }
 
 /**
  * SetGitConfig sets a git config value for the repository
  */
 export function SetGitConfig(repoPath: string, key: string, value: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(868804395, repoPath, key, value).then(($result: any) => {
+    return $Call.ByID(103690093, repoPath, key, value).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -295,7 +295,7 @@ export function SetGitConfig(repoPath: string, key: string, value: string): $Can
  * SetUpstreamBranch sets the upstream tracking branch
  */
 export function SetUpstreamBranch(repoPath: string, remoteBranch: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(176924750, repoPath, remoteBranch).then(($result: any) => {
+    return $Call.ByID(2964227604, repoPath, remoteBranch).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -304,7 +304,7 @@ export function SetUpstreamBranch(repoPath: string, remoteBranch: string): $Canc
  * StartBackgroundTasks starts background tasks for a repository
  */
 export function StartBackgroundTasks(repoPath: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(4221563179, repoPath).then(($result: any) => {
+    return $Call.ByID(3459357049, repoPath).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -313,7 +313,7 @@ export function StartBackgroundTasks(repoPath: string): $CancellablePromise<$mod
  * StashAndReset stashes current changes before resetting
  */
 export function StashAndReset(repoPath: string, ref: string, stashMessage: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(2959044426, repoPath, ref, stashMessage).then(($result: any) => {
+    return $Call.ByID(2738364712, repoPath, ref, stashMessage).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -322,7 +322,7 @@ export function StashAndReset(repoPath: string, ref: string, stashMessage: strin
  * StopBackgroundTasks stops all background tasks for a repository
  */
 export function StopBackgroundTasks(repoPath: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(1389077597, repoPath).then(($result: any) => {
+    return $Call.ByID(3301198759, repoPath).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -331,7 +331,7 @@ export function StopBackgroundTasks(repoPath: string): $CancellablePromise<$mode
  * UnsetGitConfig removes a git config value from the repository
  */
 export function UnsetGitConfig(repoPath: string, key: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(3545101820, repoPath, key).then(($result: any) => {
+    return $Call.ByID(2350127138, repoPath, key).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -340,7 +340,7 @@ export function UnsetGitConfig(repoPath: string, key: string): $CancellablePromi
  * UpdateBackgroundTask updates the configuration for a specific background task
  */
 export function UpdateBackgroundTask(repoPath: string, taskType: $models.BackgroundTaskType, config: $models.BackgroundTaskConfig): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(3961703453, repoPath, taskType, config).then(($result: any) => {
+    return $Call.ByID(3288829775, repoPath, taskType, config).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -349,7 +349,7 @@ export function UpdateBackgroundTask(repoPath: string, taskType: $models.Backgro
  * UpdateFetchSettings updates fetch-related settings
  */
 export function UpdateFetchSettings(repoPath: string, fetchSettings: $models.FetchSettings): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(559173737, repoPath, fetchSettings).then(($result: any) => {
+    return $Call.ByID(2349640803, repoPath, fetchSettings).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -358,7 +358,7 @@ export function UpdateFetchSettings(repoPath: string, fetchSettings: $models.Fet
  * UpdateLFSSettings updates LFS-related settings
  */
 export function UpdateLFSSettings(repoPath: string, lfsSettings: $models.LFSSettings): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(3231604222, repoPath, lfsSettings).then(($result: any) => {
+    return $Call.ByID(230317320, repoPath, lfsSettings).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -367,29 +367,29 @@ export function UpdateLFSSettings(repoPath: string, lfsSettings: $models.LFSSett
  * UpdateMaintenanceSettings updates maintenance-related settings
  */
 export function UpdateMaintenanceSettings(repoPath: string, maintenanceSettings: $models.MaintenanceSettings): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(1654879214, repoPath, maintenanceSettings).then(($result: any) => {
+    return $Call.ByID(1946380472, repoPath, maintenanceSettings).then(($result: any) => {
         return $$createType0($result);
     });
 }
 
 /**
- * WriteRepoLocalConfig writes the shared config (.controlzebra/config.json) to
- * the repository. Creates the .controlzebra/ directory if it does not exist.
+ * WriteRepoLocalConfig writes the shared config (.iofabrik/config.json) to
+ * the repository. Creates the .iofabrik/ directory if it does not exist.
  */
 export function WriteRepoLocalConfig(repoPath: string, config: $models.RepoLocalConfig): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(3742543705, repoPath, config).then(($result: any) => {
+    return $Call.ByID(276858675, repoPath, config).then(($result: any) => {
         return $$createType0($result);
     });
 }
 
 /**
  * WriteRepoPersonalConfig writes the personal/machine-specific config
- * (.controlzebra/local.json) to the repository. Creates the .controlzebra/
- * directory if it does not exist. Also ensures .controlzebra/local.json is
+ * (.iofabrik/local.json) to the repository. Creates the .iofabrik/
+ * directory if it does not exist. Also ensures .iofabrik/local.json is
  * listed in the repository's .gitignore so it is never committed.
  */
 export function WriteRepoPersonalConfig(repoPath: string, config: $models.RepoPersonalConfig): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(2316351710, repoPath, config).then(($result: any) => {
+    return $Call.ByID(3121693460, repoPath, config).then(($result: any) => {
         return $$createType0($result);
     });
 }

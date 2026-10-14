@@ -39,9 +39,9 @@ import { useGitHubDeviceFlow } from '../../auth/hooks/useGitHubDeviceFlow';
 import ProjectCreationStepper, { type StepperStatus } from '../components/ProjectCreationStepper';
 import { Button, Input, Select, Switch } from '../../../shared/ui';
 import type { SelectOption } from '../../../shared/ui';
-import { OpenFolderDialog } from '../../../../bindings/controlzebra/services/filedialogservice';
-import { RepoList, RepoListForOrg, RepoClone } from '../../../../bindings/controlzebra/services/githubservice';
-import type { GitHubRepo } from '../../../../bindings/controlzebra/services/models';
+import { OpenFolderDialog } from '../../../../bindings/iofabrik/services/filedialogservice';
+import { RepoList, RepoListForOrg, RepoClone } from '../../../../bindings/iofabrik/services/githubservice';
+import type { GitHubRepo } from '../../../../bindings/iofabrik/services/models';
 
 // ============================================================================
 // Types

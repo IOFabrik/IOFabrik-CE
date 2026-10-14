@@ -1,4 +1,4 @@
-// Package services provides backend functionality for the ControlZebra application.
+// Package services provides backend functionality for the IOFabrik application.
 // This file contains the DebugService which is exposed to the frontend via Wails
 // bindings. It provides methods to enable/disable logging, retrieve log entries,
 // export logs to disk, and get statistics.

@@ -64,13 +64,13 @@ function UnsupportedViewer({ filePath }: ViewerProps): JSX.Element {
           
           {extension && (
             <p className="text-xs text-theme-muted mb-6">
-              .{extension} files cannot be previewed in ControlZebra
+              .{extension} files cannot be previewed in IOFabrik
             </p>
           )}
           
           {!extension && (
             <p className="text-xs text-theme-muted mb-6">
-              This file type cannot be previewed in ControlZebra
+              This file type cannot be previewed in IOFabrik
             </p>
           )}
           

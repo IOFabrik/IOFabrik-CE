@@ -2,7 +2,7 @@
   "number": 42,
   "title": "Update mixer sequence",
   "body": "Adds the requested mixer interlock.",
-  "url": "https://github.com/controlzebra/plant-project/pull/42",
+  "url": "https://github.com/iofabrik/plant-project/pull/42",
   "state": "OPEN",
   "isDraft": false,
   "author": { "login": "operator", "name": "Operator" },

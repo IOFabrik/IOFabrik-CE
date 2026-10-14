@@ -19,7 +19,7 @@ import * as $models from "./models.js";
  * or is Finish itself moving the destination.
  */
 export function AttachToBus(bus: $models.RepoEventBus | null): $CancellablePromise<void> {
-    return $Call.ByID(1449981676, bus);
+    return $Call.ByID(1294942946, bus);
 }
 
 /**
@@ -27,7 +27,7 @@ export function AttachToBus(bus: $models.RepoEventBus | null): $CancellablePromi
  * session that is already gone succeeds.
  */
 export function CancelSession(sessionID: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(2679687464, sessionID).then(($result: any) => {
+    return $Call.ByID(3422227790, sessionID).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -36,7 +36,7 @@ export function CancelSession(sessionID: string): $CancellablePromise<$models.Op
  * DetachFromBus removes the bus subscription, if any.
  */
 export function DetachFromBus(): $CancellablePromise<void> {
-    return $Call.ByID(2471575149);
+    return $Call.ByID(2696946651);
 }
 
 /**
@@ -44,7 +44,7 @@ export function DetachFromBus(): $CancellablePromise<void> {
  * merge: if a valid result exists, that result is what gets applied.
  */
 export function FinishSession(sessionID: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(2918716195, sessionID).then(($result: any) => {
+    return $Call.ByID(776588937, sessionID).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -53,7 +53,7 @@ export function FinishSession(sessionID: string): $CancellablePromise<$models.Op
  * GetSessionConflictResolutionData loads one conflicted file for the resolver.
  */
 export function GetSessionConflictResolutionData(sessionID: string, filePath: string): $CancellablePromise<$models.ConflictResolutionData> {
-    return $Call.ByID(3090228294, sessionID, filePath).then(($result: any) => {
+    return $Call.ByID(3657963768, sessionID, filePath).then(($result: any) => {
         return $$createType1($result);
     });
 }
@@ -62,7 +62,7 @@ export function GetSessionConflictResolutionData(sessionID: string, filePath: st
  * GetSessionConflicts returns the files this review is currently asking about.
  */
 export function GetSessionConflicts(sessionID: string): $CancellablePromise<$models.SessionConflictSnapshot> {
-    return $Call.ByID(4141193181, sessionID).then(($result: any) => {
+    return $Call.ByID(147936571, sessionID).then(($result: any) => {
         return $$createType2($result);
     });
 }
@@ -73,7 +73,7 @@ export function GetSessionConflicts(sessionID: string): $CancellablePromise<$mod
  * legitimately disappear between the frontend reading it and asking about it.
  */
 export function GetSessionState(sessionID: string): $CancellablePromise<$models.IntegrationSessionSnapshot> {
-    return $Call.ByID(1897995979, sessionID).then(($result: any) => {
+    return $Call.ByID(1998087149, sessionID).then(($result: any) => {
         return $$createType3($result);
     });
 }
@@ -83,7 +83,7 @@ export function GetSessionState(sessionID: string): $CancellablePromise<$models.
  * the protected-default-branch confirmation before Sync mutates Git state.
  */
 export function IsDefaultBranchSyncEligible(repoPath: string): $CancellablePromise<boolean> {
-    return $Call.ByID(678034365, repoPath);
+    return $Call.ByID(2046658767, repoPath);
 }
 
 /**
@@ -91,7 +91,7 @@ export function IsDefaultBranchSyncEligible(repoPath: string): $CancellablePromi
  * repoPath, including its linked worktrees.
  */
 export function ListSessions(repoPath: string): $CancellablePromise<$models.IntegrationSessionSnapshot[]> {
-    return $Call.ByID(4005078063, repoPath).then(($result: any) => {
+    return $Call.ByID(3914528021, repoPath).then(($result: any) => {
         return $$createType4($result);
     });
 }
@@ -101,7 +101,7 @@ export function ListSessions(repoPath: string): $CancellablePromise<$models.Inte
  * they claim. Called once at startup. It never moves a ref.
  */
 export function RecoverSessions(): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(2748400255).then(($result: any) => {
+    return $Call.ByID(3660827449).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -110,7 +110,7 @@ export function RecoverSessions(): $CancellablePromise<$models.OperationResult> 
  * ResolveSessionConflictWithContent applies a fully composed file.
  */
 export function ResolveSessionConflictWithContent(sessionID: string, filePath: string, resolutionToken: string, content: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(3772647109, sessionID, filePath, resolutionToken, content).then(($result: any) => {
+    return $Call.ByID(2115701415, sessionID, filePath, resolutionToken, content).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -119,7 +119,7 @@ export function ResolveSessionConflictWithContent(sessionID: string, filePath: s
  * ResolveSessionConflictWithDecisions applies per-region choices to one file.
  */
 export function ResolveSessionConflictWithDecisions(sessionID: string, filePath: string, resolutionToken: string, decisions: $models.ConflictDecision[]): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(3376488127, sessionID, filePath, resolutionToken, decisions).then(($result: any) => {
+    return $Call.ByID(1753157885, sessionID, filePath, resolutionToken, decisions).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -128,7 +128,7 @@ export function ResolveSessionConflictWithDecisions(sessionID: string, filePath:
  * ResolveSessionConflictWithSide keeps one whole version of the file.
  */
 export function ResolveSessionConflictWithSide(sessionID: string, filePath: string, side: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(2627696747, sessionID, filePath, side).then(($result: any) => {
+    return $Call.ByID(578570053, sessionID, filePath, side).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -137,7 +137,7 @@ export function ResolveSessionConflictWithSide(sessionID: string, filePath: stri
  * SetApp sets the Wails application reference for event emission.
  */
 export function SetApp(app: application$0.App | null): $CancellablePromise<void> {
-    return $Call.ByID(521708933, app);
+    return $Call.ByID(317312715, app);
 }
 
 /**
@@ -145,7 +145,7 @@ export function SetApp(app: application$0.App | null): $CancellablePromise<void>
  * so the conflict queue and the file watcher refresh.
  */
 export function SetRepoEventBus(bus: $models.RepoEventBus | null): $CancellablePromise<void> {
-    return $Call.ByID(3399731792, bus);
+    return $Call.ByID(2866236082, bus);
 }
 
 /**
@@ -153,7 +153,7 @@ export function SetRepoEventBus(bus: $models.RepoEventBus | null): $CancellableP
  * silent, which is the correct default for a feature that is still flagged.
  */
 export function SetSettings(settings: $models.SettingsService | null): $CancellablePromise<void> {
-    return $Call.ByID(2275590811, settings);
+    return $Call.ByID(908552781, settings);
 }
 
 /**
@@ -162,7 +162,7 @@ export function SetSettings(settings: $models.SettingsService | null): $Cancella
  * retry without repeating conflict decisions.
  */
 export function ShareSession(sessionID: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(219549935, sessionID).then(($result: any) => {
+    return $Call.ByID(3460114053, sessionID).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -172,7 +172,7 @@ export function ShareSession(sessionID: string): $CancellablePromise<$models.Ope
  * are published through events and the session query methods.
  */
 export function UpdateFeatureFromDestination(repoPath: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(3151023925, repoPath).then(($result: any) => {
+    return $Call.ByID(4066832283, repoPath).then(($result: any) => {
         return $$createType0($result);
     });
 }

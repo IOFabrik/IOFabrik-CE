@@ -52,10 +52,10 @@ import {
   RevealInFinder,
   CopyToClipboard,
   MoveToTrash,
-} from '../../../../bindings/controlzebra/services/filesystemservice';
-import { GetRemoteURL } from '../../../../bindings/controlzebra/services/gitservice';
-import { GetGitUser, LFSLsFiles, LFSLock, LFSLocks, LFSUnlock } from '../../../../bindings/controlzebra/services/lfsservice';
-import { FileEntry } from '../../../../bindings/controlzebra/services/models';
+} from '../../../../bindings/iofabrik/services/filesystemservice';
+import { GetRemoteURL } from '../../../../bindings/iofabrik/services/gitservice';
+import { GetGitUser, LFSLsFiles, LFSLock, LFSLocks, LFSUnlock } from '../../../../bindings/iofabrik/services/lfsservice';
+import { FileEntry } from '../../../../bindings/iofabrik/services/models';
 import { useRepo, useLayout } from '../../../context';
 import { useWindowSize } from '../../../shared/hooks';
 import { openExternalUrl } from '../../../shared/runtime/browser';

@@ -9,7 +9,7 @@ unexercised project-switching checkpoint.
 
 ## Test Goal
 
-Confirm that ControlZebra can check saved work against the shared project,
+Confirm that IOFabrik can check saved work against the shared project,
 show real files that need a decision, and finish the work without interrupting
 the user's open project or overwriting local files.
 
@@ -23,7 +23,7 @@ the user's open project or overwriting local files.
 
 ## Prerequisites
 
-1. Build and launch the current ControlZebra application.
+1. Build and launch the current IOFabrik application.
 2. Open a disposable project with a local shared project and a separate
    feature project. The projects should have at least one text file that can be
    edited and saved.
@@ -259,8 +259,8 @@ while the destination is still owned elsewhere.
 
 1. Prepare a review with at least one pending decision, or leave a review at
    **Ready to finish**.
-2. Quit ControlZebra normally before finishing.
-3. Relaunch ControlZebra and reopen the same feature project.
+2. Quit IOFabrik normally before finishing.
+3. Relaunch IOFabrik and reopen the same feature project.
 4. Open the review and inspect its state.
 
 **Pass:** the review returns with the correct source and destination, pending

@@ -5,19 +5,19 @@
 !include "FileFunc.nsh"
 
 !ifndef INFO_PROJECTNAME
-    !define INFO_PROJECTNAME "control-zebra"
+    !define INFO_PROJECTNAME "iofabrik"
 !endif
 !ifndef INFO_COMPANYNAME
-    !define INFO_COMPANYNAME "ControlZebra"
+    !define INFO_COMPANYNAME "IOFabrik"
 !endif
 !ifndef INFO_PRODUCTNAME
-    !define INFO_PRODUCTNAME "ControlZebra"
+    !define INFO_PRODUCTNAME "IOFabrik"
 !endif
 !ifndef INFO_PRODUCTVERSION
     !define INFO_PRODUCTVERSION "v0.0.1"
 !endif
 !ifndef INFO_COPYRIGHT
-    !define INFO_COPYRIGHT "(c) 2025, ControlZebra"
+    !define INFO_COPYRIGHT "(c) 2025, IOFabrik"
 !endif
 !ifndef PRODUCT_EXECUTABLE
     !define PRODUCT_EXECUTABLE "${INFO_PROJECTNAME}.exe"

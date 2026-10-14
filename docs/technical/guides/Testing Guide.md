@@ -173,7 +173,7 @@ describe('MyComponent', () => {
 ### Mocking Wails Bindings
 
 ```tsx
-vi.mock('../../bindings/controlzebra/services/gitservice', () => ({
+vi.mock('../../bindings/iofabrik/services/gitservice', () => ({
     GetStatus: vi.fn().mockResolvedValue([]),
     CommitAll: vi.fn().mockResolvedValue({ success: true }),
 }));

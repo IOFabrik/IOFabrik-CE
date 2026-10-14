@@ -6,7 +6,7 @@ import {
   IntegrationSessionSnapshot,
   OperationResult,
   SessionConflictSnapshot,
-} from '../../../../bindings/controlzebra/services/models';
+} from '../../../../bindings/iofabrik/services/models';
 import { IntegrationSessionProvider, useIntegrationSession } from './IntegrationSessionContext';
 
 const { repoStore, repoRefresh, layoutStore, bindings, eventBus } = vi.hoisted(() => ({
@@ -32,7 +32,7 @@ vi.mock('../../../context', () => ({
   useLayout: () => layoutStore.current,
 }));
 
-vi.mock('../../../../bindings/controlzebra/services/integrationsessionservice', () => bindings);
+vi.mock('../../../../bindings/iofabrik/services/integrationsessionservice', () => bindings);
 
 vi.mock('../../../shared/runtime/events', () => ({
   onEvent: (name: string, handler: (event: { data: unknown }) => void) => {

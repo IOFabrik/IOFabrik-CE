@@ -12,7 +12,7 @@ import {
 } from "ladder-visualizer";
 
 import { ICON_SIZES } from "../../../../shared/constants";
-import { CONTROL_ZEBRA_LADDER_THEME } from "./theme";
+import { IOFABRIK_LADDER_THEME } from "./theme";
 
 interface L5XRoutineViewerProps {
   routine: NormalizedRoutine;
@@ -113,7 +113,7 @@ function FBDRoutineViewer({
           width="100%"
           height="100%"
           className="h-full w-full"
-          theme={CONTROL_ZEBRA_LADDER_THEME}
+          theme={IOFABRIK_LADDER_THEME}
           showControls
           showBackground
           showMiniMap={false}
@@ -145,7 +145,7 @@ export const L5XRoutineViewer = memo(function L5XRoutineViewer({
       <VirtualizedLadderDiagram
         routine={routine}
         instructionContext={instructionContext}
-        theme={CONTROL_ZEBRA_LADDER_THEME}
+        theme={IOFABRIK_LADDER_THEME}
         className="h-full"
       />
     );

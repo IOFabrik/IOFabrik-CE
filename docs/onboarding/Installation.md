@@ -1,17 +1,17 @@
-# Install ControlZebra on Windows
+# Install IOFabrik on Windows
 
 > Install, update, or remove the supported Windows x64 application.
 
-Download `control-zebra-amd64-installer.exe` from the
-[latest ControlZebra release](https://github.com/ControlZebra/controlzebra-oss/releases/latest).
+Download `iofabrik-amd64-installer.exe` from the
+[latest IOFabrik release](https://github.com/IOFabrik/IOFabrik-CE/releases/latest).
 The installer is for Windows x64. The separately published
-`control-zebra-windows-amd64.exe` is the application update artifact; use the
+`iofabrik-windows-amd64.exe` is the application update artifact; use the
 installer for your first installation.
 
 1. Open the downloaded installer and review the license agreement.
 2. Follow the installer steps. The default location is
-   `%LOCALAPPDATA%\Programs\ControlZebra` for your Windows account.
-3. Launch **ControlZebra** from the Start menu or desktop shortcut.
+   `%LOCALAPPDATA%\Programs\IOFabrik` for your Windows account.
+3. Launch **IOFabrik** from the Start menu or desktop shortcut.
 4. Complete the in-app setup for the project tools you need.
 
 Keep Windows security protection enabled. If Windows blocks the installer,
@@ -31,7 +31,7 @@ release feed should be upgraded by running the current installer.
 
 ## Uninstall
 
-Remove ControlZebra from Windows **Settings → Apps → Installed apps**.
+Remove IOFabrik from Windows **Settings → Apps → Installed apps**.
 The uninstaller offers an optional action to remove user data; select it only
 if you also want to remove application settings and local tool data.
 

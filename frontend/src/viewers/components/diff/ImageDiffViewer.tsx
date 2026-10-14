@@ -42,7 +42,7 @@ import {
 import { onEvent } from '../../../shared/runtime/events';
 
 import { ICON_SIZES } from '../../../shared/constants';
-import { ImageDiffResult } from '../../../../bindings/controlzebra/services/models';
+import { ImageDiffResult } from '../../../../bindings/iofabrik/services/models';
 import { formatFileSize, CHECKERBOARD_STYLE, ToolbarIcon } from '../file/image-utils';
 import { getPathFileName } from '../shared/path-utils';
 import type { DiffSide } from '../../registry/diff-registry';

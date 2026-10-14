@@ -71,14 +71,14 @@ import {
   RepairRepository,
   ResetToDefaults,
   RecoverFromDetachedHead,
-} from '../../../../bindings/controlzebra/services/repositorysettingsservice';
+} from '../../../../bindings/iofabrik/services/repositorysettingsservice';
 import {
   AbortRevert,
   AbortBisect,
   AbortAM,
   AbortCurrentOperation,
   GetRemoteURL,
-} from '../../../../bindings/controlzebra/services/gitservice';
+} from '../../../../bindings/iofabrik/services/gitservice';
 import {
   IsLFSInstalled,
   IsLFSEnabled,
@@ -87,8 +87,8 @@ import {
   GetTrackedPatterns,
   TrackPattern,
   UntrackPattern,
-} from '../../../../bindings/controlzebra/services/lfsservice';
-import { BackgroundTaskType, PresetPattern, TrackedPattern } from '../../../../bindings/controlzebra/services/models';
+} from '../../../../bindings/iofabrik/services/lfsservice';
+import { BackgroundTaskType, PresetPattern, TrackedPattern } from '../../../../bindings/iofabrik/services/models';
 import { getFolderNameFromPath } from '../../../shared/utils/path';
 
 // ============================================================================

@@ -20,18 +20,18 @@ func TestGitHubCreateGitPhases(t *testing.T) {
 	t.Setenv("GIT_CONFIG_NOSYSTEM", "1")
 	t.Setenv("GIT_CONFIG_COUNT", "0")
 	t.Setenv("GIT_CONFIG_PARAMETERS", "")
-	t.Setenv("CZ_CREATE_LOG", filepath.Join(root, "gh-calls"))
+	t.Setenv("IOFABRIK_CREATE_LOG", filepath.Join(root, "gh-calls"))
 	installFakeGh(t, `#!/usr/bin/python3
 import os, sys, subprocess
 args = sys.argv[1:]
-with open(os.environ['CZ_CREATE_LOG'], 'a') as f: f.write(' '.join(args) + '\n')
-if args[:2] == ['auth', 'status']: sys.exit(int(os.environ.get('CZ_AUTH_EXIT', '0')))
-if args[:2] == ['config', 'get']: print(os.environ.get('CZ_PROTOCOL', 'https')); sys.exit(0)
+with open(os.environ['IOFABRIK_CREATE_LOG'], 'a') as f: f.write(' '.join(args) + '\n')
+if args[:2] == ['auth', 'status']: sys.exit(int(os.environ.get('IOFABRIK_AUTH_EXIT', '0')))
+if args[:2] == ['config', 'get']: print(os.environ.get('IOFABRIK_PROTOCOL', 'https')); sys.exit(0)
 if args[:2] != ['repo', 'create'] or '--push' in args or '--clone' in args: sys.exit(2)
-if os.environ.get('CZ_API_FAIL'): sys.exit(1)
+if os.environ.get('IOFABRIK_API_FAIL'): sys.exit(1)
 if '--source' in args:
-    subprocess.check_call(['git', 'remote', 'add', 'origin', os.environ['CZ_PUBLISH_DEST']])
-print(os.environ.get('CZ_CREATED_URL', 'https://github.com/fixture/new-repo'))
+    subprocess.check_call(['git', 'remote', 'add', 'origin', os.environ['IOFABRIK_PUBLISH_DEST']])
+print(os.environ.get('IOFABRIK_CREATED_URL', 'https://github.com/fixture/new-repo'))
 `)
 	runner := NewCommandRunner()
 	dest := filepath.Join(root, "remote.git")
@@ -49,7 +49,7 @@ print(os.environ.get('CZ_CREATED_URL', 'https://github.com/fixture/new-repo'))
 		if got.Success {
 			t.Fatal("empty repository was published")
 		}
-		if data, _ := os.ReadFile(os.Getenv("CZ_CREATE_LOG")); len(data) > 0 {
+		if data, _ := os.ReadFile(os.Getenv("IOFABRIK_CREATE_LOG")); len(data) > 0 {
 			t.Fatal("empty repository reached gh before preflight failed")
 		}
 	})
@@ -59,7 +59,7 @@ print(os.environ.get('CZ_CREATED_URL', 'https://github.com/fixture/new-repo'))
 	if got := runner.RunGit(source, "commit", "--allow-empty", "-m", "fixture"); !got.Success {
 		t.Fatal(got.Error)
 	}
-	t.Setenv("CZ_PUBLISH_DEST", dest)
+	t.Setenv("IOFABRIK_PUBLISH_DEST", dest)
 	t.Run("publish sets upstream", func(t *testing.T) {
 		got := service.RepoCreateFromLocal(source, "fixture", "description", true, "owner")
 		if !got.Success || got.Repo.FullName != "owner/fixture" {
@@ -84,7 +84,7 @@ print(os.environ.get('CZ_CREATED_URL', 'https://github.com/fixture/new-repo'))
 	})
 	for _, protocol := range []string{"https", "ssh"} {
 		t.Run(protocol+" empty create", func(t *testing.T) {
-			t.Setenv("CZ_PROTOCOL", protocol)
+			t.Setenv("IOFABRIK_PROTOCOL", protocol)
 			parent := t.TempDir()
 			got := service.RepoCreate(GitHubRepoCreateOptions{Name: "owner/new-repo", Clone: true, ClonePath: parent, Private: true})
 			want := filepath.Join(parent, "new-repo")
@@ -105,7 +105,7 @@ print(os.environ.get('CZ_CREATED_URL', 'https://github.com/fixture/new-repo'))
 			}
 		})
 		t.Run(protocol+" initialized create", func(t *testing.T) {
-			t.Setenv("CZ_PROTOCOL", protocol)
+			t.Setenv("IOFABRIK_PROTOCOL", protocol)
 			parent := t.TempDir()
 			got := service.RepoCreate(GitHubRepoCreateOptions{Name: "new-repo", Clone: true, ClonePath: parent, AddReadme: true})
 			if !got.Success || !runner.RunGit(got.CloneDir, "rev-parse", "HEAD").Success {
@@ -114,7 +114,7 @@ print(os.environ.get('CZ_CREATED_URL', 'https://github.com/fixture/new-repo'))
 		})
 	}
 	t.Run("enterprise empty create", func(t *testing.T) {
-		t.Setenv("CZ_CREATED_URL", "https://ghe.example/fixture/new-repo")
+		t.Setenv("IOFABRIK_CREATED_URL", "https://ghe.example/fixture/new-repo")
 		parent := t.TempDir()
 		got := service.RepoCreate(GitHubRepoCreateOptions{Name: "new-repo", Clone: true, ClonePath: parent})
 		if !got.Success || got.CloneDir != filepath.Join(parent, "new-repo") {
@@ -129,13 +129,13 @@ print(os.environ.get('CZ_CREATED_URL', 'https://github.com/fixture/new-repo'))
 		local := filepath.Join(root, "push-failure")
 		runner.RunGit(root, "clone", source, local)
 		runner.RunGit(local, "remote", "remove", "origin")
-		t.Setenv("CZ_PUBLISH_DEST", filepath.Join(root, "missing.git"))
+		t.Setenv("IOFABRIK_PUBLISH_DEST", filepath.Join(root, "missing.git"))
 		if got := service.RepoCreateFromLocal(local, "fixture", "", false, ""); got.Success || got.Error == "" {
 			t.Fatal("failed push was reported as success")
 		}
 	})
 	t.Run("failed API does not clone", func(t *testing.T) {
-		t.Setenv("CZ_API_FAIL", "1")
+		t.Setenv("IOFABRIK_API_FAIL", "1")
 		parent := t.TempDir()
 		if got := service.RepoCreate(GitHubRepoCreateOptions{Name: "fixture", Clone: true, ClonePath: parent}); got.Success {
 			t.Fatal("failed creation reported success")
@@ -156,8 +156,8 @@ func TestGitCredentialProfileCapture(t *testing.T) {
 	}
 	root := t.TempDir()
 	calls := filepath.Join(root, "calls")
-	t.Setenv("CZ_AUTH_CALLS", calls)
-	installFakeGh(t, "#!/bin/sh\nprintf 'status\\n' >> \"$CZ_AUTH_CALLS\"\nexit 0\n")
+	t.Setenv("IOFABRIK_AUTH_CALLS", calls)
+	installFakeGh(t, "#!/bin/sh\nprintf 'status\\n' >> \"$IOFABRIK_AUTH_CALLS\"\nexit 0\n")
 	runner := NewCommandRunner()
 	operation := runner.forGitOperation()
 	if !operation.credentials.usable || runner.credentials != nil || operation.forGitOperation() != operation {

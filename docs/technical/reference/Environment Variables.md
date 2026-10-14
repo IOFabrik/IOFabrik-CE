@@ -17,9 +17,9 @@ Set in `.env` or CI environment:
 
 | Variable | Purpose | Default |
 |----------|---------|---------|
-| `CZ_PORTABLE_GIT_URL` | Override MinGit download URL | GitHub releases URL |
-| `CZ_PORTABLE_GH_URL` | Override gh CLI download URL | GitHub releases URL |
-| `CZ_PORTABLE_LFS_URL` | Override git-lfs download URL | GitHub releases URL |
+| `IOFABRIK_PORTABLE_GIT_URL` | Override MinGit download URL | GitHub releases URL |
+| `IOFABRIK_PORTABLE_GH_URL` | Override gh CLI download URL | GitHub releases URL |
+| `IOFABRIK_PORTABLE_LFS_URL` | Override git-lfs download URL | GitHub releases URL |
 
 ## Git Environment (Set by CommandRunner)
 

@@ -7,7 +7,7 @@ vi.mock('../../../features/explorer/components/DiffViewer', () => ({
   default: (props: unknown) => diffViewerSpy(props),
 }));
 
-vi.mock('../../../../bindings/controlzebra/services/gitservice', () => ({
+vi.mock('../../../../bindings/iofabrik/services/gitservice', () => ({
   DiffCommitFileRaw: vi.fn(),
   DiffMergeReviewFileRaw: vi.fn(),
   DiffWorkingRaw: vi.fn(),
@@ -17,7 +17,7 @@ import {
   DiffCommitFileRaw,
   DiffMergeReviewFileRaw,
   DiffWorkingRaw,
-} from '../../../../bindings/controlzebra/services/gitservice';
+} from '../../../../bindings/iofabrik/services/gitservice';
 import TextDiffViewer from './TextDiffViewer';
 
 describe('TextDiffViewer', () => {

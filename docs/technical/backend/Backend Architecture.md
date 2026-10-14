@@ -129,7 +129,7 @@ type CommandResult struct {
 
 `services/cli_resolver.go` resolves `git`, `gh`, and `git-lfs` binaries in priority order:
 
-1. **Platform-local managed binaries** — Windows `%LOCALAPPDATA%\ControlZebra\tools\bin`
+1. **Platform-local managed binaries** — Windows `%LOCALAPPDATA%\IOFabrik\tools\bin`
 2. **Bundled app resources** — macOS `.app/Contents/Resources/`
 3. **System PATH** — `exec.LookPath()`
 4. **Common install paths** — Windows Program Files, scoop, etc.
@@ -145,12 +145,12 @@ All data storage follows XDG conventions via `services/data_paths.go`:
 
 | Data | Windows | macOS |
 |------|---------|-------|
-| Settings | `%APPDATA%\ControlZebra\config\settings.json` | `~/.config/ControlZebra/config/settings.json` |
-| Repo settings | `%APPDATA%\ControlZebra\config\repositories\` | `~/.config/ControlZebra/config/repositories/` |
-| Logs | `%LOCALAPPDATA%\ControlZebra\logs\` | `~/Library/Caches/ControlZebra/logs/` |
-| Portable tools | `%LOCALAPPDATA%\ControlZebra\tools\bin\` | N/A |
+| Settings | `%APPDATA%\IOFabrik\config\settings.json` | `~/.config/IOFabrik/config/settings.json` |
+| Repo settings | `%APPDATA%\IOFabrik\config\repositories\` | `~/.config/IOFabrik/config/repositories/` |
+| Logs | `%LOCALAPPDATA%\IOFabrik\logs\` | `~/Library/Caches/IOFabrik/logs/` |
+| Portable tools | `%LOCALAPPDATA%\IOFabrik\tools\bin\` | N/A |
 
-On startup, `RunDataLayoutMigration()` migrates legacy `control-zebra` paths to canonical `ControlZebra` paths (non-destructive, one-time).
+On startup, `RunDataLayoutMigration()` migrates legacy `iofabrik` paths to canonical `IOFabrik` paths (non-destructive, one-time).
 
 ## Debug Logger — Ring-Buffer Logging
 

@@ -1,12 +1,12 @@
 # Architecture Overview
 
-> This document describes the system-level architecture of ControlZebra Desktop. Read this first before diving into any specific subsystem.
+> This document describes the system-level architecture of IOFabrik Desktop. Read this first before diving into any specific subsystem.
 
 ## System Diagram
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                        ControlZebra Desktop                     │
+│                        IOFabrik Desktop                     │
 │                                                                  │
 │  ┌──────────────────────┐     ┌──────────────────────────────┐  │
 │  │   Go Backend (Wails) │     │  React Frontend (WebView)    │  │

@@ -1,8 +1,8 @@
-# ControlZebra Documentation
+# IOFabrik Documentation
 
 > **Version:** v0.13.0-beta | **Platform:** Windows (primary), macOS | **Stack:** Wails v3 + Go 1.26 + React 18 + TypeScript
 
-ControlZebra is a simplified desktop Git client for **non-technical users** in industrial automation — PLC engineers, HMI designers, and automation teams who work with binary config files, ladder logic, and hardware schematics.
+IOFabrik is a simplified desktop Git client for **non-technical users** in industrial automation — PLC engineers, HMI designers, and automation teams who work with binary config files, ladder logic, and hardware schematics.
 
 ---
 
@@ -15,7 +15,7 @@ ControlZebra is a simplified desktop Git client for **non-technical users** in i
 - [Architecture Overview](technical/architecture/Architecture%20Overview.md) — Understand how the app is built
 
 ### 📦 Product
-- [Product Overview](product/Product%20Overview.md) — What ControlZebra is and who it's for
+- [Product Overview](product/Product%20Overview.md) — What IOFabrik is and who it's for
 - [User-Facing Terminology](product/User-Facing%20Terminology.md) — How we map Git concepts to plain English
 
 ### 🏗 Technical — Architecture

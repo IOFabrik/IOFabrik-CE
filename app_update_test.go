@@ -34,13 +34,13 @@ func TestAppUpdaterReleaseVerification(t *testing.T) {
 		{name: "skipped for this session", checksumAsset: true, skipVersion: "0.0.2", wantNoUpdate: true},
 		{name: "missing SHA256SUMS", wantCheckError: true},
 		{name: "missing executable entry", checksumAsset: true, checksumBody: "invalid  other.exe\n", wantCheckError: true},
-		{name: "malformed digest", checksumAsset: true, checksumBody: "invalid  control-zebra-windows-amd64.exe\n", wantCheckError: true},
+		{name: "malformed digest", checksumAsset: true, checksumBody: "invalid  iofabrik-windows-amd64.exe\n", wantCheckError: true},
 		{name: "corrupt download", checksumAsset: true, corrupt: true, wantInstallError: true},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			body := "expected application bytes"
 			digest := sha256.Sum256([]byte(body))
-			manifest := fmt.Sprintf("%x  control-zebra-windows-amd64.exe\n", digest)
+			manifest := fmt.Sprintf("%x  iofabrik-windows-amd64.exe\n", digest)
 			if test.checksumBody != "" {
 				manifest = test.checksumBody
 			}
@@ -50,12 +50,12 @@ func TestAppUpdaterReleaseVerification(t *testing.T) {
 			http.DefaultTransport = updateTestTransport(func(req *http.Request) (*http.Response, error) {
 				var response string
 				switch req.URL.String() {
-				case "https://api.github.com/repos/ControlZebra/controlzebra-oss/releases/latest":
+				case "https://api.github.com/repos/IOFabrik/IOFabrik-CE/releases/latest":
 					// An installer with both platform/arch words comes first to exercise
 					// Wails' installer exclusion, not only filename platform matching.
 					assets := []map[string]any{
-						{"name": "control-zebra-windows-amd64-installer.exe", "browser_download_url": "https://test.invalid/installer"},
-						{"name": "control-zebra-windows-amd64.exe", "browser_download_url": "https://test.invalid/app"},
+						{"name": "iofabrik-windows-amd64-installer.exe", "browser_download_url": "https://test.invalid/installer"},
+						{"name": "iofabrik-windows-amd64.exe", "browser_download_url": "https://test.invalid/app"},
 					}
 					if test.checksumAsset {
 						assets = append(assets, map[string]any{"name": "SHA256SUMS", "browser_download_url": "https://test.invalid/checksums"})
@@ -130,7 +130,7 @@ func TestAppUpdaterReleaseVerification(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if release == nil || release.Version != "0.0.2" || release.Artifact.Filename != "control-zebra-windows-amd64.exe" {
+			if release == nil || release.Version != "0.0.2" || release.Artifact.Filename != "iofabrik-windows-amd64.exe" {
 				t.Fatalf("unexpected release: %+v", release)
 			}
 			err = client.DownloadAndInstall(context.Background())

@@ -24,12 +24,12 @@ if ! command -v osslsigncode >/dev/null 2>&1; then
 fi
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-CERT_DIR="${CZ_WINDOWS_SELF_SIGNED_CERT_DIR:-$ROOT_DIR/build/certs/windows/selfsigned}"
-TIMESTAMP_SERVER="${CZ_WINDOWS_TIMESTAMP_SERVER:-}"
+CERT_DIR="${IOFABRIK_WINDOWS_SELF_SIGNED_CERT_DIR:-$ROOT_DIR/build/certs/windows/selfsigned}"
+TIMESTAMP_SERVER="${IOFABRIK_WINDOWS_TIMESTAMP_SERVER:-}"
 
 bash "$ROOT_DIR/scripts/setup-self-signed-windows-cert.sh" --cert-dir "$CERT_DIR"
 
-PFX_PATH="$CERT_DIR/controlzebra-selfsigned.pfx"
+PFX_PATH="$CERT_DIR/iofabrik-selfsigned.pfx"
 PASSWORD_PATH="$CERT_DIR/password.txt"
 
 if [[ ! -f "$PFX_PATH" ]]; then
@@ -49,8 +49,8 @@ SIGN_ARGS=(
   -pkcs12 "$PFX_PATH"
   -pass "$PASSWORD"
   -h sha256
-  -n "ControlZebra"
-  -i "https://controlzebra.com"
+  -n "IOFabrik"
+  -i "https://iofabrik.com"
   -in "$ARTIFACT"
   -out "$TMP_OUT"
 )

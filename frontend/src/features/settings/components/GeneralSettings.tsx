@@ -35,13 +35,13 @@ import {
   GetAppSettings,
   GetDataLocations,
   SaveAppSettings,
-} from '../../../../bindings/controlzebra/services/settingsservice';
+} from '../../../../bindings/iofabrik/services/settingsservice';
 import {
   CheckForUpdates,
   GetCurrentVersion,
-} from '../../../../bindings/controlzebra/services/appupdateservice';
-import { IsEnabled, SetEnabled } from '../../../../bindings/controlzebra/services/debugservice';
-import type { AppSettings, DataLocations } from '../../../../bindings/controlzebra/services/models';
+} from '../../../../bindings/iofabrik/services/appupdateservice';
+import { IsEnabled, SetEnabled } from '../../../../bindings/iofabrik/services/debugservice';
+import type { AppSettings, DataLocations } from '../../../../bindings/iofabrik/services/models';
 
 const iconStyle: CSSProperties = { width: ICON_SIZES.sm, height: ICON_SIZES.sm };
 
@@ -317,7 +317,7 @@ function GeneralSettings(): JSX.Element {
           <p className="text-theme-muted text-sm mb-4">
             {isAuthenticated
               ? `Signed in as ${userEmail || 'your account'}. Local Git work stays available if you sign out.`
-              : 'Controlzebra Account sign-in is not available in this release.'}
+              : 'IOFabrik Account sign-in is not available in this release.'}
           </p>
 
           <div className="flex flex-wrap gap-2">
@@ -426,7 +426,7 @@ function GeneralSettings(): JSX.Element {
             </label>
           </div>
           <p className="text-theme-muted text-sm mb-4">
-            Active storage paths used by ControlZebra on this machine.
+            Active storage paths used by IOFabrik on this machine.
           </p>
 
           <Table>

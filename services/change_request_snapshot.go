@@ -1,4 +1,4 @@
-// Package services provides backend functionality for the ControlZebra application.
+// Package services provides backend functionality for the IOFabrik application.
 // This file owns the local snapshot lifecycle for GitHub Change Requests: the
 // private refs a request is compared against, and the per-file availability
 // checks that run before a viewer materializes any content.
@@ -18,7 +18,7 @@ const (
 	// changeRequestRefNamespace holds the private refs a Change Request is
 	// compared against. These refs are deliberately outside refs/heads and
 	// refs/remotes so they never appear as branches to the user.
-	changeRequestRefNamespace = "refs/controlzebra/change-requests"
+	changeRequestRefNamespace = "refs/iofabrik/change-requests"
 
 	// Snapshot fetches routinely exceed the 30-second CommandRunner default on
 	// the large binary repositories this product targets.
@@ -238,7 +238,7 @@ func (g *GitService) EnsureChangeRequestSnapshotsLocal(
 	if !headResolved {
 		return changeRequestSnapshotFailure(
 			GitHubChangeRequestErrorSnapshotUnavailable,
-			"ControlZebra could not read this Change Request's latest changes from GitHub.",
+			"IOFabrik could not read this Change Request's latest changes from GitHub.",
 		)
 	}
 
@@ -254,7 +254,7 @@ func (g *GitService) EnsureChangeRequestSnapshotsLocal(
 	if !baseTipResolved {
 		return changeRequestSnapshotFailure(
 			GitHubChangeRequestErrorSnapshotUnavailable,
-			"ControlZebra could not read the '"+baseRefName+"' branch this Change Request targets.",
+			"IOFabrik could not read the '"+baseRefName+"' branch this Change Request targets.",
 		)
 	}
 
@@ -263,14 +263,14 @@ func (g *GitService) EnsureChangeRequestSnapshotsLocal(
 	if !mergeBaseResult.Success || mergeBaseOID == "" {
 		return changeRequestSnapshotFailure(
 			GitHubChangeRequestErrorSnapshotUnavailable,
-			"ControlZebra could not find a common starting point between this Change Request and '"+baseRefName+"'.",
+			"IOFabrik could not find a common starting point between this Change Request and '"+baseRefName+"'.",
 		)
 	}
 
 	if updateResult := g.runner.RunGit(repoPath, "update-ref", baseRef, mergeBaseOID); !updateResult.Success {
 		return changeRequestSnapshotFailure(
 			GitHubChangeRequestErrorSnapshotUnavailable,
-			"ControlZebra could not prepare this Change Request for comparison: "+getErrorMessage(updateResult),
+			"IOFabrik could not prepare this Change Request for comparison: "+getErrorMessage(updateResult),
 		)
 	}
 
@@ -401,7 +401,7 @@ func (g *GitService) EnsureChangeRequestFileContent(
 	switch {
 	case oldSide.TooLarge || newSide.TooLarge:
 		result.ErrorCode = GitHubChangeRequestErrorContentTooLarge
-		result.Error = "This file is too large to compare inside ControlZebra. Open the Change Request on GitHub to review it."
+		result.Error = "This file is too large to compare inside IOFabrik. Open the Change Request on GitHub to review it."
 
 	case changeRequestNeedsLFS(oldSide) || changeRequestNeedsLFS(newSide):
 		result.ErrorCode = GitHubChangeRequestErrorContentLFSUnavailable
@@ -550,10 +550,10 @@ func mapChangeRequestFetchError(result CommandResult) GitHubChangeRequestErrorCo
 func changeRequestFetchErrorMessage(result CommandResult) string {
 	switch mapChangeRequestFetchError(result) {
 	case GitHubChangeRequestErrorNetworkUnavailable:
-		return "ControlZebra could not reach GitHub to download this Change Request. Check your connection and try again."
+		return "IOFabrik could not reach GitHub to download this Change Request. Check your connection and try again."
 	case GitHubChangeRequestErrorPermissionDenied:
 		return "Your GitHub account does not have access to download this Change Request."
 	default:
-		return "ControlZebra could not download this Change Request from GitHub: " + getErrorMessage(result)
+		return "IOFabrik could not download this Change Request from GitHub: " + getErrorMessage(result)
 	}
 }

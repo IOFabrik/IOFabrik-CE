@@ -26,7 +26,7 @@ const {
   SetUserProfile,
   StartBackgroundTasks,
   StopBackgroundTasks,
-  EnsureControlZebraDir,
+  EnsureIOFabrikDir,
   WatchDirectory,
   StopWatching,
   CheckoutBranch,
@@ -56,7 +56,7 @@ const {
   SetUserProfile: vi.fn(),
   StartBackgroundTasks: vi.fn(),
   StopBackgroundTasks: vi.fn(),
-  EnsureControlZebraDir: vi.fn(),
+  EnsureIOFabrikDir: vi.fn(),
   WatchDirectory: vi.fn(),
   StopWatching: vi.fn(),
   CheckoutBranch: vi.fn(),
@@ -172,7 +172,7 @@ vi.mock('../services/repo-commands', () => ({
   GetUserProfile,
   SetUserProfile,
   WriteRepoLocalConfig: vi.fn(),
-  EnsureControlZebraDir,
+  EnsureIOFabrikDir,
   StartBackgroundTasks,
   StopBackgroundTasks,
   ApplyGitignoreTemplate: vi.fn(),
@@ -187,13 +187,13 @@ vi.mock('../polling/useStatusPolling', () => ({
 vi.mock('../../auth/context/AuthContext', () => ({
   useAuth: () => ({
     userName: 'Test User',
-    userEmail: 'test@controlzebra.com',
+    userEmail: 'test@iofabrik.com',
   }),
 }));
 
 vi.mock('../../analytics/analytics', () => analyticsMocks);
 
-vi.mock('../../../../bindings/controlzebra/services/filewatcherservice', () => ({
+vi.mock('../../../../bindings/iofabrik/services/filewatcherservice', () => ({
   WatchDirectory,
   StopWatching,
 }));
@@ -283,11 +283,11 @@ describe('RepoContext merge completion guards', () => {
     GetAppSettings.mockResolvedValue({ lastRepoPath: '' });
     SaveAppSettings.mockResolvedValue({ success: true });
     EnsureIdentity.mockResolvedValue({ wasAutoSet: false, name: '', email: '' });
-    GetUserProfile.mockResolvedValue({ name: 'Test User', email: 'test@controlzebra.com' });
+    GetUserProfile.mockResolvedValue({ name: 'Test User', email: 'test@iofabrik.com' });
     SetUserProfile.mockResolvedValue({ success: true, message: 'saved' });
     StartBackgroundTasks.mockResolvedValue({ success: true });
     StopBackgroundTasks.mockResolvedValue({ success: true });
-    EnsureControlZebraDir.mockResolvedValue({ success: true });
+    EnsureIOFabrikDir.mockResolvedValue({ success: true });
     WatchDirectory.mockResolvedValue({ success: true });
     StopWatching.mockResolvedValue({ success: true });
     CheckoutBranch.mockResolvedValue({ success: true });

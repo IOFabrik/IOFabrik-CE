@@ -1,6 +1,6 @@
-# ControlZebra contributor guidance
+# IOFabrik contributor guidance
 
-ControlZebra is a desktop Git client for industrial automation projects, built
+IOFabrik is a desktop Git client for industrial automation projects, built
 with Go, Wails v3, React, TypeScript, and Vite. Read `go.mod` and
 `frontend/package.json` for the pinned dependency versions.
 

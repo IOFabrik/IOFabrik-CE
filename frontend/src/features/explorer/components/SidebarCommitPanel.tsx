@@ -11,7 +11,7 @@ import AutoGrowTextarea from '../../../shared/ui/AutoGrowTextarea';
 import ChangedFilesTable from './ChangedFilesTable';
 import LFSAutoTrackModal from './LFSAutoTrackModal';
 import RewindConfirmModal from '../../../widgets/layout/RewindConfirmModal';
-import { GetUserProfile } from '../../../../bindings/controlzebra/services/settingsservice';
+import { GetUserProfile } from '../../../../bindings/iofabrik/services/settingsservice';
 import type { FileStatus } from '../../../context';
 import { useLfsAutoTrackBeforeSave } from '../hooks/useLfsAutoTrackBeforeSave';
 import MainBranchSaveChoiceModal, { type MainBranchSaveChoice } from './MainBranchSaveChoiceModal';

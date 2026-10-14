@@ -1,7 +1,7 @@
 import type { LadderDiagramTheme } from 'ladder-visualizer';
 
 /** All colors are owned by the app CSS and react to light/dark changes in place. */
-export const CONTROL_ZEBRA_LADDER_THEME: Required<LadderDiagramTheme> = {
+export const IOFABRIK_LADDER_THEME: Required<LadderDiagramTheme> = {
   powerRailColor: 'var(--ladder-power-rail-color)',
   wireColor: 'var(--ladder-wire-color)',
   contactColor: 'var(--ladder-contact-color)',

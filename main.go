@@ -8,7 +8,7 @@ import (
 	"runtime"
 	"time"
 
-	"controlzebra/services"
+	"iofabrik/services"
 
 	"github.com/wailsapp/wails/v3/pkg/application"
 )
@@ -83,8 +83,8 @@ func main() {
 	// 'Mac' options tailor the application when running an macOS.
 	app := application.New(application.Options{
 		Windows:     application.WindowsOptions{WebviewUserDataPath: services.GetDataLocationsSnapshot().WebView2Dir},
-		Name:        "control-zebra",
-		Description: "ControlZebra",
+		Name:        "iofabrik",
+		Description: "IOFabrik",
 		Services: []application.Service{
 			application.NewService(gitService),
 			application.NewService(services.NewLFSService()),
@@ -244,19 +244,19 @@ func main() {
 	// Help menu
 	helpMenu := menu.AddSubmenu("Help")
 	helpMenu.Add("Documentation").OnClick(func(ctx *application.Context) {
-		fileSystemService.OpenURL("https://controlzebra.com/docs")
+		fileSystemService.OpenURL("https://iofabrik.com/docs")
 	})
 	helpMenu.Add("Report Issue").OnClick(func(ctx *application.Context) {
-		fileSystemService.OpenURL("https://github.com/ControlZebra/controlzebra-oss/issues")
+		fileSystemService.OpenURL("https://github.com/IOFabrik/IOFabrik-CE/issues")
 	})
 
 	// About dialog (Windows/Linux only - macOS uses AppMenu role)
 	if runtime.GOOS != "darwin" {
 		helpMenu.AddSeparator()
-		helpMenu.Add("About ControlZebra").OnClick(func(ctx *application.Context) {
+		helpMenu.Add("About IOFabrik").OnClick(func(ctx *application.Context) {
 			// Create a simple about dialog window
 			aboutWindow := app.Window.NewWithOptions(application.WebviewWindowOptions{
-				Title:            "About ControlZebra",
+				Title:            "About IOFabrik",
 				Width:            400,
 				Height:           300,
 				DisableResize:    true,
@@ -289,10 +289,10 @@ h1 { font-size: 24px; margin: 0 0 8px 0; color: #fff; }
 </style>
 </head>
 <body>
-<h1>ControlZebra</h1>
+<h1>IOFabrik</h1>
 <div class="version">Version %s</div>
-<div class="description">ControlZebra. Manage version control without the complexity.</div>
-<div class="copyright">© 2026 ControlZebra</div>
+<div class="description">IOFabrik. Manage version control without the complexity.</div>
+<div class="copyright">© 2026 IOFabrik</div>
 </body>
 </html>
 `, Version)
@@ -308,7 +308,7 @@ h1 { font-size: 24px; margin: 0 0 8px 0; color: #fff; }
 	// drag region and caption buttons. macOS keeps the native titlebar controls
 	// and uses an inset/transparent titlebar for integrated content.
 	mainWindowOptions := application.WebviewWindowOptions{
-		Title:              "ControlZebra (Beta)",
+		Title:              "IOFabrik (Beta)",
 		UseApplicationMenu: true,
 		BackgroundColour:   application.NewRGB(10, 10, 10),
 		URL:                "/",

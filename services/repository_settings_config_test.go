@@ -8,24 +8,24 @@ import (
 	"testing"
 )
 
-func TestControlZebraDirectoryHideFailure(t *testing.T) {
+func TestIOFabrikDirectoryHideFailure(t *testing.T) {
 	hideErr := errors.New("attribute update denied")
 	t.Run("empty directory is removed so a retry can hide it", func(t *testing.T) {
-		dirPath := controlZebraDirPath(filepath.Join(t.TempDir(), "new", "project"))
-		if err := createControlZebraDirectory(dirPath, func(string) error { return hideErr }); !errors.Is(err, hideErr) {
+		dirPath := iofabrikDirPath(filepath.Join(t.TempDir(), "new", "project"))
+		if err := createIOFabrikDirectory(dirPath, func(string) error { return hideErr }); !errors.Is(err, hideErr) {
 			t.Fatalf("expected attribute failure, got %v", err)
 		}
 		if _, err := os.Stat(dirPath); !os.IsNotExist(err) {
 			t.Fatalf("failed creation left a directory behind: %v", err)
 		}
 		hidden := false
-		if err := createControlZebraDirectory(dirPath, func(string) error {
+		if err := createIOFabrikDirectory(dirPath, func(string) error {
 			hidden = true
 			return nil
 		}); err != nil || !hidden {
 			t.Fatalf("retry did not hide the newly created directory: hidden=%v, err=%v", hidden, err)
 		}
-		if err := createControlZebraDirectory(dirPath, func(string) error {
+		if err := createIOFabrikDirectory(dirPath, func(string) error {
 			t.Fatal("existing directory must not be hidden again")
 			return nil
 		}); err != nil {
@@ -34,9 +34,9 @@ func TestControlZebraDirectoryHideFailure(t *testing.T) {
 	})
 
 	t.Run("contents added during failure are preserved", func(t *testing.T) {
-		dirPath := controlZebraDirPath(t.TempDir())
+		dirPath := iofabrikDirPath(t.TempDir())
 		childPath := filepath.Join(dirPath, "keep.txt")
-		err := createControlZebraDirectory(dirPath, func(string) error {
+		err := createIOFabrikDirectory(dirPath, func(string) error {
 			if err := os.WriteFile(childPath, []byte("keep this content"), 0644); err != nil {
 				t.Fatal(err)
 			}
@@ -64,8 +64,8 @@ func TestRepositorySettingsServiceProjectConfig(t *testing.T) {
 	for _, result := range []OperationResult{
 		service.WriteRepoLocalConfig(repoPath, shared),
 		service.WriteRepoPersonalConfig(repoPath, personal),
-		service.EnsureControlZebraDir(repoPath),
-		service.EnsureControlZebraDir(repoPath),
+		service.EnsureIOFabrikDir(repoPath),
+		service.EnsureIOFabrikDir(repoPath),
 	} {
 		if !result.Success {
 			t.Fatal(result.Error)
@@ -81,8 +81,37 @@ func TestRepositorySettingsServiceProjectConfig(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got := string(data); got != "existing-pattern\n.controlzebra/local.json\n" {
+	if got := string(data); got != "existing-pattern\n.iofabrik/local.json\n" {
 		t.Errorf("ignore rules changed unexpectedly: %q", got)
+	}
+}
+
+func TestIOFabrikProjectConfigReadsLegacyAndPrefersCurrent(t *testing.T) {
+	repoPath := t.TempDir()
+	service := &RepositorySettingsService{}
+	writeMigrationFixture(t, filepath.Join(repoPath, ".controlzebra", "config.json"), `{"createdBy":"legacy-user"}`)
+	writeMigrationFixture(t, filepath.Join(repoPath, ".controlzebra", "local.json"), `{"localOnlyMode":true}`)
+	if got := service.ReadRepoLocalConfig(repoPath); got.CreatedBy != "legacy-user" {
+		t.Fatalf("legacy shared configuration was lost: %+v", got)
+	}
+	if got := service.ReadRepoPersonalConfig(repoPath); !got.LocalOnlyMode {
+		t.Fatalf("legacy personal configuration was lost: %+v", got)
+	}
+	if result := service.WriteRepoLocalConfig(repoPath, RepoLocalConfig{CreatedBy: "current-user"}); !result.Success {
+		t.Fatal(result.Error)
+	}
+	if result := service.WriteRepoPersonalConfig(repoPath, RepoPersonalConfig{}); !result.Success {
+		t.Fatal(result.Error)
+	}
+	if got := service.ReadRepoLocalConfig(repoPath); got.CreatedBy != "current-user" {
+		t.Fatalf("legacy configuration replaced current configuration: %+v", got)
+	}
+	if got := service.ReadRepoPersonalConfig(repoPath); got.LocalOnlyMode {
+		t.Fatalf("legacy personal configuration replaced current configuration: %+v", got)
+	}
+	ignore, err := os.ReadFile(filepath.Join(repoPath, ".gitignore"))
+	if err != nil || !strings.Contains(string(ignore), ".iofabrik/local.json") {
+		t.Fatalf("renamed personal settings are not ignored: %q, %v", ignore, err)
 	}
 }
 
@@ -91,7 +120,7 @@ func TestRepositorySettingsServiceProjectDirectoryFailure(t *testing.T) {
 		name string
 		run  func(*RepositorySettingsService, string) OperationResult
 	}{
-		{"ensure", (*RepositorySettingsService).EnsureControlZebraDir},
+		{"ensure", (*RepositorySettingsService).EnsureIOFabrikDir},
 		{"shared_config", func(s *RepositorySettingsService, path string) OperationResult {
 			return s.WriteRepoLocalConfig(path, RepoLocalConfig{})
 		}},
@@ -102,7 +131,7 @@ func TestRepositorySettingsServiceProjectDirectoryFailure(t *testing.T) {
 	for _, operation := range operations {
 		t.Run(operation.name, func(t *testing.T) {
 			repoPath := t.TempDir()
-			dirPath := controlZebraDirPath(repoPath)
+			dirPath := iofabrikDirPath(repoPath)
 			if err := os.WriteFile(dirPath, []byte("keep this file"), 0644); err != nil {
 				t.Fatal(err)
 			}

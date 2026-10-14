@@ -15,7 +15,7 @@ func createTestRepo(t *testing.T) string {
 	t.Helper()
 
 	// Create temp directory
-	tmpDir, err := os.MkdirTemp("", "control-zebra-test-*")
+	tmpDir, err := os.MkdirTemp("", "iofabrik-test-*")
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
 	}
@@ -115,7 +115,7 @@ func createBareRemoteAndLink(t *testing.T, repoPath string) string {
 func createBareRemoteAndLinkWithName(t *testing.T, repoPath string, remoteName string) string {
 	t.Helper()
 
-	remoteDir, err := os.MkdirTemp("", "control-zebra-remote-*.git")
+	remoteDir, err := os.MkdirTemp("", "iofabrik-remote-*.git")
 	if err != nil {
 		t.Fatalf("Failed to create remote temp dir: %v", err)
 	}
@@ -2648,9 +2648,9 @@ func TestConflictResolutionDataReturnsMultipleTrueRegions(t *testing.T) {
 }
 
 func TestParseConflictSegmentsIsStrictAboutGeneratedMarkers(t *testing.T) {
-	currentLabel := "CONTROLZEBRA_CURRENT_test"
-	baseLabel := "CONTROLZEBRA_BASE_test"
-	incomingLabel := "CONTROLZEBRA_INCOMING_test"
+	currentLabel := "IOFABRIK_CURRENT_test"
+	baseLabel := "IOFABRIK_BASE_test"
+	incomingLabel := "IOFABRIK_INCOMING_test"
 	currentMarker := strings.Repeat("<", conflictMarkerSize) + " " + currentLabel
 	baseMarker := strings.Repeat("|", conflictMarkerSize) + " " + baseLabel
 	separator := strings.Repeat("=", conflictMarkerSize)
@@ -2676,7 +2676,7 @@ func TestParseConflictSegmentsIsStrictAboutGeneratedMarkers(t *testing.T) {
 
 func TestGenerateConflictSegmentsRejectsLabelCollision(t *testing.T) {
 	token := strings.Repeat("a", 64)
-	label := "CONTROLZEBRA_CURRENT_" + token[:16]
+	label := "IOFABRIK_CURRENT_" + token[:16]
 	blobs := conflictBlobSet{
 		base:     ConflictBlob{Present: true, Content: "base\n"},
 		current:  ConflictBlob{Present: true, Content: label + "\ncurrent\n"},
@@ -3437,7 +3437,7 @@ func TestStartMergeWithOptions_UsesUpdatedOriginTargetForConflicts(t *testing.T)
 	runGitCmd(t, repoPath, "push", "-u", "origin", "feature/conflict")
 
 	// Advance origin/main in a separate clone with a conflicting change.
-	remoteWorktree, err := os.MkdirTemp("", "control-zebra-origin-main-update-*")
+	remoteWorktree, err := os.MkdirTemp("", "iofabrik-origin-main-update-*")
 	if err != nil {
 		t.Fatalf("Failed to create temp clone directory: %v", err)
 	}
@@ -3510,7 +3510,7 @@ func TestStartMergeWithOptions_PreflightUpdatesStaleTargetFromOrigin(t *testing.
 	runGitCmd(t, repoPath, "push", "-u", "origin", "main")
 	runGitCmd(t, repoPath, "push", "-u", "origin", "feature/fresh")
 
-	remoteWorktree, err := os.MkdirTemp("", "control-zebra-origin-preflight-update-*")
+	remoteWorktree, err := os.MkdirTemp("", "iofabrik-origin-preflight-update-*")
 	if err != nil {
 		t.Fatalf("Failed to create temp clone directory: %v", err)
 	}
@@ -3603,7 +3603,7 @@ func TestStartMergeWithOptions_PreflightUsesPreferredRemoteWhenOriginMissing(t *
 		t.Fatalf("Expected only upstream remote, got: %q", remotes)
 	}
 
-	remoteWorktree, err := os.MkdirTemp("", "control-zebra-upstream-preflight-update-*")
+	remoteWorktree, err := os.MkdirTemp("", "iofabrik-upstream-preflight-update-*")
 	if err != nil {
 		t.Fatalf("Failed to create temp clone directory: %v", err)
 	}
@@ -3656,7 +3656,7 @@ func TestStartMergeWithOptions_PreflightDivergedTargetFailsAndRestoresBranch(t *
 	os.WriteFile(filepath.Join(repoPath, "local-main.txt"), []byte("local divergence\n"), 0644)
 	svc.CommitAll(repoPath, "Local main divergence")
 
-	remoteWorktree, err := os.MkdirTemp("", "control-zebra-origin-diverge-*")
+	remoteWorktree, err := os.MkdirTemp("", "iofabrik-origin-diverge-*")
 	if err != nil {
 		t.Fatalf("Failed to create temp clone directory: %v", err)
 	}
@@ -3939,7 +3939,7 @@ func TestStartMergeWithOptions_Selective_ConflictMergeKeepsOnlySelectedConflicts
 }
 
 // NOTE: TestCheckBranchConflicts_RealRepo was removed - it was used for manual testing
-// with the actual control-zebra repository. The unit tests above cover the functionality.
+// with the actual iofabrik repository. The unit tests above cover the functionality.
 
 // ============================================================================
 // ReadFileAtRevision Tests

@@ -1,6 +1,6 @@
 # Documentation Standards
 
-> How we write and maintain ControlZebra documentation.
+> How we write and maintain IOFabrik documentation.
 
 ## Structure
 

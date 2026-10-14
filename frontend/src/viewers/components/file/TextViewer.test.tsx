@@ -5,7 +5,7 @@ import { clearViewerCache } from '../../registry/viewer-cache';
 import TextViewer from './TextViewer';
 
 const { read, onEvent, unsubscribe } = vi.hoisted(() => ({ read: vi.fn(), onEvent: vi.fn(), unsubscribe: vi.fn() }));
-vi.mock('../../../../bindings/controlzebra/services/filesystemservice', () => ({ ReadTextFile: read }));
+vi.mock('../../../../bindings/iofabrik/services/filesystemservice', () => ({ ReadTextFile: read }));
 vi.mock('../../../shared/runtime/events', () => ({ onEvent }));
 let changed: (event: unknown) => void;
 beforeEach(() => {

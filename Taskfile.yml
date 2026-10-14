@@ -7,7 +7,7 @@ includes:
   linux: ./build/linux/Taskfile.yml
 
 vars:
-  APP_NAME: "control-zebra"
+  APP_NAME: "iofabrik"
   APP_VERSION_FROM_CONFIG:
     sh: |
       awk -F'"' '/^  version:/ { if (NF >= 2) { print $2; exit } }' build/config.yml

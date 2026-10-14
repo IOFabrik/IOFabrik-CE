@@ -17,7 +17,7 @@
  */
 import { memo, useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Cpu, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
-import { ReadTextFile } from '../../../../bindings/controlzebra/services/filesystemservice';
+import { ReadTextFile } from '../../../../bindings/iofabrik/services/filesystemservice';
 import { ICON_SIZES } from '../../../shared/constants';
 import { onEvent } from '../../../shared/runtime/events';
 import type { ViewerProps } from '../../registry/viewer-registry';

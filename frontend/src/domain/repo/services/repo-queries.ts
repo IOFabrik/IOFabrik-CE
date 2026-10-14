@@ -16,7 +16,7 @@ export {
   GetConflictSidesInfo,
   GetBisectState,
   GetGitVersion,
-} from '../../../../bindings/controlzebra/services/gitservice';
+} from '../../../../bindings/iofabrik/services/gitservice';
 
 export {
   IsGHInstalled,
@@ -31,14 +31,14 @@ export {
   FindOpenChangeRequestForBranch,
   RepoList,
   ListUserOrganizations,
-} from '../../../../bindings/controlzebra/services/githubservice';
+} from '../../../../bindings/iofabrik/services/githubservice';
 
 export {
   IsLFSInstalled,
   GetPresetPatterns,
-} from '../../../../bindings/controlzebra/services/lfsservice';
+} from '../../../../bindings/iofabrik/services/lfsservice';
 
 export {
   GetRemotes,
   GetSettings,
-} from '../../../../bindings/controlzebra/services/repositorysettingsservice';
+} from '../../../../bindings/iofabrik/services/repositorysettingsservice';

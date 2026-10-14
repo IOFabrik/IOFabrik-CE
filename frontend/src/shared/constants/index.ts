@@ -1,5 +1,5 @@
 /**
- * Shared constants for the ControlZebra frontend.
+ * Shared constants for the IOFabrik frontend.
  * Centralizes configuration to ensure consistency across components.
  */
 

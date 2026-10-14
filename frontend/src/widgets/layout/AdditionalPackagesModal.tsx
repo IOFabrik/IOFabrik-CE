@@ -27,7 +27,7 @@ function AdditionalPackagesModal(): JSX.Element {
             Preparing required packages
           </DialogTitle>
           <DialogDescription>
-            Checking the supporting tools included with ControlZebra.
+            Checking the supporting tools included with IOFabrik.
           </DialogDescription>
         </DialogHeader>
 

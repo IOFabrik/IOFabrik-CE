@@ -15,7 +15,7 @@ func TestRepositorySettingsServiceHiddenDirectory(t *testing.T) {
 		name string
 		run  func(*RepositorySettingsService, string) OperationResult
 	}{
-		{"ensure", (*RepositorySettingsService).EnsureControlZebraDir},
+		{"ensure", (*RepositorySettingsService).EnsureIOFabrikDir},
 		{"shared_config", func(s *RepositorySettingsService, path string) OperationResult {
 			return s.WriteRepoLocalConfig(path, RepoLocalConfig{AppVersion: "test"})
 		}},
@@ -30,7 +30,7 @@ func TestRepositorySettingsServiceHiddenDirectory(t *testing.T) {
 				if err := os.Mkdir(repoPath, 0755); err != nil {
 					t.Fatal(err)
 				}
-				dirPath := controlZebraDirPath(repoPath)
+				dirPath := iofabrikDirPath(repoPath)
 				var before uint32
 				var childAttrs uint32
 				var nestedAttrs uint32
@@ -81,7 +81,7 @@ func TestRepositorySettingsServiceHiddenDirectory(t *testing.T) {
 					attrs := hiddenTestAttributes(t, dirPath)
 					wantHidden := state != "existing_visible"
 					if gotHidden := attrs&windows.FILE_ATTRIBUTE_HIDDEN != 0; gotHidden != wantHidden {
-						t.Errorf(".controlzebra Hidden attribute: got %v, want %v (%#x)", gotHidden, wantHidden, attrs)
+						t.Errorf(".iofabrik Hidden attribute: got %v, want %v (%#x)", gotHidden, wantHidden, attrs)
 					}
 					if state != "new" && attrs != before {
 						t.Errorf("existing directory attributes changed: before=%#x after=%#x", before, attrs)
@@ -116,10 +116,10 @@ func TestRepositorySettingsServiceHiddenDirectory(t *testing.T) {
 func TestRepositorySettingsServiceUnhiddenDirectory(t *testing.T) {
 	repoPath := t.TempDir()
 	service := &RepositorySettingsService{}
-	if result := service.EnsureControlZebraDir(repoPath); !result.Success {
+	if result := service.EnsureIOFabrikDir(repoPath); !result.Success {
 		t.Fatal(result.Error)
 	}
-	dirPath := controlZebraDirPath(repoPath)
+	dirPath := iofabrikDirPath(repoPath)
 	attrs := hiddenTestAttributes(t, dirPath) &^ windows.FILE_ATTRIBUTE_HIDDEN
 	path, err := windows.UTF16PtrFromString(dirPath)
 	if err != nil {
@@ -129,7 +129,7 @@ func TestRepositorySettingsServiceUnhiddenDirectory(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, result := range []OperationResult{
-		service.EnsureControlZebraDir(repoPath),
+		service.EnsureIOFabrikDir(repoPath),
 		service.WriteRepoLocalConfig(repoPath, RepoLocalConfig{}),
 		service.WriteRepoPersonalConfig(repoPath, RepoPersonalConfig{}),
 	} {

@@ -9,7 +9,7 @@ export interface DataTypeTableProps {
 }
 
 /**
- * ControlZebra-native presentation for Ladder Visualizer's normalized data types.
+ * IOFabrik-native presentation for Ladder Visualizer's normalized data types.
  * Keep its behavior aligned with the package component while using app theme tokens.
  */
 export const DataTypeTable = memo(function DataTypeTable({

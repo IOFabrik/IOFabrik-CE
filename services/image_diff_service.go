@@ -1,4 +1,4 @@
-// Package services provides backend functionality for the ControlZebra application.
+// Package services provides backend functionality for the IOFabrik application.
 // This file contains the ImageDiffService which provides visual image diff
 // comparison between git revisions using pixel-level comparison via imgdiff.
 package services

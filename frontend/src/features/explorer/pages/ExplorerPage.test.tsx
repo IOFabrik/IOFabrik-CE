@@ -30,7 +30,7 @@ vi.mock('../../../context', () => ({
   useLayout: () => layoutStore.current,
 }));
 
-vi.mock('../../../../bindings/controlzebra/services/filedialogservice', () => ({
+vi.mock('../../../../bindings/iofabrik/services/filedialogservice', () => ({
   OpenFolderDialog: vi.fn(),
 }));
 

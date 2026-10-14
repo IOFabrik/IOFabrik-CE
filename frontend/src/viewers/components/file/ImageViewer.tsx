@@ -30,7 +30,7 @@ import {
 } from 'lucide-react';
 import { onEvent } from '../../../shared/runtime/events';
 import { ICON_SIZES } from '../../../shared/constants';
-import { ReadFileBase64 } from '../../../../bindings/controlzebra/services/filesystemservice';
+import { ReadFileBase64 } from '../../../../bindings/iofabrik/services/filesystemservice';
 import type { ViewerProps } from '../../registry/viewer-registry';
 import { formatFileSize, CHECKERBOARD_STYLE, ToolbarIcon } from './image-utils';
 import { getPathFileName } from '../shared/path-utils';

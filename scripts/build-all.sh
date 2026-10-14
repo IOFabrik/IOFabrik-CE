@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# build-all.sh — Build ControlZebra for macOS & Windows (ARM64 + AMD64)
+# build-all.sh — Build IOFabrik for macOS & Windows (ARM64 + AMD64)
 #
 # This script orchestrates a full multi-platform release build:
 #   1. Downloads optional macOS CLI deps for app-bundle embedding
@@ -48,7 +48,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$ROOT_DIR"
 
-APP_NAME="control-zebra"
+APP_NAME="iofabrik"
 BIN_DIR="bin"
 DEPS_DIR="build/deps"
 
@@ -114,7 +114,7 @@ fi
 
 echo ""
 echo -e "${BOLD}╔══════════════════════════════════════════════════════╗${NC}"
-echo -e "${BOLD}║  ControlZebra Multi-Platform Build  v${VERSION}          ║${NC}"
+echo -e "${BOLD}║  IOFabrik Multi-Platform Build  v${VERSION}          ║${NC}"
 echo -e "${BOLD}╚══════════════════════════════════════════════════════╝${NC}"
 echo ""
 echo -e "  Platforms: ${BOLD}${PLATFORMS[*]}${NC}"
@@ -408,7 +408,7 @@ if ! $SKIP_PACKAGE; then
             nsis_version="${nsis_version%%-*}"
             nsis_version="${nsis_version%%+*}"
             makensis \
-                -DCZ_TOOLS_DIR="${ROOT_DIR}/build/deps/windows-${arch}" \
+                -DIOFABRIK_TOOLS_DIR="${ROOT_DIR}/build/deps/windows-${arch}" \
                 -DINFO_PRODUCTVERSION="$nsis_version" \
                 -DARG_WAILS_${NSIS_ARCH_FLAG}_BINARY="${ROOT_DIR}/${staging_dir}/${APP_NAME}.exe" \
                 build/windows/nsis/project.nsi

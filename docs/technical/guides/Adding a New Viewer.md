@@ -112,7 +112,7 @@ interface ViewerProps {
 
 To read file content, use the [FileSystemService](../backend/services/FileSystemService.md) bindings:
 ```tsx
-import { ReadTextFile, ReadFileBase64 } from '../../../bindings/controlzebra/services/filesystemservice';
+import { ReadTextFile, ReadFileBase64 } from '../../../bindings/iofabrik/services/filesystemservice';
 ```
 
 ## Checklist

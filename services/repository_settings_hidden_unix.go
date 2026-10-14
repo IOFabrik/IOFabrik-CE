@@ -3,6 +3,6 @@
 package services
 
 // The dot-prefixed name already hides this directory on macOS and Linux.
-func hideControlZebraDirectory(_ string) error {
+func hideIOFabrikDirectory(_ string) error {
 	return nil
 }

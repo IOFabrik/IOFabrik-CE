@@ -19,7 +19,7 @@ import * as $models from "./models.js";
  * Runs: git am --abort
  */
 export function AbortAM(repoPath: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(3254738718, repoPath).then(($result: any) => {
+    return $Call.ByID(1257821888, repoPath).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -29,7 +29,7 @@ export function AbortAM(repoPath: string): $CancellablePromise<$models.Operation
  * Runs: git bisect reset
  */
 export function AbortBisect(repoPath: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(960387302, repoPath).then(($result: any) => {
+    return $Call.ByID(4239617908, repoPath).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -39,7 +39,7 @@ export function AbortBisect(repoPath: string): $CancellablePromise<$models.Opera
  * Runs: git cherry-pick --abort
  */
 export function AbortCherryPick(repoPath: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(3790816276, repoPath).then(($result: any) => {
+    return $Call.ByID(2544474378, repoPath).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -49,7 +49,7 @@ export function AbortCherryPick(repoPath: string): $CancellablePromise<$models.O
  * This is a convenience method that detects the state and calls the appropriate abort.
  */
 export function AbortCurrentOperation(repoPath: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(4067841994, repoPath).then(($result: any) => {
+    return $Call.ByID(1564805796, repoPath).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -60,7 +60,7 @@ export function AbortCurrentOperation(repoPath: string): $CancellablePromise<$mo
  * Handles both regular merges (MERGE_HEAD) and squash merges (SQUASH_MSG).
  */
 export function AbortMerge(repoPath: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(3116495328, repoPath).then(($result: any) => {
+    return $Call.ByID(1746677326, repoPath).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -70,7 +70,7 @@ export function AbortMerge(repoPath: string): $CancellablePromise<$models.Operat
  * Runs: git revert --abort
  */
 export function AbortRevert(repoPath: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(409655226, repoPath).then(($result: any) => {
+    return $Call.ByID(779170144, repoPath).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -80,7 +80,7 @@ export function AbortRevert(repoPath: string): $CancellablePromise<$models.Opera
  * Equivalent to: git add <path>
  */
 export function Add(repoPath: string, path: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(3982870129, repoPath, path).then(($result: any) => {
+    return $Call.ByID(1581331647, repoPath, path).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -90,7 +90,7 @@ export function Add(repoPath: string, path: string): $CancellablePromise<$models
  * Equivalent to: git add .
  */
 export function AddAll(repoPath: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(2458942728, repoPath).then(($result: any) => {
+    return $Call.ByID(1761842090, repoPath).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -100,7 +100,7 @@ export function AddAll(repoPath: string): $CancellablePromise<$models.OperationR
  * Equivalent to: git add -- <paths...>
  */
 export function AddFiles(repoPath: string, paths: string[]): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(3432617964, repoPath, paths).then(($result: any) => {
+    return $Call.ByID(2702396646, repoPath, paths).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -110,7 +110,7 @@ export function AddFiles(repoPath: string, paths: string[]): $CancellablePromise
  * Uses concurrent goroutines to fetch current, local, and remote branches in parallel
  */
 export function Branches(repoPath: string): $CancellablePromise<$models.BranchList> {
-    return $Call.ByID(2996696402, repoPath).then(($result: any) => {
+    return $Call.ByID(3514993576, repoPath).then(($result: any) => {
         return $$createType1($result);
     });
 }
@@ -143,7 +143,7 @@ export function Branches(repoPath: string): $CancellablePromise<$models.BranchLi
  *   - BranchConflictCheckResult with conflict information
  */
 export function CheckBranchConflicts(repoPath: string, targetBranch: string, ...sourceBranch: string[]): $CancellablePromise<$models.BranchConflictCheckResult> {
-    return $Call.ByID(7778489, repoPath, targetBranch, sourceBranch).then(($result: any) => {
+    return $Call.ByID(2351781399, repoPath, targetBranch, sourceBranch).then(($result: any) => {
         return $$createType2($result);
     });
 }
@@ -152,7 +152,7 @@ export function CheckBranchConflicts(repoPath: string, targetBranch: string, ...
  * CheckForStaleLocks returns a list of any lock files found in .git directory.
  */
 export function CheckForStaleLocks(repoPath: string): $CancellablePromise<string[]> {
-    return $Call.ByID(2124716010, repoPath).then(($result: any) => {
+    return $Call.ByID(2385205872, repoPath).then(($result: any) => {
         return $$createType3($result);
     });
 }
@@ -163,7 +163,7 @@ export function CheckForStaleLocks(repoPath: string): $CancellablePromise<string
  * a process crashes or is interrupted.
  */
 export function CheckLockFile(repoPath: string): $CancellablePromise<$models.LockFileInfo> {
-    return $Call.ByID(2390930803, repoPath).then(($result: any) => {
+    return $Call.ByID(4209163741, repoPath).then(($result: any) => {
         return $$createType4($result);
     });
 }
@@ -174,7 +174,7 @@ export function CheckLockFile(repoPath: string): $CancellablePromise<$models.Loc
  * Equivalent to: git checkout <ref>
  */
 export function Checkout(repoPath: string, ref: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(254446414, repoPath, ref).then(($result: any) => {
+    return $Call.ByID(2705527760, repoPath, ref).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -184,7 +184,7 @@ export function Checkout(repoPath: string, ref: string): $CancellablePromise<$mo
  * Fails if there are uncommitted changes to prevent accidental loss.
  */
 export function CheckoutBranch(repoPath: string, branchName: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(272806078, repoPath, branchName).then(($result: any) => {
+    return $Call.ByID(338405504, repoPath, branchName).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -195,7 +195,7 @@ export function CheckoutBranch(repoPath: string, branchName: string): $Cancellab
  * Equivalent to: git checkout -b <branch>
  */
 export function CheckoutNewBranch(repoPath: string, branchName: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(2751510696, repoPath, branchName).then(($result: any) => {
+    return $Call.ByID(2691560830, repoPath, branchName).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -206,7 +206,7 @@ export function CheckoutNewBranch(repoPath: string, branchName: string): $Cancel
  * Equivalent to: git clean -fd
  */
 export function Clean(repoPath: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(1402270439, repoPath).then(($result: any) => {
+    return $Call.ByID(2255109389, repoPath).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -216,7 +216,7 @@ export function Clean(repoPath: string): $CancellablePromise<$models.OperationRe
  * Equivalent to: git clean -fdn
  */
 export function CleanDryRun(repoPath: string): $CancellablePromise<string[]> {
-    return $Call.ByID(3917172525, repoPath).then(($result: any) => {
+    return $Call.ByID(2863610719, repoPath).then(($result: any) => {
         return $$createType3($result);
     });
 }
@@ -226,7 +226,7 @@ export function CleanDryRun(repoPath: string): $CancellablePromise<string[]> {
  * used when a previously selected request is merged or closed upstream.
  */
 export function ClearChangeRequestSnapshot(repoPath: string, $number: number): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(314593484, repoPath, $number).then(($result: any) => {
+    return $Call.ByID(3054691234, repoPath, $number).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -237,7 +237,7 @@ export function ClearChangeRequestSnapshot(repoPath: string, $number: number): $
  * leaves refs behind that anchor objects indefinitely.
  */
 export function ClearChangeRequestSnapshots(repoPath: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(1136598189, repoPath).then(($result: any) => {
+    return $Call.ByID(1891410435, repoPath).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -248,7 +248,7 @@ export function ClearChangeRequestSnapshots(repoPath: string): $CancellablePromi
  * Equivalent to: git commit -m <message>
  */
 export function Commit(repoPath: string, message: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(1270424519, repoPath, message).then(($result: any) => {
+    return $Call.ByID(3106433105, repoPath, message).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -259,7 +259,7 @@ export function Commit(repoPath: string, message: string): $CancellablePromise<$
  * For finer control, use AddAll() and Commit() separately.
  */
 export function CommitAll(repoPath: string, message: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(2762480610, repoPath, message).then(($result: any) => {
+    return $Call.ByID(1248234152, repoPath, message).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -269,7 +269,7 @@ export function CommitAll(repoPath: string, message: string): $CancellablePromis
  * Supports both regular merges (MERGE_HEAD) and squash merges (SQUASH_MSG).
  */
 export function CompleteMerge(repoPath: string, message: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(370211995, repoPath, message).then(($result: any) => {
+    return $Call.ByID(1013336825, repoPath, message).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -283,7 +283,7 @@ export function CompleteMerge(repoPath: string, message: string): $CancellablePr
  * for squash merges. This method is kept public for backward compatibility.
  */
 export function CompleteSquashMerge(repoPath: string, message: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(3207029892, repoPath, message).then(($result: any) => {
+    return $Call.ByID(990971922, repoPath, message).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -293,7 +293,7 @@ export function CompleteSquashMerge(repoPath: string, message: string): $Cancell
  * Runs: git cherry-pick --continue
  */
 export function ContinueCherryPick(repoPath: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(1951010683, repoPath).then(($result: any) => {
+    return $Call.ByID(3523399249, repoPath).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -303,7 +303,7 @@ export function ContinueCherryPick(repoPath: string): $CancellablePromise<$model
  * Runs: git revert --continue
  */
 export function ContinueRevert(repoPath: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(2514630157, repoPath).then(($result: any) => {
+    return $Call.ByID(2580714627, repoPath).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -313,7 +313,7 @@ export function ContinueRevert(repoPath: string): $CancellablePromise<$models.Op
  * Fails if there are uncommitted changes or if the branch name is invalid.
  */
 export function CreateBranchAndCheckout(repoPath: string, branchName: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(2251096979, repoPath, branchName).then(($result: any) => {
+    return $Call.ByID(3893376157, repoPath, branchName).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -323,7 +323,7 @@ export function CreateBranchAndCheckout(repoPath: string, branchName: string): $
  * This saves the user's work by attaching it to a named branch.
  */
 export function CreateBranchFromDetached(repoPath: string, branchName: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(2050814244, repoPath, branchName).then(($result: any) => {
+    return $Call.ByID(1567449254, repoPath, branchName).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -333,7 +333,7 @@ export function CreateBranchFromDetached(repoPath: string, branchName: string): 
  * Requires confirm=true as a safety measure.
  */
 export function DeleteBranch(repoPath: string, branchName: string, confirm: boolean): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(3038471925, repoPath, branchName, confirm).then(($result: any) => {
+    return $Call.ByID(3008481535, repoPath, branchName, confirm).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -342,7 +342,7 @@ export function DeleteBranch(repoPath: string, branchName: string, confirm: bool
  * DetectRepo checks if the given path is a git repository
  */
 export function DetectRepo(path: string): $CancellablePromise<$models.RepoInfo> {
-    return $Call.ByID(2256312149, path).then(($result: any) => {
+    return $Call.ByID(2184584787, path).then(($result: any) => {
         return $$createType5($result);
     });
 }
@@ -351,13 +351,13 @@ export function DetectRepo(path: string): $CancellablePromise<$models.RepoInfo> 
  * DiffCommitFileRaw returns the raw unified diff text for a specific file in a commit
  */
 export function DiffCommitFileRaw(repoPath: string, hash: string, filePath: string): $CancellablePromise<$models.RawDiffResult> {
-    return $Call.ByID(3273729992, repoPath, hash, filePath).then(($result: any) => {
+    return $Call.ByID(3381989266, repoPath, hash, filePath).then(($result: any) => {
         return $$createType6($result);
     });
 }
 
 export function DiffMergeReviewFileRaw(repoPath: string, targetBranch: string, sourceBranch: string, filePath: string): $CancellablePromise<$models.RawDiffResult> {
-    return $Call.ByID(2755065833, repoPath, targetBranch, sourceBranch, filePath).then(($result: any) => {
+    return $Call.ByID(3724123451, repoPath, targetBranch, sourceBranch, filePath).then(($result: any) => {
         return $$createType6($result);
     });
 }
@@ -367,7 +367,7 @@ export function DiffMergeReviewFileRaw(repoPath: string, targetBranch: string, s
  * This is designed to be consumed by react-diff-view's parseDiff function
  */
 export function DiffWorkingRaw(repoPath: string, filePath: string): $CancellablePromise<$models.RawDiffResult> {
-    return $Call.ByID(97595618, repoPath, filePath).then(($result: any) => {
+    return $Call.ByID(2385466092, repoPath, filePath).then(($result: any) => {
         return $$createType6($result);
     });
 }
@@ -380,7 +380,7 @@ export function DiffWorkingRaw(repoPath: string, filePath: string): $Cancellable
  * For finer control, use those methods separately.
  */
 export function DiscardAll(repoPath: string, confirm: boolean): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(4274134007, repoPath, confirm).then(($result: any) => {
+    return $Call.ByID(1318297093, repoPath, confirm).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -393,7 +393,7 @@ export function DiscardAll(repoPath: string, confirm: boolean): $CancellableProm
  * For finer control, use those methods separately.
  */
 export function DiscardFile(repoPath: string, filePath: string, confirm: boolean): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(1158166522, repoPath, filePath, confirm).then(($result: any) => {
+    return $Call.ByID(464394272, repoPath, filePath, confirm).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -411,7 +411,7 @@ export function DiscardFile(repoPath: string, filePath: string, confirm: boolean
  * old side of an addition and the new side of a deletion.
  */
 export function EnsureChangeRequestFileContent(repoPath: string, oldRef: string, oldPath: string, newRef: string, newPath: string): $CancellablePromise<$models.ChangeRequestFileContentResult> {
-    return $Call.ByID(4028858380, repoPath, oldRef, oldPath, newRef, newPath).then(($result: any) => {
+    return $Call.ByID(2627836410, repoPath, oldRef, oldPath, newRef, newPath).then(($result: any) => {
         return $$createType7($result);
     });
 }
@@ -432,7 +432,7 @@ export function EnsureChangeRequestFileContent(repoPath: string, oldRef: string,
  * branch, so equality checking would report snapshot_stale on most opens.
  */
 export function EnsureChangeRequestSnapshotsLocal(repoPath: string, $number: number, baseRefName: string, expectedHeadOID: string, isCrossRepository: boolean): $CancellablePromise<$models.ChangeRequestSnapshotResult> {
-    return $Call.ByID(688737465, repoPath, $number, baseRefName, expectedHeadOID, isCrossRepository).then(($result: any) => {
+    return $Call.ByID(1121982635, repoPath, $number, baseRefName, expectedHeadOID, isCrossRepository).then(($result: any) => {
         return $$createType8($result);
     });
 }
@@ -444,7 +444,7 @@ export function EnsureChangeRequestSnapshotsLocal(repoPath: string, $number: num
  * file contents at those revisions.
  */
 export function EnsureLFSForRefs(repoPath: string, filePath: string, ...refs: string[]): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(561837188, repoPath, filePath, refs).then(($result: any) => {
+    return $Call.ByID(1300066786, repoPath, filePath, refs).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -455,7 +455,7 @@ export function EnsureLFSForRefs(repoPath: string, filePath: string, ...refs: st
  * still be used for non-LFS files.
  */
 export function EnsureOriginLFSForRef(repoPath: string, ref: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(1935629521, repoPath, ref).then(($result: any) => {
+    return $Call.ByID(2500297063, repoPath, ref).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -465,7 +465,7 @@ export function EnsureOriginLFSForRef(repoPath: string, ref: string): $Cancellab
  * Equivalent to: git fetch [remote] [branch]
  */
 export function Fetch(repoPath: string, remote: string, branch: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(94614478, repoPath, remote, branch).then(($result: any) => {
+    return $Call.ByID(3185812572, repoPath, remote, branch).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -475,7 +475,7 @@ export function Fetch(repoPath: string, remote: string, branch: string): $Cancel
  * Equivalent to: git fetch --all
  */
 export function FetchAll(repoPath: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(919354909, repoPath).then(($result: any) => {
+    return $Call.ByID(165231687, repoPath).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -484,7 +484,7 @@ export function FetchAll(repoPath: string): $CancellablePromise<$models.Operatio
  * GetBisectState returns information about the current bisect session.
  */
 export function GetBisectState(repoPath: string): $CancellablePromise<{ [_ in string]?: any }> {
-    return $Call.ByID(3805468497, repoPath).then(($result: any) => {
+    return $Call.ByID(492372479, repoPath).then(($result: any) => {
         return $$createType9($result);
     });
 }
@@ -493,13 +493,13 @@ export function GetBisectState(repoPath: string): $CancellablePromise<{ [_ in st
  * GetCommitGraph returns commits with parent references and branch/tag info for graph visualization
  */
 export function GetCommitGraph(repoPath: string, limit: number): $CancellablePromise<$models.CommitGraphResult> {
-    return $Call.ByID(3628939361, repoPath, limit).then(($result: any) => {
+    return $Call.ByID(2306091647, repoPath, limit).then(($result: any) => {
         return $$createType10($result);
     });
 }
 
 export function GetConflictResolutionData(repoPath: string, filePath: string): $CancellablePromise<$models.ConflictResolutionData> {
-    return $Call.ByID(833720214, repoPath, filePath).then(($result: any) => {
+    return $Call.ByID(2137015968, repoPath, filePath).then(($result: any) => {
         return $$createType11($result);
     });
 }
@@ -512,7 +512,7 @@ export function GetConflictResolutionData(repoPath: string, filePath: string): $
  *   - parentBranch: The branch being merged from (theirs)
  */
 export function GetConflictSidesInfo(repoPath: string, parentBranch: string): $CancellablePromise<$models.ConflictSidesInfo> {
-    return $Call.ByID(428205696, repoPath, parentBranch).then(($result: any) => {
+    return $Call.ByID(364789014, repoPath, parentBranch).then(($result: any) => {
         return $$createType12($result);
     });
 }
@@ -521,7 +521,7 @@ export function GetConflictSidesInfo(repoPath: string, parentBranch: string): $C
  * GetConflictedFiles returns a list of files with merge conflicts.
  */
 export function GetConflictedFiles(repoPath: string): $CancellablePromise<$models.ConflictedFile[]> {
-    return $Call.ByID(484033912, repoPath).then(($result: any) => {
+    return $Call.ByID(1124214106, repoPath).then(($result: any) => {
         return $$createType14($result);
     });
 }
@@ -531,7 +531,7 @@ export function GetConflictedFiles(repoPath: string): $CancellablePromise<$model
  * Returns empty string if in detached HEAD state.
  */
 export function GetCurrentBranch(repoPath: string): $CancellablePromise<string> {
-    return $Call.ByID(935044367, repoPath);
+    return $Call.ByID(900445349, repoPath);
 }
 
 /**
@@ -541,7 +541,7 @@ export function GetCurrentBranch(repoPath: string): $CancellablePromise<string> 
  * HEAD, HEAD~N, etc.
  */
 export function GetFileAtRevisionBase64(repoPath: string, filePath: string, revision: string): $CancellablePromise<$models.FileBase64Result> {
-    return $Call.ByID(2465511231, repoPath, filePath, revision).then(($result: any) => {
+    return $Call.ByID(1055253069, repoPath, filePath, revision).then(($result: any) => {
         return $$createType15($result);
     });
 }
@@ -551,7 +551,7 @@ export function GetFileAtRevisionBase64(repoPath: string, filePath: string, revi
  * Used to determine feature compatibility (e.g., git restore requires 2.23+).
  */
 export function GetGitVersion(): $CancellablePromise<$models.GitVersion | null> {
-    return $Call.ByID(2885829042).then(($result: any) => {
+    return $Call.ByID(2970963900).then(($result: any) => {
         return $$createType17($result);
     });
 }
@@ -561,7 +561,7 @@ export function GetGitVersion(): $CancellablePromise<$models.GitVersion | null> 
  * Checks for: merge, rebase, cherry-pick, revert, bisect, AM, detached HEAD, and stale locks.
  */
 export function GetMergeState(repoPath: string): $CancellablePromise<$models.MergeState> {
-    return $Call.ByID(844598379, repoPath).then(($result: any) => {
+    return $Call.ByID(1215814305, repoPath).then(($result: any) => {
         return $$createType18($result);
     });
 }
@@ -576,7 +576,7 @@ export function GetMergeState(repoPath: string): $CancellablePromise<$models.Mer
  * Returns the detected parent branch name and the source of detection.
  */
 export function GetParentBranch(repoPath: string): $CancellablePromise<$models.ParentBranchResult> {
-    return $Call.ByID(1659162422, repoPath).then(($result: any) => {
+    return $Call.ByID(3624278064, repoPath).then(($result: any) => {
         return $$createType19($result);
     });
 }
@@ -585,7 +585,7 @@ export function GetParentBranch(repoPath: string): $CancellablePromise<$models.P
  * GetRecentCommits returns recent commits from the repository
  */
 export function GetRecentCommits(repoPath: string, limit: number): $CancellablePromise<$models.CommitInfo[]> {
-    return $Call.ByID(4130048517, repoPath, limit).then(($result: any) => {
+    return $Call.ByID(3126670883, repoPath, limit).then(($result: any) => {
         return $$createType21($result);
     });
 }
@@ -596,21 +596,21 @@ export function GetRecentCommits(repoPath: string, limit: number): $CancellableP
  * Returns empty string when no remotes are configured.
  */
 export function GetRemoteURL(repoPath: string): $CancellablePromise<string> {
-    return $Call.ByID(3646388877, repoPath);
+    return $Call.ByID(3171202055, repoPath);
 }
 
 /**
  * HasChanges returns true if the repository has uncommitted changes.
  */
 export function HasChanges(repoPath: string): $CancellablePromise<boolean> {
-    return $Call.ByID(2297511263, repoPath);
+    return $Call.ByID(3421466853, repoPath);
 }
 
 /**
  * HasStagedChanges returns true if there are staged (but uncommitted) changes.
  */
 export function HasStagedChanges(repoPath: string): $CancellablePromise<boolean> {
-    return $Call.ByID(2014791321, repoPath);
+    return $Call.ByID(291786143, repoPath);
 }
 
 /**
@@ -619,7 +619,7 @@ export function HasStagedChanges(repoPath: string): $CancellablePromise<boolean>
  * Returns an error if the path is already a Git repository.
  */
 export function InitRepo(path: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(930497596, path).then(($result: any) => {
+    return $Call.ByID(3809505018, path).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -629,7 +629,7 @@ export function InitRepo(path: string): $CancellablePromise<$models.OperationRes
  * Creates the directory if it doesn't exist, runs git init, then git lfs install.
  */
 export function InitRepoWithLFS(path: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(2769753051, path).then(($result: any) => {
+    return $Call.ByID(2893424321, path).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -638,11 +638,11 @@ export function InitRepoWithLFS(path: string): $CancellablePromise<$models.Opera
  * IsDetachedHead checks if the repository is in a detached HEAD state.
  */
 export function IsDetachedHead(repoPath: string): $CancellablePromise<boolean> {
-    return $Call.ByID(2286894754, repoPath);
+    return $Call.ByID(1202439012, repoPath);
 }
 
 export function ListMergeReviewFiles(repoPath: string, targetBranch: string, sourceBranch: string): $CancellablePromise<$models.MergeReviewFile[]> {
-    return $Call.ByID(2838372817, repoPath, targetBranch, sourceBranch).then(($result: any) => {
+    return $Call.ByID(2807147219, repoPath, targetBranch, sourceBranch).then(($result: any) => {
         return $$createType23($result);
     });
 }
@@ -652,7 +652,7 @@ export function ListMergeReviewFiles(repoPath: string, targetBranch: string, sou
  * Runs: git add <path>
  */
 export function MarkResolved(repoPath: string, filePath: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(1152182123, repoPath, filePath).then(($result: any) => {
+    return $Call.ByID(3236925789, repoPath, filePath).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -662,7 +662,7 @@ export function MarkResolved(repoPath: string, filePath: string): $CancellablePr
  * Equivalent to: git mv <source> <destination>
  */
 export function MoveFile(repoPath: string, source: string, destination: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(3955727001, repoPath, source, destination).then(($result: any) => {
+    return $Call.ByID(1288214839, repoPath, source, destination).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -672,7 +672,7 @@ export function MoveFile(repoPath: string, source: string, destination: string):
  * does not use locally cached remote-tracking refs or a preferred-remote fallback.
  */
 export function OriginRemoteBranches(repoPath: string): $CancellablePromise<$models.RemoteBranch[]> {
-    return $Call.ByID(2407226354, repoPath).then(($result: any) => {
+    return $Call.ByID(565200448, repoPath).then(($result: any) => {
         return $$createType25($result);
     });
 }
@@ -681,21 +681,21 @@ export function OriginRemoteBranches(repoPath: string): $CancellablePromise<$mod
  * OriginRemoteURL returns origin's URL and never falls back to another remote.
  */
 export function OriginRemoteURL(repoPath: string): $CancellablePromise<string> {
-    return $Call.ByID(1438912467, repoPath);
+    return $Call.ByID(113100885, repoPath);
 }
 
 /**
  * OriginTrackingUpstream verifies that branch tracks its same-named origin branch.
  */
 export function OriginTrackingUpstream(repoPath: string, branch: string): $CancellablePromise<[string, boolean]> {
-    return $Call.ByID(860446192, repoPath, branch);
+    return $Call.ByID(3306383750, repoPath, branch);
 }
 
 /**
  * Pull fetches and merges changes from the remote
  */
 export function Pull(repoPath: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(1098588353, repoPath).then(($result: any) => {
+    return $Call.ByID(1580597355, repoPath).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -704,7 +704,7 @@ export function Pull(repoPath: string): $CancellablePromise<$models.OperationRes
  * Push pushes local commits to the remote
  */
 export function Push(repoPath: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(1132982234, repoPath).then(($result: any) => {
+    return $Call.ByID(1482638592, repoPath).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -716,18 +716,17 @@ export function Push(repoPath: string): $CancellablePromise<$models.OperationRes
  * For working tree content, use os.ReadFile directly instead.
  */
 export function ReadFileAtRevision(repoPath: string, filePath: string, revision: string): $CancellablePromise<$models.FileContentResult> {
-    return $Call.ByID(2435261556, repoPath, filePath, revision).then(($result: any) => {
+    return $Call.ByID(3100954298, repoPath, filePath, revision).then(($result: any) => {
         return $$createType26($result);
     });
 }
 
 /**
- * ReadFileAtRevisionLarge is the same as ReadFileAtRevision but with a longer
- * timeout for large files (e.g. L5X files that can be several megabytes).
- * Uses a 2-minute timeout instead of the default 30 seconds.
+ * ReadFileAtRevisionLarge reads viewer text with a 2-minute timeout and the
+ * same size limit as working-tree text reads (including resolved LFS content).
  */
 export function ReadFileAtRevisionLarge(repoPath: string, filePath: string, revision: string): $CancellablePromise<$models.FileContentResult> {
-    return $Call.ByID(2397397827, repoPath, filePath, revision).then(($result: any) => {
+    return $Call.ByID(681730373, repoPath, filePath, revision).then(($result: any) => {
         return $$createType26($result);
     });
 }
@@ -737,7 +736,7 @@ export function ReadFileAtRevisionLarge(repoPath: string, filePath: string, revi
  * This is a convenience method that removes all known lock files at once.
  */
 export function RemoveAllStaleLocks(repoPath: string, confirm: boolean): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(2318621430, repoPath, confirm).then(($result: any) => {
+    return $Call.ByID(913971060, repoPath, confirm).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -747,7 +746,7 @@ export function RemoveAllStaleLocks(repoPath: string, confirm: boolean): $Cancel
  * Equivalent to: git rm <path>
  */
 export function RemoveFile(repoPath: string, path: string, cached: boolean): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(1703072200, repoPath, path, cached).then(($result: any) => {
+    return $Call.ByID(2812262242, repoPath, path, cached).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -761,7 +760,7 @@ export function RemoveFile(repoPath: string, path: string, cached: boolean): $Ca
  * Removing a lock file while another Git process is running can cause corruption.
  */
 export function RemoveLockFile(repoPath: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(4110976079, repoPath).then(($result: any) => {
+    return $Call.ByID(580652469, repoPath).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -771,7 +770,7 @@ export function RemoveLockFile(repoPath: string): $CancellablePromise<$models.Op
  * This is a potentially dangerous operation - requires confirmation.
  */
 export function RemoveStaleLock(repoPath: string, lockFile: string, confirm: boolean): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(764376340, repoPath, lockFile, confirm).then(($result: any) => {
+    return $Call.ByID(2468586510, repoPath, lockFile, confirm).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -783,7 +782,7 @@ export function RemoveStaleLock(repoPath: string, lockFile: string, confirm: boo
  * Requires confirm=true as a safety measure.
  */
 export function RenameBranch(repoPath: string, oldName: string, newName: string, confirm: boolean): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(3714449276, repoPath, oldName, newName, confirm).then(($result: any) => {
+    return $Call.ByID(44916598, repoPath, oldName, newName, confirm).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -794,7 +793,7 @@ export function RenameBranch(repoPath: string, oldName: string, newName: string,
  * Equivalent to: git reset --hard <ref>
  */
 export function ResetHard(repoPath: string, ref: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(58112180, repoPath, ref).then(($result: any) => {
+    return $Call.ByID(2855673062, repoPath, ref).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -807,7 +806,7 @@ export function ResetHard(repoPath: string, ref: string): $CancellablePromise<$m
  * For finer control, use ResetHard() and Clean() separately.
  */
 export function ResetHardHead(repoPath: string, confirm: boolean): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(348508294, repoPath, confirm).then(($result: any) => {
+    return $Call.ByID(3346568944, repoPath, confirm).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -818,7 +817,7 @@ export function ResetHardHead(repoPath: string, confirm: boolean): $CancellableP
  * Equivalent to: git reset <ref>
  */
 export function ResetMixed(repoPath: string, ref: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(509754688, repoPath, ref).then(($result: any) => {
+    return $Call.ByID(2714129170, repoPath, ref).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -828,7 +827,7 @@ export function ResetMixed(repoPath: string, ref: string): $CancellablePromise<$
  * Equivalent to: git reset --soft <ref>
  */
 export function ResetSoft(repoPath: string, ref: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(2939470669, repoPath, ref).then(($result: any) => {
+    return $Call.ByID(1665706815, repoPath, ref).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -840,7 +839,7 @@ export function ResetSoft(repoPath: string, ref: string): $CancellablePromise<$m
  * This is a wrapper around ResetSoft() with validation.
  */
 export function ResetSoftHead(repoPath: string, n: number, confirm: boolean): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(2645939291, repoPath, n, confirm).then(($result: any) => {
+    return $Call.ByID(370250501, repoPath, n, confirm).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -852,7 +851,7 @@ export function ResetSoftHead(repoPath: string, n: number, confirm: boolean): $C
  * For example: file.txt becomes incoming version, file_COPY_20260115_143052.txt is local version.
  */
 export function ResolveConflictKeepBoth(repoPath: string, filePath: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(1635013574, repoPath, filePath).then(($result: any) => {
+    return $Call.ByID(1793390956, repoPath, filePath).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -862,7 +861,7 @@ export function ResolveConflictKeepBoth(repoPath: string, filePath: string): $Ca
  * Runs: git checkout --ours <path> && git add <path>
  */
 export function ResolveConflictKeepOurs(repoPath: string, filePath: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(1586716466, repoPath, filePath).then(($result: any) => {
+    return $Call.ByID(3679402372, repoPath, filePath).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -872,13 +871,13 @@ export function ResolveConflictKeepOurs(repoPath: string, filePath: string): $Ca
  * Runs: git checkout --theirs <path> && git add <path>
  */
 export function ResolveConflictKeepTheirs(repoPath: string, filePath: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(3794143328, repoPath, filePath).then(($result: any) => {
+    return $Call.ByID(3654139870, repoPath, filePath).then(($result: any) => {
         return $$createType0($result);
     });
 }
 
 export function ResolveConflictWithContent(repoPath: string, filePath: string, resolutionToken: string, content: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(3916318693, repoPath, filePath, resolutionToken, content).then(($result: any) => {
+    return $Call.ByID(3171830015, repoPath, filePath, resolutionToken, content).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -889,7 +888,7 @@ export function ResolveConflictWithContent(repoPath: string, filePath: string, r
  * full file text, and the resolved document is never rebuilt on every render.
  */
 export function ResolveConflictWithDecisions(repoPath: string, filePath: string, resolutionToken: string, decisions: $models.ConflictDecision[]): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(3281313503, repoPath, filePath, resolutionToken, decisions).then(($result: any) => {
+    return $Call.ByID(1206575045, repoPath, filePath, resolutionToken, decisions).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -900,7 +899,7 @@ export function ResolveConflictWithDecisions(repoPath: string, filePath: string,
  * Equivalent to: git restore <path> (Git 2.23+) or git checkout -- <path>
  */
 export function Restore(repoPath: string, path: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(1606765776, repoPath, path).then(($result: any) => {
+    return $Call.ByID(4033060750, repoPath, path).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -911,7 +910,7 @@ export function Restore(repoPath: string, path: string): $CancellablePromise<$mo
  * Equivalent to: git restore . (Git 2.23+) or git checkout -- .
  */
 export function RestoreAll(repoPath: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(2271909699, repoPath).then(($result: any) => {
+    return $Call.ByID(1870318045, repoPath).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -925,7 +924,7 @@ export function RestoreAll(repoPath: string): $CancellablePromise<$models.Operat
  * Runs: git revert --no-edit <commitHash>
  */
 export function RevertCommit(repoPath: string, commitHash: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(779702585, repoPath, commitHash).then(($result: any) => {
+    return $Call.ByID(26608831, repoPath, commitHash).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -937,7 +936,7 @@ export function RevertCommit(repoPath: string, commitHash: string): $Cancellable
  * Runs: git revert -m <message> <commitHash> (via stdin for message)
  */
 export function RevertCommitWithMessage(repoPath: string, commitHash: string, message: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(2725214252, repoPath, commitHash, message).then(($result: any) => {
+    return $Call.ByID(1846219782, repoPath, commitHash, message).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -947,7 +946,7 @@ export function RevertCommitWithMessage(repoPath: string, commitHash: string, me
  * holders such as the conflict queue can react to mutating operations.
  */
 export function SetRepoEventBus(bus: $models.RepoEventBus | null): $CancellablePromise<void> {
-    return $Call.ByID(875315372, bus);
+    return $Call.ByID(2667808750, bus);
 }
 
 /**
@@ -955,7 +954,7 @@ export function SetRepoEventBus(bus: $models.RepoEventBus | null): $CancellableP
  * Uses concurrent goroutines to fetch metadata, numstat, and name-status in parallel
  */
 export function ShowCommit(repoPath: string, hash: string): $CancellablePromise<$models.CommitDetail> {
-    return $Call.ByID(137660310, repoPath, hash).then(($result: any) => {
+    return $Call.ByID(2156221748, repoPath, hash).then(($result: any) => {
         return $$createType27($result);
     });
 }
@@ -965,7 +964,7 @@ export function ShowCommit(repoPath: string, hash: string): $CancellablePromise<
  * Runs: git am --skip
  */
 export function SkipAMPatch(repoPath: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(2068617355, repoPath).then(($result: any) => {
+    return $Call.ByID(1416285437, repoPath).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -975,7 +974,7 @@ export function SkipAMPatch(repoPath: string): $CancellablePromise<$models.Opera
  * Runs: git cherry-pick --skip
  */
 export function SkipCherryPickCommit(repoPath: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(2445030508, repoPath).then(($result: any) => {
+    return $Call.ByID(852809722, repoPath).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -985,7 +984,7 @@ export function SkipCherryPickCommit(repoPath: string): $CancellablePromise<$mod
  * Runs: git revert --skip
  */
 export function SkipRevertCommit(repoPath: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(2381417206, repoPath).then(($result: any) => {
+    return $Call.ByID(1471564236, repoPath).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -1009,7 +1008,7 @@ export function SkipRevertCommit(repoPath: string): $CancellablePromise<$models.
  *   - sourceBranch: The branch to merge FROM (optional, defaults to current branch)
  */
 export function StartMerge(repoPath: string, targetBranch: string, ...sourceBranch: string[]): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(3602986874, repoPath, targetBranch, sourceBranch).then(($result: any) => {
+    return $Call.ByID(107306212, repoPath, targetBranch, sourceBranch).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -1031,7 +1030,7 @@ export function StartMerge(repoPath: string, targetBranch: string, ...sourceBran
  * - Results in cleaner, linear history
  */
 export function StartMergeWithOptions(repoPath: string, targetBranch: string, sourceBranch: string, options: $models.MergeOptions): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(2111811496, repoPath, targetBranch, sourceBranch, options).then(($result: any) => {
+    return $Call.ByID(3458270754, repoPath, targetBranch, sourceBranch, options).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -1042,7 +1041,7 @@ export function StartMergeWithOptions(repoPath: string, targetBranch: string, so
  * If the stash pop fails due to conflicts, the stash is preserved.
  */
 export function StashAndSwitchBranch(repoPath: string, targetBranch: string, createNew: boolean): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(3570517492, repoPath, targetBranch, createNew).then(($result: any) => {
+    return $Call.ByID(2595413742, repoPath, targetBranch, createNew).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -1052,7 +1051,7 @@ export function StashAndSwitchBranch(repoPath: string, targetBranch: string, cre
  * Requires confirm=true as a safety measure.
  */
 export function StashDrop(repoPath: string, index: number, confirm: boolean): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(3600053038, repoPath, index, confirm).then(($result: any) => {
+    return $Call.ByID(1553599452, repoPath, index, confirm).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -1061,7 +1060,7 @@ export function StashDrop(repoPath: string, index: number, confirm: boolean): $C
  * StashList returns all stash entries.
  */
 export function StashList(repoPath: string): $CancellablePromise<$models.StashEntry[]> {
-    return $Call.ByID(2553569151, repoPath).then(($result: any) => {
+    return $Call.ByID(1996596753, repoPath).then(($result: any) => {
         return $$createType29($result);
     });
 }
@@ -1070,7 +1069,7 @@ export function StashList(repoPath: string): $CancellablePromise<$models.StashEn
  * StashPop applies the most recent stash and removes it from the stash list.
  */
 export function StashPop(repoPath: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(342633834, repoPath).then(($result: any) => {
+    return $Call.ByID(2825098816, repoPath).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -1080,7 +1079,7 @@ export function StashPop(repoPath: string): $CancellablePromise<$models.Operatio
  * Stashes all tracked changes (staged and unstaged).
  */
 export function StashPush(repoPath: string, message: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(3552291683, repoPath, message).then(($result: any) => {
+    return $Call.ByID(3713734541, repoPath, message).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -1090,7 +1089,7 @@ export function StashPush(repoPath: string, message: string): $CancellablePromis
  * Uses concurrent goroutines to fetch branch, ahead/behind, and status in parallel
  */
 export function Status(repoPath: string): $CancellablePromise<$models.RepoStatus> {
-    return $Call.ByID(2928711956, repoPath).then(($result: any) => {
+    return $Call.ByID(494893774, repoPath).then(($result: any) => {
         return $$createType30($result);
     });
 }
@@ -1099,14 +1098,14 @@ export function Status(repoPath: string): $CancellablePromise<$models.RepoStatus
  * SupportsRestore returns true if git version supports 'git restore' (2.23+)
  */
 export function SupportsRestore(): $CancellablePromise<boolean> {
-    return $Call.ByID(3341958236);
+    return $Call.ByID(3395067146);
 }
 
 /**
  * Sync performs a git pull (merge) followed by git push
  */
 export function Sync(repoPath: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(2968559073, repoPath).then(($result: any) => {
+    return $Call.ByID(1848622983, repoPath).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -1116,7 +1115,7 @@ export function Sync(repoPath: string): $CancellablePromise<$models.OperationRes
  * Equivalent to: git restore --staged <path> (Git 2.23+) or git reset HEAD <path>
  */
 export function Unstage(repoPath: string, path: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(1167094881, repoPath, path).then(($result: any) => {
+    return $Call.ByID(520221395, repoPath, path).then(($result: any) => {
         return $$createType0($result);
     });
 }
@@ -1126,7 +1125,7 @@ export function Unstage(repoPath: string, path: string): $CancellablePromise<$mo
  * Equivalent to: git restore --staged . (Git 2.23+) or git reset HEAD
  */
 export function UnstageAll(repoPath: string): $CancellablePromise<$models.OperationResult> {
-    return $Call.ByID(2725489176, repoPath).then(($result: any) => {
+    return $Call.ByID(1762950662, repoPath).then(($result: any) => {
         return $$createType0($result);
     });
 }

@@ -1,7 +1,7 @@
-// Package services provides backend functionality for the ControlZebra application.
+// Package services provides backend functionality for the IOFabrik application.
 // This file contains the CLI resolver which locates managed/local git, gh,
 // and git-lfs binaries. On Windows, user-level managed binaries in
-// %LOCALAPPDATA%\ControlZebra\tools\bin are preferred.
+// %LOCALAPPDATA%\IOFabrik\tools\bin are preferred.
 package services
 
 import (
@@ -55,7 +55,7 @@ func resolveCLIPaths() {
 		switch runtime.GOOS {
 		case "darwin":
 			// macOS .app bundle layout:
-			//   Contents/MacOS/control-zebra        ← execDir
+			//   Contents/MacOS/iofabrik        ← execDir
 			//   Contents/Resources/git/bin/git
 			//   Contents/Resources/gh/bin/gh
 			resourcesDir := filepath.Join(execDir, "..", "Resources")

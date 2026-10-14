@@ -1291,7 +1291,7 @@ export class ConflictedFile {
 }
 
 /**
- * DataLocations describes where ControlZebra stores app data by class.
+ * DataLocations describes where IOFabrik stores app data by class.
  * RoamingConfigDir retains its binding name; on Windows config is now local.
  */
 export class DataLocations {
@@ -4410,7 +4410,7 @@ export class RepoInfo {
 }
 
 /**
- * RepoLocalConfig holds shared configuration stored in .controlzebra/config.json.
+ * RepoLocalConfig holds shared configuration stored in .iofabrik/config.json.
  * This file is committed to the repository so collaborators share these settings.
  */
 export class RepoLocalConfig {
@@ -4425,7 +4425,7 @@ export class RepoLocalConfig {
     "createdBy"?: string;
 
     /**
-     * ControlZebra version that created the project
+     * IOFabrik version that created the project
      */
     "appVersion"?: string;
 
@@ -4471,7 +4471,7 @@ export class RepoNameCheckResult {
 
 /**
  * RepoPersonalConfig holds personal/machine-specific configuration stored in
- * .controlzebra/local.json. This file is added to .gitignore and NOT committed.
+ * .iofabrik/local.json. This file is added to .gitignore and NOT committed.
  */
 export class RepoPersonalConfig {
     /**

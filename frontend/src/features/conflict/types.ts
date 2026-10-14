@@ -2,7 +2,7 @@ import type {
   ConflictBlob as GeneratedConflictBlob,
   ConflictRegionView as GeneratedConflictRegionView,
   ConflictResolutionData as GeneratedConflictResolutionData,
-} from '../../../bindings/controlzebra/services/models';
+} from '../../../bindings/iofabrik/services/models';
 
 export type ConflictFileStatus =
   | 'both-modified'

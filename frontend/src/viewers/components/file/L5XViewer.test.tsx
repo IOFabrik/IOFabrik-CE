@@ -37,7 +37,7 @@ let filesChangedHandler: ((event: {
   };
 }) => void) | null = null;
 
-vi.mock('../../../../bindings/controlzebra/services/filesystemservice', () => ({
+vi.mock('../../../../bindings/iofabrik/services/filesystemservice', () => ({
   ReadTextFile: readTextFileMock,
 }));
 

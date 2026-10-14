@@ -61,9 +61,9 @@ vi.mock('../../../domain/analytics/analytics', () => ({
   setAnalyticsConsent: vi.fn(),
 }));
 
-vi.mock('../../../../bindings/controlzebra/services/settingsservice', () => settingsServiceMock);
-vi.mock('../../../../bindings/controlzebra/services/appupdateservice', () => updateServiceMock);
-vi.mock('../../../../bindings/controlzebra/services/debugservice', () => debugServiceMock);
+vi.mock('../../../../bindings/iofabrik/services/settingsservice', () => settingsServiceMock);
+vi.mock('../../../../bindings/iofabrik/services/appupdateservice', () => updateServiceMock);
+vi.mock('../../../../bindings/iofabrik/services/debugservice', () => debugServiceMock);
 
 vi.mock('sonner', () => ({
   toast: toastMock,
@@ -213,7 +213,7 @@ describe('GeneralSettings', () => {
     const { unmount } = render(<GeneralSettings />);
 
     await screen.findByText('v0.13.0-beta');
-    expect(screen.queryByText('Active storage paths used by ControlZebra on this machine.')).not.toBeInTheDocument();
+    expect(screen.queryByText('Active storage paths used by IOFabrik on this machine.')).not.toBeInTheDocument();
     expect(settingsServiceMock.GetDataLocations).not.toHaveBeenCalled();
 
     layoutMock.developerModeEnabled = true;
@@ -224,7 +224,7 @@ describe('GeneralSettings', () => {
     await waitFor(() => {
       expect(settingsServiceMock.GetDataLocations).toHaveBeenCalledTimes(1);
     });
-    expect(screen.getByText('Active storage paths used by ControlZebra on this machine.')).toBeInTheDocument();
+    expect(screen.getByText('Active storage paths used by IOFabrik on this machine.')).toBeInTheDocument();
   });
 
   it('persists Developer Mode and updates the effective runtime setting', async () => {

@@ -1,5 +1,5 @@
 /**
- * Path utilities for ControlZebra frontend.
+ * Path utilities for IOFabrik frontend.
  *
  * Helpers for deriving repo names from folder paths,
  * normalising paths across platforms, etc.

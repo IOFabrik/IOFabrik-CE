@@ -1,10 +1,10 @@
 # Onboarding Guide
 
-> Welcome to ControlZebra! This guide is your starting point as a new team member.
+> Welcome to IOFabrik! This guide is your starting point as a new team member.
 
-## What is ControlZebra?
+## What is IOFabrik?
 
-ControlZebra is a **desktop Git client** designed for non-technical users in industrial automation — PLC engineers, HMI designers, and teams working with binary configs, ladder logic, and hardware schematics.
+IOFabrik is a **desktop Git client** designed for non-technical users in industrial automation — PLC engineers, HMI designers, and teams working with binary configs, ladder logic, and hardware schematics.
 
 Read [Product Overview](../product/Product%20Overview.md) for full context on the product, users, and goals.
 
@@ -61,7 +61,7 @@ Read these docs in order:
 |---|---|
 | Find a git operation | `services/git_service.go` |
 | Find a frontend component | `frontend/src/` |
-| Check available bindings | `frontend/bindings/controlzebra/services/` |
+| Check available bindings | `frontend/bindings/iofabrik/services/` |
 | Understand a view/page | `frontend/src/components/layout/views/` and `pages/` |
 | See UI primitives | `frontend/src/components/ui/` |
 | Check frontend constants | `frontend/src/constants/index.ts`, [Constants Reference](../technical/reference/Constants%20Reference.md) |
@@ -86,7 +86,7 @@ type OperationResult struct {
 
 ```tsx
 // 1. Import the binding (auto-generated from Go)
-import { GetStatus } from '../../bindings/controlzebra/services/gitservice';
+import { GetStatus } from '../../bindings/iofabrik/services/gitservice';
 
 // 2. Call it from a React component
 const status = await GetStatus(repoPath);

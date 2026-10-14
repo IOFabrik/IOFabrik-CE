@@ -1,4 +1,4 @@
-// Package services provides backend functionality for the ControlZebra application.
+// Package services provides backend functionality for the IOFabrik application.
 // This file contains the RepositorySettingsService which manages repository-level
 // configuration and automatic background tasks like fetch, LFS sync, and maintenance.
 package services
@@ -99,19 +99,19 @@ type RepositorySettings struct {
 }
 
 // ============================================================================
-// In-Repo Config Types (.controlzebra/ directory)
+// In-Repo Config Types (.iofabrik/ directory)
 // ============================================================================
 
-// RepoLocalConfig holds shared configuration stored in .controlzebra/config.json.
+// RepoLocalConfig holds shared configuration stored in .iofabrik/config.json.
 // This file is committed to the repository so collaborators share these settings.
 type RepoLocalConfig struct {
 	CreatedAt  string `json:"createdAt,omitempty"`  // ISO 8601 timestamp of project creation
 	CreatedBy  string `json:"createdBy,omitempty"`  // Username/email of the creator
-	AppVersion string `json:"appVersion,omitempty"` // ControlZebra version that created the project
+	AppVersion string `json:"appVersion,omitempty"` // IOFabrik version that created the project
 }
 
 // RepoPersonalConfig holds personal/machine-specific configuration stored in
-// .controlzebra/local.json. This file is added to .gitignore and NOT committed.
+// .iofabrik/local.json. This file is added to .gitignore and NOT committed.
 type RepoPersonalConfig struct {
 	LocalOnlyMode bool `json:"localOnlyMode,omitempty"` // Skip remote sync
 }
@@ -1270,7 +1270,7 @@ func (r *RepositorySettingsService) SetUpstreamBranch(repoPath string, remoteBra
 }
 
 // ============================================================================
-// In-Repo Config: .controlzebra/ Directory
+// In-Repo Config: .iofabrik/ Directory
 // ============================================================================
 
 // GitignoreTemplateOption describes a selectable .gitignore template preset.
@@ -1374,7 +1374,8 @@ var gitignoreTemplates = []gitignoreTemplate{
 	},
 }
 
-const controlZebraDir = ".controlzebra"
+const iofabrikDir = ".iofabrik"
+const legacyProjectConfigDir = ".controlzebra"
 const sharedConfigFile = "config.json"
 const personalConfigFile = "local.json"
 
@@ -1455,7 +1456,7 @@ func (r *RepositorySettingsService) ApplyGitignoreTemplate(repoPath string, temp
 	if len(existingContent) > 0 && existingContent[len(existingContent)-1] != '\n' {
 		b.WriteString("\n")
 	}
-	b.WriteString("\n# ControlZebra template: ")
+	b.WriteString("\n# IOFabrik template: ")
 	b.WriteString(selected.option.Name)
 	b.WriteString("\n")
 	for _, line := range missing {
@@ -1470,24 +1471,24 @@ func (r *RepositorySettingsService) ApplyGitignoreTemplate(repoPath string, temp
 	return successOp(fmt.Sprintf("Applied %s template to .gitignore", selected.option.Name))
 }
 
-// controlZebraDirPath returns the path to the .controlzebra/ directory for a repo.
-func controlZebraDirPath(repoPath string) string {
-	return filepath.Join(repoPath, controlZebraDir)
+// iofabrikDirPath returns the path to the .iofabrik/ directory for a repo.
+func iofabrikDirPath(repoPath string) string {
+	return filepath.Join(repoPath, iofabrikDir)
 }
 
-var controlZebraDirectoryMu sync.Mutex
+var iofabrikDirectoryMu sync.Mutex
 
-// prepareControlZebraDirectory hides only directories this operation creates.
+// prepareIOFabrikDirectory hides only directories this operation creates.
 // Existing directories, including those checked out by Git, keep their attributes.
-func prepareControlZebraDirectory(dirPath string) error {
-	return createControlZebraDirectory(dirPath, hideControlZebraDirectory)
+func prepareIOFabrikDirectory(dirPath string) error {
+	return createIOFabrikDirectory(dirPath, hideIOFabrikDirectory)
 }
 
-func createControlZebraDirectory(dirPath string, hide func(string) error) error {
+func createIOFabrikDirectory(dirPath string, hide func(string) error) error {
 	// Do not let another settings operation use a new directory before hiding
 	// succeeds, or before a failed creation has been cleaned up for a retry.
-	controlZebraDirectoryMu.Lock()
-	defer controlZebraDirectoryMu.Unlock()
+	iofabrikDirectoryMu.Lock()
+	defer iofabrikDirectoryMu.Unlock()
 
 	if err := os.MkdirAll(filepath.Dir(dirPath), 0755); err != nil {
 		return err
@@ -1511,18 +1512,21 @@ func createControlZebraDirectory(dirPath string, hide func(string) error) error 
 	return nil
 }
 
-func controlZebraDirectoryFailure(err error) OperationResult {
+func iofabrikDirectoryFailure(err error) OperationResult {
 	GetDebugLogger().Log(LogLevelError, LogCategoryError, "RepositorySettingsService",
 		"Could not prepare the project settings folder", LogDetails{Error: err.Error()}, -1)
 	return failedOp("Could not prepare the project settings folder. Check the folder's permissions and try again.")
 }
 
-// ReadRepoLocalConfig reads the shared config (.controlzebra/config.json) from
+// ReadRepoLocalConfig reads the shared config (.iofabrik/config.json) from
 // the repository. This file is committed and shared with collaborators.
 // Returns a zero-value config if the file does not exist.
 func (r *RepositorySettingsService) ReadRepoLocalConfig(repoPath string) RepoLocalConfig {
-	configPath := filepath.Join(controlZebraDirPath(repoPath), sharedConfigFile)
+	configPath := filepath.Join(iofabrikDirPath(repoPath), sharedConfigFile)
 	data, err := os.ReadFile(configPath)
+	if os.IsNotExist(err) {
+		data, err = os.ReadFile(filepath.Join(repoPath, legacyProjectConfigDir, sharedConfigFile))
+	}
 	if err != nil {
 		return RepoLocalConfig{}
 	}
@@ -1534,12 +1538,12 @@ func (r *RepositorySettingsService) ReadRepoLocalConfig(repoPath string) RepoLoc
 	return config
 }
 
-// WriteRepoLocalConfig writes the shared config (.controlzebra/config.json) to
-// the repository. Creates the .controlzebra/ directory if it does not exist.
+// WriteRepoLocalConfig writes the shared config (.iofabrik/config.json) to
+// the repository. Creates the .iofabrik/ directory if it does not exist.
 func (r *RepositorySettingsService) WriteRepoLocalConfig(repoPath string, config RepoLocalConfig) OperationResult {
-	dirPath := controlZebraDirPath(repoPath)
-	if err := prepareControlZebraDirectory(dirPath); err != nil {
-		return controlZebraDirectoryFailure(err)
+	dirPath := iofabrikDirPath(repoPath)
+	if err := prepareIOFabrikDirectory(dirPath); err != nil {
+		return iofabrikDirectoryFailure(err)
 	}
 
 	data, err := json.MarshalIndent(config, "", "  ")
@@ -1552,15 +1556,18 @@ func (r *RepositorySettingsService) WriteRepoLocalConfig(repoPath string, config
 		return failedOp("Failed to write config: " + err.Error())
 	}
 
-	return successOp("Config saved to .controlzebra/config.json")
+	return successOp("Config saved to .iofabrik/config.json")
 }
 
 // ReadRepoPersonalConfig reads the personal/machine-specific config
-// (.controlzebra/local.json) from the repository. This file is gitignored and
+// (.iofabrik/local.json) from the repository. This file is gitignored and
 // NOT committed. Returns a zero-value config if the file does not exist.
 func (r *RepositorySettingsService) ReadRepoPersonalConfig(repoPath string) RepoPersonalConfig {
-	configPath := filepath.Join(controlZebraDirPath(repoPath), personalConfigFile)
+	configPath := filepath.Join(iofabrikDirPath(repoPath), personalConfigFile)
 	data, err := os.ReadFile(configPath)
+	if os.IsNotExist(err) {
+		data, err = os.ReadFile(filepath.Join(repoPath, legacyProjectConfigDir, personalConfigFile))
+	}
 	if err != nil {
 		return RepoPersonalConfig{}
 	}
@@ -1573,13 +1580,13 @@ func (r *RepositorySettingsService) ReadRepoPersonalConfig(repoPath string) Repo
 }
 
 // WriteRepoPersonalConfig writes the personal/machine-specific config
-// (.controlzebra/local.json) to the repository. Creates the .controlzebra/
-// directory if it does not exist. Also ensures .controlzebra/local.json is
+// (.iofabrik/local.json) to the repository. Creates the .iofabrik/
+// directory if it does not exist. Also ensures .iofabrik/local.json is
 // listed in the repository's .gitignore so it is never committed.
 func (r *RepositorySettingsService) WriteRepoPersonalConfig(repoPath string, config RepoPersonalConfig) OperationResult {
-	dirPath := controlZebraDirPath(repoPath)
-	if err := prepareControlZebraDirectory(dirPath); err != nil {
-		return controlZebraDirectoryFailure(err)
+	dirPath := iofabrikDirPath(repoPath)
+	if err := prepareIOFabrikDirectory(dirPath); err != nil {
+		return iofabrikDirectoryFailure(err)
 	}
 
 	data, err := json.MarshalIndent(config, "", "  ")
@@ -1592,23 +1599,23 @@ func (r *RepositorySettingsService) WriteRepoPersonalConfig(repoPath string, con
 		return failedOp("Failed to write personal config: " + err.Error())
 	}
 
-	// Ensure .controlzebra/local.json is in .gitignore
-	r.ensureGitignoreEntry(repoPath, ".controlzebra/local.json")
+	// Ensure .iofabrik/local.json is in .gitignore
+	r.ensureGitignoreEntry(repoPath, ".iofabrik/local.json")
 
-	return successOp("Personal config saved to .controlzebra/local.json")
+	return successOp("Personal config saved to .iofabrik/local.json")
 }
 
-// EnsureControlZebraDir creates the .controlzebra/ directory and ensures the
+// EnsureIOFabrikDir creates the .iofabrik/ directory and ensures the
 // personal config file is gitignored. Call this during project initialisation.
-func (r *RepositorySettingsService) EnsureControlZebraDir(repoPath string) OperationResult {
-	dirPath := controlZebraDirPath(repoPath)
-	if err := prepareControlZebraDirectory(dirPath); err != nil {
-		return controlZebraDirectoryFailure(err)
+func (r *RepositorySettingsService) EnsureIOFabrikDir(repoPath string) OperationResult {
+	dirPath := iofabrikDirPath(repoPath)
+	if err := prepareIOFabrikDirectory(dirPath); err != nil {
+		return iofabrikDirectoryFailure(err)
 	}
 
-	r.ensureGitignoreEntry(repoPath, ".controlzebra/local.json")
+	r.ensureGitignoreEntry(repoPath, ".iofabrik/local.json")
 
-	return successOp(".controlzebra directory ready")
+	return successOp(".iofabrik directory ready")
 }
 
 // ensureGitignoreEntry appends `entry` to the repo's .gitignore if it is not

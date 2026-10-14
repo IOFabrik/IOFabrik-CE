@@ -18,8 +18,8 @@ import {
   DiffCommitFileRaw,
   DiffMergeReviewFileRaw,
   DiffWorkingRaw,
-} from '../../../../bindings/controlzebra/services/gitservice';
-import type { RawDiffResult } from '../../../../bindings/controlzebra/services/models';
+} from '../../../../bindings/iofabrik/services/gitservice';
+import type { RawDiffResult } from '../../../../bindings/iofabrik/services/models';
 import type { DiffSide, TextDiffSource } from '../../registry/diff-registry';
 
 // ============================================================================

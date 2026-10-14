@@ -5,12 +5,12 @@ version: '3'
 
 # This information is used to generate the build assets.
 info:
-  companyName: "ControlZebra" # The name of the company
-  productName: "ControlZebra" # The name of the application
-  productIdentifier: "com.controlzebra.controlzebra" # The unique product identifier
-  description: "ControlZebra" # The application description
-  copyright: "(c) 2025, ControlZebra" # Copyright text
-  comments: "ControlZebra" # Comments
+  companyName: "IOFabrik" # The name of the company
+  productName: "IOFabrik" # The name of the application
+  productIdentifier: "com.iofabrik.iofabrik" # The unique product identifier
+  description: "IOFabrik" # The application description
+  copyright: "(c) 2025, IOFabrik" # Copyright text
+  comments: "IOFabrik" # Comments
   version: "v0.0.1" # The application version
 
 # Dev mode configuration

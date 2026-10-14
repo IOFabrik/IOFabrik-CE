@@ -192,6 +192,38 @@ func TestIntegrationWorkspaceRemovalRefusesAForeignSession(t *testing.T) {
 	}
 }
 
+func TestIOFabrikCancelsLegacyReviewWithoutLeavingResultRefs(t *testing.T) {
+	fixture := newLinkedWorktreeRepo(t)
+	integrationDir := t.TempDir()
+	store := newIntegrationSessionStore(integrationDir)
+	session := newTestSession(t, fixture, integrationDir)
+	runner := NewCommandRunner()
+	marker, err := integrationOwnershipMarkerPath(runner, session.WorkspacePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Rename(marker, filepath.Join(filepath.Dir(marker), "controlzebra-session.json")); err != nil {
+		t.Fatal(err)
+	}
+	legacyRef := "refs/controlzebra/integration/" + session.SessionID
+	runGitCmd(t, fixture.openProject, "update-ref", legacyRef, session.DestinationOID)
+	if err := store.save(session); err != nil {
+		t.Fatal(err)
+	}
+	if err := verifyIntegrationOwnership(runner, session.WorkspacePath, session.SessionID); err != nil {
+		t.Fatalf("legacy review was not recovered: %v", err)
+	}
+	if err := cancelIntegrationSession(runner, store, session); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := runGitAllowFail(t, fixture.openProject, "rev-parse", "--verify", legacyRef); err == nil {
+		t.Fatal("legacy result ref survived cancellation")
+	}
+	if _, err := os.Stat(session.WorkspacePath); !os.IsNotExist(err) {
+		t.Fatalf("legacy workspace survived cancellation: %v", err)
+	}
+}
+
 // Phase 1 exit criterion: creating and cancelling leaves no worktree, no lock,
 // no metadata file, and no ref behind, and cancelling twice is a no-op.
 func TestIntegrationSessionCancelLeavesNothingBehind(t *testing.T) {

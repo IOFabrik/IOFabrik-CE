@@ -43,7 +43,7 @@ lifecycle method and does not expose it to the frontend.
 
 ## Release and installation integration
 
-The provider targets stable releases in `ControlZebra/controlzebra-oss` and
+The provider targets stable releases in `IOFabrik/IOFabrik-CE` and
 requires the selected executable to have a SHA-256 digest in `SHA256SUMS`.
 `SyncWindowsInstallRegistryVersion()` updates the NSIS per-user uninstall entry
 after an in-place update so Windows Installed Apps displays the running version.

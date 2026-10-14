@@ -38,7 +38,7 @@ function LFSAutoTrackModal({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent size="2xl">
         <AlertDialogHeader>
-          <AlertDialogTitle>ControlZebra can remember these file types for Large File Storage</AlertDialogTitle>
+          <AlertDialogTitle>IOFabrik can remember these file types for Large File Storage</AlertDialogTitle>
           <AlertDialogDescription>
             These files look like large or non-human readable formats. Using Large File Storage (LFS) can improve git performance.
             Select files which you want to store with LFS.

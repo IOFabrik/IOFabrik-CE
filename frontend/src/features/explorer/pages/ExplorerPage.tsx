@@ -12,7 +12,7 @@
  */
 import { memo, useState, useCallback, useMemo } from 'react';
 import { useRepo, useLayout } from '../../../context';
-import { OpenFolderDialog } from '../../../../bindings/controlzebra/services/filedialogservice';
+import { OpenFolderDialog } from '../../../../bindings/iofabrik/services/filedialogservice';
 import { RecentProjectsPage, NewProjectPage, CloneProjectPage, OpenFolderPage } from '../../welcome/pages';
 import GitHubDeviceFlowModal from '../../auth/components/GitHubDeviceFlowModal';
 import { useGitHubDeviceFlow } from '../../auth/hooks/useGitHubDeviceFlow';

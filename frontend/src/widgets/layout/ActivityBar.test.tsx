@@ -65,8 +65,8 @@ describe('ActivityBar Developer Mode', () => {
   });
 
   it.each([
-    ['Documentation', 'https://controlzebra.com/docs/'],
-    ['Community Forum', 'https://github.com/orgs/ControlZebra/discussions'],
+    ['Documentation', 'https://iofabrik.com/docs/'],
+    ['Community Forum', 'https://github.com/orgs/IOFabrik/discussions'],
   ])('opens %s externally', async (optionName, expectedUrl) => {
     render(<ActivityBar />);
 
