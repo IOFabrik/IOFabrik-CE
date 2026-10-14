@@ -64,7 +64,8 @@ export function AuthLogout(): $CancellablePromise<$models.GitHubAuthResult> {
 }
 
 /**
- * AuthStatus checks the current authentication status
+ * AuthStatus validates the active github.com credentials using the existing
+ * structured user query, supported by the bundled GitHub CLI as well.
  */
 export function AuthStatus(): $CancellablePromise<$models.GitHubAuthStatus> {
     return $Call.ByID(1323872181).then(($result: any) => {

@@ -45,17 +45,17 @@ describe('shared GitHub authentication status', () => {
     vi.restoreAllMocks();
   });
 
-  it('checks on startup and every 60 seconds, detecting external logout and login', async () => {
+  it('checks on startup and every 10 seconds, detecting external logout and login', async () => {
     const { result } = await mountStatus();
     expect(result.current.ghAuthStatus).toMatchObject(signedIn);
     expect(result.current.ghVersion).toBe('2.80.0');
     authStatus.mockResolvedValue(signedOut);
-    await act(async () => { await vi.advanceTimersByTimeAsync(59_999); });
+    await act(async () => { await vi.advanceTimersByTimeAsync(9_999); });
     expect(authStatus).toHaveBeenCalledTimes(1);
     await act(async () => { await vi.advanceTimersByTimeAsync(1); });
     expect(result.current.ghAuthStatus?.loggedIn).toBe(false);
     authStatus.mockResolvedValue(signedIn);
-    await act(async () => { await vi.advanceTimersByTimeAsync(60_000); });
+    await act(async () => { await vi.advanceTimersByTimeAsync(10_000); });
     expect(result.current.ghAuthStatus?.loggedIn).toBe(true);
   });
 
@@ -133,7 +133,7 @@ describe('shared GitHub authentication status', () => {
     const { result } = await mountStatus();
     await act(async () => {
       window.dispatchEvent(new Event('focus'));
-      await vi.advanceTimersByTimeAsync(60_000);
+      await vi.advanceTimersByTimeAsync(10_000);
     });
     expect(authStatus).toHaveBeenCalledTimes(1);
     await act(async () => { pending.resolve(signedIn); });
@@ -173,7 +173,7 @@ describe('shared GitHub authentication status', () => {
       window.dispatchEvent(new Event('focus'));
       window.dispatchEvent(new Event('online'));
       document.dispatchEvent(new Event('visibilitychange'));
-      await vi.advanceTimersByTimeAsync(120_000);
+      await vi.advanceTimersByTimeAsync(20_000);
     });
     expect(authStatus).toHaveBeenCalledTimes(1);
   });

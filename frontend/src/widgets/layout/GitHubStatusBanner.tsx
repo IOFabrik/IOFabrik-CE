@@ -24,7 +24,7 @@ function GitHubStatusBanner(): JSX.Element {
         <div
           role="status"
           aria-live="polite"
-          className="flex min-h-10 shrink-0 items-center justify-center gap-3 border-t border-amber-600 bg-amber-400 px-4 py-1.5 text-sm font-medium text-amber-950"
+          className="flex min-h-10 shrink-0 items-center justify-center gap-3 border-t border-theme-default bg-theme-inverted px-4 py-1.5 text-sm font-medium text-theme-inverted"
         >
           {isOffline
             ? <WifiOff size={ICON_SIZES.sm} className="shrink-0" aria-hidden="true" />
@@ -33,7 +33,7 @@ function GitHubStatusBanner(): JSX.Element {
           {!isOffline && (
             <Button
               size="sm"
-              className="shrink-0 bg-amber-950 text-amber-50 hover:bg-amber-900 focus-visible:ring-amber-950"
+              className="shrink-0"
               onClick={handleAuthenticate}
               loading={isStarting}
               disabled={isStarting || deviceFlow.isOpen}

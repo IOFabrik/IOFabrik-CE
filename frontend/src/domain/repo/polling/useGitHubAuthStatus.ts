@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { AuthStatus, GetGHVersion, IsGHInstalled } from '../services/repo-queries';
 import type { GitHubAuthStatus } from '../context/RepoContext.types';
 
-const AUTH_CHECK_INTERVAL_MS = 60_000;
+const AUTH_CHECK_INTERVAL_MS = 10_000;
 
 /** Shared GitHub state for the app, including external login/logout and connectivity. */
 export function useGitHubAuthStatus() {
