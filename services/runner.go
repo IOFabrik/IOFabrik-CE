@@ -64,6 +64,9 @@ func (r *CommandRunner) runWithWriters(ctx context.Context, workDir string, stdo
 	result := CommandResult{Success: err == nil}
 	if err != nil {
 		result.Error = err.Error()
+		if ctx.Err() != nil {
+			result.Error = ctx.Err().Error()
+		}
 		result.ExitCode = -1
 		if exitErr, ok := err.(*exec.ExitError); ok {
 			result.ExitCode = exitErr.ExitCode()
@@ -103,6 +106,9 @@ func (r *CommandRunner) RunWithContext(ctx context.Context, workDir string, name
 	if err != nil {
 		result.Success = false
 		result.Error = err.Error()
+		if ctx.Err() != nil {
+			result.Error = ctx.Err().Error()
+		}
 
 		// Extract exit code if available
 		if exitErr, ok := err.(*exec.ExitError); ok {
@@ -269,6 +275,9 @@ func (r *CommandRunner) RunWithContextAndStdin(ctx context.Context, workDir stri
 	if err != nil {
 		result.Success = false
 		result.Error = err.Error()
+		if ctx.Err() != nil {
+			result.Error = ctx.Err().Error()
+		}
 
 		// Extract exit code if available
 		if exitErr, ok := err.(*exec.ExitError); ok {

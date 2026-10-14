@@ -30,6 +30,7 @@
   --color-bg-elevated: #EAEAEC;
   --color-bg-muted: #E1E1E4;
   --color-bg-subtle: #EAEAEC;
+  --color-bg-inverted: #1D1D1E;
   
   /* Text */
   --color-text-primary: theme(colors.neutral.700);
@@ -121,6 +122,7 @@
   --color-bg-elevated: #262629;
   --color-bg-muted: #303034;
   --color-bg-subtle: #262629;
+  --color-bg-inverted: #F5F5F6;
   
   /* Text */
   --color-text-primary: theme(colors.neutral.300);
@@ -355,6 +357,14 @@
 
 @utility bg-theme-subtle {
   background-color: var(--color-bg-subtle);
+}
+
+@utility bg-theme-inverted {
+  background-color: var(--color-bg-inverted);
+}
+
+@utility text-theme-inverted {
+  color: var(--color-text-inverted);
 }
 
 @utility text-theme-primary {

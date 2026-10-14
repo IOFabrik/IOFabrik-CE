@@ -7,6 +7,7 @@ import (
 	"strings"
 	"sync"
 	"testing"
+	"time"
 )
 
 // installFakeGh replaces the resolved gh binary with a shell script for the
@@ -258,6 +259,66 @@ func TestGitHubService_GetGHVersion(t *testing.T) {
 		t.Error("Expected version string when gh is installed")
 	}
 	t.Logf("GitHub CLI version: %s", version)
+}
+
+func TestGitHubServiceAuthStatusUsesStructuredUserQuery(t *testing.T) {
+	for _, tt := range []struct {
+		name string
+		json string
+		code GitHubChangeRequestErrorCode
+	}{
+		{"active account", `{"login":"operator","id":42,"type":"User","name":"Operator"}`, ""},
+		{"malformed JSON", `{`, GitHubChangeRequestErrorInternal},
+		{"missing login", `{"id":42}`, GitHubChangeRequestErrorInternal},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			// The bundled gh 2.65 supports api --jq but not auth status --json.
+			installFakeGh(t, "#!/bin/sh\n"+
+				"[ \"$*\" = 'api --hostname github.com user --jq {login,id,type,name}' ] || exit 9\n"+
+				"printf '%s\\n' '"+tt.json+"'\n")
+			status := NewGitHubService().AuthStatus()
+			if status.LoggedIn != (tt.code == "") || status.Host != "github.com" || status.ErrorCode != tt.code {
+				t.Fatalf("unexpected status: %#v", status)
+			}
+			if status.LoggedIn && (status.Username != "operator" || status.AccountType != "user" || status.Error != "") {
+				t.Fatalf("unexpected account details: %#v", status)
+			}
+		})
+	}
+}
+
+func TestGitHubServiceAuthStatusClassifiesFailures(t *testing.T) {
+	for _, tt := range []struct {
+		name, output string
+		code         GitHubChangeRequestErrorCode
+	}{
+		{"signed out", "To get started with GitHub CLI, please run: gh auth login", GitHubChangeRequestErrorAuthRequired},
+		{"no account for host", "You are not logged into any accounts on github.com", GitHubChangeRequestErrorAuthRequired},
+		{"expired credentials", "gh: Bad credentials (HTTP 401)", GitHubChangeRequestErrorAuthRequired},
+		{"DNS failure", "Get https://api.github.com/user: dial tcp: lookup api.github.com: no such host", GitHubChangeRequestErrorNetworkUnavailable},
+		{"connection failure", "error connecting to api.github.com", GitHubChangeRequestErrorNetworkUnavailable},
+		{"timeout", "context deadline exceeded", GitHubChangeRequestErrorNetworkUnavailable},
+		{"rate limit", "API rate limit exceeded", GitHubChangeRequestErrorRateLimited},
+		{"unknown failure", "unexpected diagnostic detail", GitHubChangeRequestErrorInternal},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			installFakeGh(t, "#!/bin/sh\nprintf '%s\\n' '"+tt.output+"' >&2\nexit 1\n")
+			status := NewGitHubService().AuthStatus()
+			if status.LoggedIn || status.ErrorCode != tt.code || status.Error == "" || strings.Contains(status.Error, "diagnostic") {
+				t.Fatalf("unexpected command failure: %#v", status)
+			}
+		})
+	}
+}
+
+func TestGitHubServiceAuthStatusRunnerTimeoutIsOffline(t *testing.T) {
+	installFakeGh(t, "#!/bin/sh\nexec sleep 30\n")
+	service := NewGitHubService()
+	service.runner.Timeout = time.Second
+	status := service.AuthStatus()
+	if status.LoggedIn || status.ErrorCode != GitHubChangeRequestErrorNetworkUnavailable {
+		t.Fatalf("expected the runner deadline to activate offline status, got %#v", status)
+	}
 }
 
 func TestGitHubService_AuthStatus(t *testing.T) {

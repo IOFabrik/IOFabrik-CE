@@ -1767,6 +1767,7 @@ export class GitHubAuthStatus {
      */
     "scopes"?: string;
     "error"?: string;
+    "errorCode"?: GitHubChangeRequestErrorCode;
 
     /** Creates a new GitHubAuthStatus instance. */
     constructor($$source: Partial<GitHubAuthStatus> = {}) {

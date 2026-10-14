@@ -10,6 +10,7 @@ vi.mock('../../shared/ui/RecoveryBanner', () => ({ default: () => null }));
 vi.mock('./TopBar', () => ({ default: () => <header data-testid="unified-top-bar" /> }));
 vi.mock('./ActivityBar', () => ({ default: () => null }));
 vi.mock('./Sidebar', () => ({ default: () => <aside data-testid="sidebar" /> }));
+vi.mock('./GitHubStatusBanner', () => ({ default: () => <footer data-testid="github-status-banner" /> }));
 vi.mock('./MainArea', () => ({ default: () => <main data-testid="main-area" /> }));
 vi.mock('./NonGitFolderPromptModal', () => ({ default: () => null }));
 vi.mock('./AdditionalPackagesModal', () => ({ default: () => null }));
@@ -30,4 +31,12 @@ describe('Windows app shell', () => {
       bar.compareDocumentPosition(screen.getByTestId('sidebar')) & Node.DOCUMENT_POSITION_FOLLOWING
     ).toBeTruthy();
   });
+  it('keeps the GitHub status banner at the bottom, outside the scrolling workspace', () => {
+    render(<AppLayout />);
+    const workspace = screen.getByTestId('workspace-container');
+    const banner = screen.getByTestId('github-status-banner');
+    expect(banner.parentElement).toBe(workspace.parentElement?.parentElement);
+    expect(banner.parentElement?.lastElementChild).toBe(banner);
+  });
+
 });

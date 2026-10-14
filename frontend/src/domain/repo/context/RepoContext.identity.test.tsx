@@ -1,6 +1,7 @@
-import { act, render, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ReactNode } from 'react';
+import type { GitHubDeviceFlowResult } from './RepoContext.types';
 
 const {
   DetectRepo,
@@ -14,6 +15,8 @@ const {
   IsGHInstalled,
   GetGHVersion,
   AuthStatus,
+  AuthLoginStart,
+  AuthLoginCancel,
   IsLFSInstalled,
   GetPresetPatterns,
   GetRemotes,
@@ -46,6 +49,8 @@ const {
   IsGHInstalled: vi.fn(),
   GetGHVersion: vi.fn(),
   AuthStatus: vi.fn(),
+  AuthLoginStart: vi.fn(),
+  AuthLoginCancel: vi.fn(),
   IsLFSInstalled: vi.fn(),
   GetPresetPatterns: vi.fn(),
   GetRemotes: vi.fn(),
@@ -137,9 +142,9 @@ vi.mock('../services/repo-commands', () => ({
   RemoveAllStaleLocks: vi.fn(),
   Pull: vi.fn(),
   AuthLogin: vi.fn(),
-  AuthLoginStart: vi.fn(),
+  AuthLoginStart,
   AuthLoginComplete: vi.fn(),
-  AuthLoginCancel: vi.fn(),
+  AuthLoginCancel,
   AuthLogout: vi.fn(),
   RepoClone: vi.fn(),
   RepoCreateFromLocal,
@@ -223,6 +228,8 @@ vi.mock('sonner', () => ({
 }));
 
 import { RepoProvider, useRepo } from './RepoContext';
+import IntegrationsSettings from '../../../features/settings/components/IntegrationsSettings';
+import GitHubStatusBanner from '../../../widgets/layout/GitHubStatusBanner';
 
 function CaptureRepoApi({ onReady }: { onReady: (api: ReturnType<typeof useRepo>) => void }): null {
   const api = useRepo();
@@ -230,16 +237,17 @@ function CaptureRepoApi({ onReady }: { onReady: (api: ReturnType<typeof useRepo>
   return null;
 }
 
-function renderHarness(onReady: (api: ReturnType<typeof useRepo>) => void): void {
+function renderHarness(onReady: (api: ReturnType<typeof useRepo>) => void, children?: ReactNode): void {
   const Wrapper = ({ children }: { children: ReactNode }) => <RepoProvider>{children}</RepoProvider>;
   render(
     <Wrapper>
       <CaptureRepoApi onReady={onReady} />
+      {children}
     </Wrapper>,
   );
 }
 
-describe('RepoContext git identity prompts', () => {
+describe('RepoContext identity and GitHub authentication', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
@@ -263,6 +271,8 @@ describe('RepoContext git identity prompts', () => {
     IsGHInstalled.mockResolvedValue(false);
     GetGHVersion.mockResolvedValue('');
     AuthStatus.mockResolvedValue(null);
+    AuthLoginStart.mockReset();
+    AuthLoginCancel.mockReset().mockResolvedValue({ success: true });
     IsLFSInstalled.mockResolvedValue(true);
     GetPresetPatterns.mockResolvedValue([]);
     GetRemotes.mockResolvedValue(['origin']);
@@ -438,5 +448,62 @@ describe('RepoContext git identity prompts', () => {
       'The first saved revision was skipped until a name and email are added.',
       expect.any(Object),
     );
+  });
+
+  it('guards simultaneous login callers and permits retry after a failed start', async () => {
+    let rejectStart!: (reason: Error) => void;
+    AuthLoginStart.mockReturnValueOnce(new Promise((_resolve, reject) => { rejectStart = reject; }));
+    let api: ReturnType<typeof useRepo> | null = null;
+    renderHarness((value) => { api = value; });
+    await waitFor(() => expect(api).not.toBeNull());
+
+    let first!: Promise<GitHubDeviceFlowResult>;
+    let competing!: typeof first;
+    act(() => {
+      first = api!.startGitHubLogin();
+      competing = api!.startGitHubLogin();
+    });
+    await expect(competing).resolves.toEqual({ success: false, cancelled: true });
+    expect(AuthLoginStart).toHaveBeenCalledTimes(1);
+    expect(api!.isStartingGitHubLogin).toBe(true);
+
+    await act(async () => {
+      rejectStart(new Error('test bridge failure'));
+      await first;
+    });
+    expect(api!.isStartingGitHubLogin).toBe(false);
+    AuthLoginStart.mockResolvedValueOnce({ success: true, userCode: 'RETRY-1234' });
+    await act(async () => {
+      await expect(api!.startGitHubLogin()).resolves.toMatchObject({ success: true, userCode: 'RETRY-1234' });
+    });
+    expect(AuthLoginStart).toHaveBeenCalledTimes(2);
+  });
+
+  it.each(['settings', 'banner'])('keeps one authentication dialog when %s starts first', async (first) => {
+    IsGHInstalled.mockResolvedValue(true);
+    AuthStatus.mockResolvedValue({ loggedIn: false, errorCode: 'auth_required' });
+    let resolveStart!: (value: object) => void;
+    AuthLoginStart.mockReturnValue(new Promise((resolve) => { resolveStart = resolve; }));
+    let api: ReturnType<typeof useRepo> | null = null;
+    renderHarness((value) => { api = value; }, <><IntegrationsSettings /><GitHubStatusBanner /></>);
+    await waitFor(() => expect(api?.ghAuthStatus?.loggedIn).toBe(false));
+
+    const settings = screen.getByRole('button', { name: 'Connect' });
+    const banner = screen.getByRole('button', { name: 'Authenticate with GitHub' });
+    fireEvent.click(first === 'settings' ? settings : banner);
+    fireEvent.click(first === 'settings' ? banner : settings);
+    await act(async () => {
+      resolveStart({ success: true, userCode: 'ABCD-1234', verificationUrl: 'https://github.com/login/device' });
+    });
+    expect(screen.getAllByRole('alertdialog', { hidden: true })).toHaveLength(1);
+    expect(AuthLoginStart).toHaveBeenCalledTimes(1);
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Cancel' })); });
+    expect(AuthLoginCancel).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole('alertdialog', { hidden: true })).not.toBeInTheDocument();
+
+    AuthLoginStart.mockResolvedValue({ success: true, userCode: 'NEXT-5678' });
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Authenticate with GitHub' })); });
+    expect(screen.getAllByRole('alertdialog', { hidden: true })).toHaveLength(1);
+    expect(screen.getByText('NEXT-5678')).toBeInTheDocument();
   });
 });

@@ -2,6 +2,8 @@ package services
 
 import (
 	"context"
+	"io"
+	"os"
 	"testing"
 	"time"
 )
@@ -71,6 +73,52 @@ func TestRunWithContext_Timeout(t *testing.T) {
 
 	if result.Success {
 		t.Error("Expected command to fail due to timeout")
+	}
+}
+
+// Run the test binary itself so timeout/cancellation coverage is portable.
+func TestCommandRunnerContextHelper(t *testing.T) {
+	if os.Getenv("IOFABRIK_RUNNER_CONTEXT_HELPER") == "1" {
+		time.Sleep(time.Minute)
+	}
+}
+
+func TestCommandRunnerPreservesContextFailure(t *testing.T) {
+	executable, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("IOFABRIK_RUNNER_CONTEXT_HELPER", "1")
+	runner := NewCommandRunner()
+	for _, variant := range []struct {
+		name string
+		run  func(context.Context) CommandResult
+	}{
+		{"capture", func(ctx context.Context) CommandResult {
+			return runner.RunWithContext(ctx, "", executable, "-test.run=^TestCommandRunnerContextHelper$")
+		}},
+		{"stdin", func(ctx context.Context) CommandResult {
+			return runner.RunWithContextAndStdin(ctx, "", "", executable, "-test.run=^TestCommandRunnerContextHelper$")
+		}},
+		{"stream", func(ctx context.Context) CommandResult {
+			return runner.runWithStderr(ctx, io.Discard, executable, "-test.run=^TestCommandRunnerContextHelper$")
+		}},
+	} {
+		t.Run(variant.name, func(t *testing.T) {
+			ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+			defer cancel()
+			result := variant.run(ctx)
+			if result.Success || result.Error != context.DeadlineExceeded.Error() {
+				t.Fatalf("expected deadline cause after killing the child process, got %#v", result)
+			}
+
+			cancelled, cancelNow := context.WithCancel(context.Background())
+			cancelNow()
+			result = variant.run(cancelled)
+			if result.Success || result.Error != context.Canceled.Error() {
+				t.Fatalf("expected cancellation to remain distinct from timeout, got %#v", result)
+			}
+		})
 	}
 }
 
