@@ -7,6 +7,7 @@ import (
 	"strings"
 	"sync"
 	"testing"
+	"time"
 )
 
 // installFakeGh replaces the resolved gh binary with a shell script for the
@@ -307,6 +308,16 @@ func TestGitHubServiceAuthStatusClassifiesFailures(t *testing.T) {
 				t.Fatalf("unexpected command failure: %#v", status)
 			}
 		})
+	}
+}
+
+func TestGitHubServiceAuthStatusRunnerTimeoutIsOffline(t *testing.T) {
+	installFakeGh(t, "#!/bin/sh\nexec sleep 30\n")
+	service := NewGitHubService()
+	service.runner.Timeout = time.Second
+	status := service.AuthStatus()
+	if status.LoggedIn || status.ErrorCode != GitHubChangeRequestErrorNetworkUnavailable {
+		t.Fatalf("expected the runner deadline to activate offline status, got %#v", status)
 	}
 }
 
