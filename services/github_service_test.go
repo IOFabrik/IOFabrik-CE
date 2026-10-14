@@ -260,51 +260,53 @@ func TestGitHubService_GetGHVersion(t *testing.T) {
 	t.Logf("GitHub CLI version: %s", version)
 }
 
-func TestGitHubServiceAuthStatusReadsStructuredState(t *testing.T) {
-	tests := []struct {
-		name   string
-		json   string
-		code   GitHubChangeRequestErrorCode
-		logged bool
+func TestGitHubServiceAuthStatusUsesStructuredUserQuery(t *testing.T) {
+	for _, tt := range []struct {
+		name string
+		json string
+		code GitHubChangeRequestErrorCode
 	}{
-		{"active account", `{"hosts":{"github.com":[{"active":true,"state":"success","login":"operator","gitProtocol":"https","scopes":"repo"}]}}`, "", true},
-		{"signed out", `{"hosts":{}}`, GitHubChangeRequestErrorAuthRequired, false},
-		{"enterprise only", `{"hosts":{"github.example.com":[{"active":true,"state":"success"}]}}`, GitHubChangeRequestErrorAuthRequired, false},
-		{"expired token", `{"hosts":{"github.com":[{"active":true,"state":"error","error":"HTTP 401: Bad credentials"}]}}`, GitHubChangeRequestErrorAuthRequired, false},
-		{"DNS failure", `{"hosts":{"github.com":[{"active":true,"state":"error","error":"Get https://api.github.com/: dial tcp: lookup api.github.com: no such host"}]}}`, GitHubChangeRequestErrorNetworkUnavailable, false},
-		{"timeout", `{"hosts":{"github.com":[{"active":true,"state":"timeout"}]}}`, GitHubChangeRequestErrorNetworkUnavailable, false},
-		{"rate limit", `{"hosts":{"github.com":[{"active":true,"state":"error","error":"API rate limit exceeded"}]}}`, GitHubChangeRequestErrorRateLimited, false},
-		{"unknown failure", `{"hosts":{"github.com":[{"active":true,"state":"error","error":"unexpected diagnostic detail"}]}}`, GitHubChangeRequestErrorInternal, false},
-		{"malformed JSON", `{`, GitHubChangeRequestErrorInternal, false},
-		{"missing hosts", `{}`, GitHubChangeRequestErrorInternal, false},
-		{"inactive stale account", `{"hosts":{"github.com":[{"active":false,"state":"error","error":"HTTP 401"},{"active":true,"state":"success","login":"operator","gitProtocol":"https","scopes":"repo"}]}}`, "", true},
-	}
-	for _, tt := range tests {
+		{"active account", `{"login":"operator","id":42,"type":"User","name":"Operator"}`, ""},
+		{"malformed JSON", `{`, GitHubChangeRequestErrorInternal},
+		{"missing login", `{"id":42}`, GitHubChangeRequestErrorInternal},
+	} {
 		t.Run(tt.name, func(t *testing.T) {
-			// gh exits successfully in JSON mode even for expired tokens or offline.
+			// The bundled gh 2.65 supports api --jq but not auth status --json.
 			installFakeGh(t, "#!/bin/sh\n"+
-				"[ \"$*\" = 'auth status --active --hostname github.com --json hosts' ] || exit 9\n"+
+				"[ \"$*\" = 'api --hostname github.com user --jq {login,id,type,name}' ] || exit 9\n"+
 				"printf '%s\\n' '"+tt.json+"'\n")
 			status := NewGitHubService().AuthStatus()
-			if status.LoggedIn != tt.logged || status.Host != "github.com" || status.ErrorCode != tt.code {
+			if status.LoggedIn != (tt.code == "") || status.Host != "github.com" || status.ErrorCode != tt.code {
 				t.Fatalf("unexpected status: %#v", status)
 			}
-			if tt.logged {
-				if status.Username != "operator" || status.Protocol != "https" || status.Scopes != "repo" || status.Error != "" {
-					t.Fatalf("unexpected account details: %#v", status)
-				}
-			} else if status.Error == "" || strings.Contains(status.Error, "diagnostic") {
-				t.Fatalf("expected a translated recovery message, got %q", status.Error)
+			if status.LoggedIn && (status.Username != "operator" || status.AccountType != "user" || status.Error != "") {
+				t.Fatalf("unexpected account details: %#v", status)
 			}
 		})
 	}
 }
 
-func TestGitHubServiceAuthStatusHandlesCommandFailure(t *testing.T) {
-	installFakeGh(t, "#!/bin/sh\nprintf '%s\\n' 'error connecting to api.github.com' >&2\nexit 1\n")
-	status := NewGitHubService().AuthStatus()
-	if status.LoggedIn || status.ErrorCode != GitHubChangeRequestErrorNetworkUnavailable {
-		t.Fatalf("unexpected command failure: %#v", status)
+func TestGitHubServiceAuthStatusClassifiesFailures(t *testing.T) {
+	for _, tt := range []struct {
+		name, output string
+		code         GitHubChangeRequestErrorCode
+	}{
+		{"signed out", "To get started with GitHub CLI, please run: gh auth login", GitHubChangeRequestErrorAuthRequired},
+		{"no account for host", "You are not logged into any accounts on github.com", GitHubChangeRequestErrorAuthRequired},
+		{"expired credentials", "gh: Bad credentials (HTTP 401)", GitHubChangeRequestErrorAuthRequired},
+		{"DNS failure", "Get https://api.github.com/user: dial tcp: lookup api.github.com: no such host", GitHubChangeRequestErrorNetworkUnavailable},
+		{"connection failure", "error connecting to api.github.com", GitHubChangeRequestErrorNetworkUnavailable},
+		{"timeout", "context deadline exceeded", GitHubChangeRequestErrorNetworkUnavailable},
+		{"rate limit", "API rate limit exceeded", GitHubChangeRequestErrorRateLimited},
+		{"unknown failure", "unexpected diagnostic detail", GitHubChangeRequestErrorInternal},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			installFakeGh(t, "#!/bin/sh\nprintf '%s\\n' '"+tt.output+"' >&2\nexit 1\n")
+			status := NewGitHubService().AuthStatus()
+			if status.LoggedIn || status.ErrorCode != tt.code || status.Error == "" || strings.Contains(status.Error, "diagnostic") {
+				t.Fatalf("unexpected command failure: %#v", status)
+			}
+		})
 	}
 }
 

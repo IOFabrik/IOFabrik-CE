@@ -340,7 +340,7 @@ func (g *GitHubService) GetAuthenticatedUser() GitHubAuthenticatedUserResult {
 		return GitHubAuthenticatedUserResult{
 			Success:   false,
 			Error:     getGHErrorMessage(result),
-			ErrorCode: mapGitHubChangeRequestError(result),
+			ErrorCode: githubAuthStatusErrorCode(result),
 		}
 	}
 	return mapGitHubAuthenticatedUserJSON([]byte(result.Stdout))
@@ -1181,54 +1181,20 @@ func (g *GitHubService) AuthLogout() GitHubAuthResult {
 	}
 }
 
-// AuthStatus checks the active github.com account. JSON preserves network errors
-// that gh's display output otherwise presents as an invalid token.
+// AuthStatus validates the active github.com credentials using the existing
+// structured user query, supported by the bundled GitHub CLI as well.
 func (g *GitHubService) AuthStatus() GitHubAuthStatus {
 	done := LogMethod("GitHubService.AuthStatus", nil)
 	defer func() { done(nil, nil) }()
 
-	result := g.runner.Run("", GhPath(), "auth", "status", "--active", "--hostname", "github.com", "--json", "hosts")
-	status := GitHubAuthStatus{Host: "github.com"}
-	if !result.Success {
-		status.ErrorCode = githubAuthStatusErrorCode(result)
-	} else {
-		var raw struct {
-			Hosts map[string][]struct {
-				State       string `json:"state"`
-				Error       string `json:"error"`
-				Active      bool   `json:"active"`
-				Login       string `json:"login"`
-				GitProtocol string `json:"gitProtocol"`
-				Scopes      string `json:"scopes"`
-			} `json:"hosts"`
-		}
-		if err := json.Unmarshal([]byte(result.Stdout), &raw); err != nil || raw.Hosts == nil {
-			status.ErrorCode = GitHubChangeRequestErrorInternal
-		} else if len(raw.Hosts["github.com"]) == 0 {
-			status.ErrorCode = GitHubChangeRequestErrorAuthRequired
-		} else {
-			status.ErrorCode = GitHubChangeRequestErrorInternal
-			for _, entry := range raw.Hosts["github.com"] {
-				if !entry.Active {
-					continue
-				}
-				switch entry.State {
-				case "success":
-					status.LoggedIn = true
-					status.Username = entry.Login
-					status.Protocol = entry.GitProtocol
-					status.Scopes = entry.Scopes
-					status.ErrorCode = ""
-				case "timeout":
-					status.ErrorCode = GitHubChangeRequestErrorNetworkUnavailable
-				case "error":
-					status.ErrorCode = githubAuthStatusErrorCode(CommandResult{Stderr: entry.Error})
-				}
-				break
-			}
-		}
+	viewer := g.GetAuthenticatedUser()
+	status := GitHubAuthStatus{
+		Host:        "github.com",
+		LoggedIn:    viewer.Success,
+		Username:    viewer.User.Login,
+		AccountType: strings.ToLower(viewer.User.Type),
+		ErrorCode:   viewer.ErrorCode,
 	}
-
 	switch status.ErrorCode {
 	case "":
 	case GitHubChangeRequestErrorAuthRequired:
@@ -1254,6 +1220,7 @@ func githubAuthStatusErrorCode(result CommandResult) GitHubChangeRequestErrorCod
 		strings.Contains(message, "temporary failure in name resolution"):
 		return GitHubChangeRequestErrorNetworkUnavailable
 	case strings.Contains(message, "not logged into"),
+		strings.Contains(message, "to get started with github cli"),
 		strings.Contains(message, "token is invalid"),
 		strings.Contains(message, "token in ") && strings.Contains(message, " is invalid"):
 		return GitHubChangeRequestErrorAuthRequired
