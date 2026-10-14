@@ -1246,8 +1246,7 @@ export function RepoProvider({ children }: RepoProviderProps) {
 
   // ===== Commit & Sync Operations =====
 
-  // Commit all changes with message
-  // force: bypass protected branch check (used when user explicitly confirms)
+  // Save on the active branch after locally validating the project default.
   const commitChanges = useCallback(async (message: string, _force = false): Promise<boolean> => {
     if (!repoPath) {
       showMessage('error', 'No repository open');
@@ -1741,7 +1740,13 @@ const generateOperationId = useCallback((): string => {
 
       const result = await withOperationLock('Saving to new branch', async () => {
         if (session !== repoRefreshSession.current) return false;
-        if (repoStatus?.hasUpstream === false && repoStatus.totalLocalCommits === 0) {
+        const status = await Status(repoPath);
+        if (session !== repoRefreshSession.current) return false;
+        if (status.hasError) {
+          showMessage('error', 'The project could not be checked. Refresh the project and try again.');
+          return false;
+        }
+        if (status.hasUpstream === false && status.totalLocalCommits === 0) {
           showMessage('error', 'Save the first snapshot on the current branch before branching and saving.');
           return false;
         }
