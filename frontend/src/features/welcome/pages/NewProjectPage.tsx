@@ -211,6 +211,7 @@ function NewProjectPage({ prefillPath = '', onPrefillApplied }: NewProjectPagePr
     installRequiredPackages,
     ghAuthStatus,
     isCheckingGhAuth,
+    isStartingGitHubLogin,
     startGitHubLogin,
     loadUserOrganizations,
     createProject,
@@ -355,6 +356,7 @@ function NewProjectPage({ prefillPath = '', onPrefillApplied }: NewProjectPagePr
   const handleGitHubConnect = useCallback(async () => {
     setError(null);
     const result = await startGitHubLogin();
+    if (result.cancelled) return;
     if (result.success && result.userCode) {
       setDeviceFlow({
         isOpen: true,
@@ -735,9 +737,9 @@ function NewProjectPage({ prefillPath = '', onPrefillApplied }: NewProjectPagePr
                         variant="secondary"
                         size="sm"
                         onClick={handleGitHubConnect}
-                        disabled={isCheckingGhAuth || isCreating || isInstallingPackages}
+                        disabled={isCheckingGhAuth || isStartingGitHubLogin || isCreating || isInstallingPackages}
                       >
-                        {isCheckingGhAuth ? (
+                        {isCheckingGhAuth || isStartingGitHubLogin ? (
                           <Loader2 className="animate-spin" size={14} />
                         ) : (
                           <Github style={{ width: ICON_SIZES.sm, height: ICON_SIZES.sm }} />

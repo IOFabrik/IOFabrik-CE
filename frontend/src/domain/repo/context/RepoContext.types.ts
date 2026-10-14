@@ -716,6 +716,7 @@ export interface RepoContextValue {
   ghAuthStatus: GitHubAuthStatus | null;
   isOffline: boolean;
   isCheckingGhAuth: boolean;
+  isStartingGitHubLogin: boolean;
   ghRepos: GitHubRepo[];
   isLoadingGhRepos: boolean;
   changeRequestRepository: GitHubChangeRequestRepository | null;

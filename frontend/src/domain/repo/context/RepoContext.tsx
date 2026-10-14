@@ -348,6 +348,8 @@ export function RepoProvider({ children }: RepoProviderProps) {
     ghInstalled, setGhInstalled, ghVersion, ghAuthStatus, isCheckingGhAuth,
     isOffline, checkGitHubAuth, resetGitHubAuth,
   } = useGitHubAuthStatus();
+  const [isStartingGitHubLogin, setIsStartingGitHubLogin] = useState(false);
+  const gitHubLoginStartRef = useRef(false);
   const [ghRepos, setGhRepos] = useState<GitHubRepo[]>([]);
   const [isLoadingGhRepos, setIsLoadingGhRepos] = useState(false);
   const [changeRequestRepository, setChangeRequestRepository] = useState<GitHubChangeRequestRepository | null>(null);
@@ -2781,6 +2783,12 @@ export function RepoProvider({ children }: RepoProviderProps) {
 
   // Start GitHub login (device flow) - returns verification code
   const startGitHubLogin = useCallback(async (): Promise<GitHubDeviceFlowResult> => {
+    // Every entry point shares one backend attempt and must have one dialog owner.
+    if (gitHubLoginStartRef.current) {
+      return { success: false, cancelled: true };
+    }
+    gitHubLoginStartRef.current = true;
+    setIsStartingGitHubLogin(true);
     try {
       const result = await AuthLoginStart();
       return result as GitHubDeviceFlowResult;
@@ -2789,6 +2797,9 @@ export function RepoProvider({ children }: RepoProviderProps) {
         success: false,
         error: 'GitHub sign-in could not start. Try connecting again.',
       };
+    } finally {
+      gitHubLoginStartRef.current = false;
+      setIsStartingGitHubLogin(false);
     }
   }, []);
 
@@ -3904,6 +3915,7 @@ export function RepoProvider({ children }: RepoProviderProps) {
     ghAuthStatus,
     isOffline,
     isCheckingGhAuth,
+    isStartingGitHubLogin,
     ghRepos,
     isLoadingGhRepos,
     changeRequestRepository,
@@ -3981,7 +3993,7 @@ export function RepoProvider({ children }: RepoProviderProps) {
     createBranchFromDetached,
     removeAllStaleLocks,
     // GitHub dependencies
-    ghInstalled, ghVersion, ghAuthStatus, isOffline, isCheckingGhAuth, ghRepos, isLoadingGhRepos,
+    ghInstalled, ghVersion, ghAuthStatus, isOffline, isCheckingGhAuth, isStartingGitHubLogin, ghRepos, isLoadingGhRepos,
     changeRequestRepository, changeRequestViewerLogin, changeRequests, omittedExternalChangeRequestCount, changeRequestsMayHaveMore, isLoadingChangeRequests, changeRequestError,
     selectedChangeRequest, changeRequestFiles, changeRequestTotalFiles, isChangeRequestFilesTruncated, selectedChangeRequestFilePath, isLoadingChangeRequestDetail, changeRequestDetailError,
     changeRequestSnapshot, isPreparingChangeRequestSnapshot, changeRequestSnapshotError,

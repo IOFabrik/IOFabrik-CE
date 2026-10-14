@@ -37,7 +37,7 @@ interface UseGitHubDeviceFlowResult {
 export function useGitHubDeviceFlow(
   options: UseGitHubDeviceFlowOptions = {},
 ): UseGitHubDeviceFlowResult {
-  const { startGitHubLogin } = useRepo();
+  const { startGitHubLogin, isStartingGitHubLogin } = useRepo();
   const [deviceFlow, setDeviceFlow] = useState<GitHubDeviceFlowState>(CLOSED_DEVICE_FLOW_STATE);
   const [isStarting, setIsStarting] = useState(false);
   const startingRef = useRef(false);
@@ -95,7 +95,7 @@ export function useGitHubDeviceFlow(
 
   return {
     deviceFlow,
-    isStarting,
+    isStarting: isStarting || isStartingGitHubLogin === true,
     startDeviceFlow,
     closeDeviceFlow,
     handleDeviceFlowOpenChange,
