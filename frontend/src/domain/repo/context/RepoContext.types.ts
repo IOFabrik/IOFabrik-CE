@@ -65,6 +65,7 @@ export interface GitHubAuthStatus {
   token?: string;       // Masked or partial token
   scopes?: string;      // Token scopes
   error?: string;
+  errorCode?: GitHubChangeRequestErrorCode;
 }
 
 /**
@@ -713,6 +714,7 @@ export interface RepoContextValue {
   ghInstalled: boolean;
   ghVersion: string;
   ghAuthStatus: GitHubAuthStatus | null;
+  isOffline: boolean;
   isCheckingGhAuth: boolean;
   ghRepos: GitHubRepo[];
   isLoadingGhRepos: boolean;

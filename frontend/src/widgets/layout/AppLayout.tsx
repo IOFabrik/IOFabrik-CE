@@ -6,6 +6,7 @@ import TopBar from './TopBar';
 import ActivityBar from './ActivityBar';
 import Sidebar from './Sidebar';
 import MainArea from './MainArea';
+import GitHubStatusBanner from './GitHubStatusBanner';
 import NonGitFolderPromptModal from './NonGitFolderPromptModal';
 import AdditionalPackagesModal from './AdditionalPackagesModal';
 import GitIdentityPromptModal from './GitIdentityPromptModal';
@@ -58,6 +59,7 @@ function AppLayoutInner(): JSX.Element {
           </div>
         </div>
       </div>
+      <GitHubStatusBanner />
     </div>
   );
 }

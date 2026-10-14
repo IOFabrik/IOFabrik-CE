@@ -40,8 +40,6 @@ import {
   GetBisectState,
   GetGitVersion,
   IsGHInstalled,
-  GetGHVersion,
-  AuthStatus,
   GetAuthenticatedUser,
   GetChangeRequest,
   GetChangeRequestRepository,
@@ -118,6 +116,7 @@ import {
   OpenInTerminal,
 } from '../services/repo-commands';
 import { useStatusPolling } from '../polling/useStatusPolling';
+import { useGitHubAuthStatus } from '../polling/useGitHubAuthStatus';
 import { useAuth } from '../../auth/context/AuthContext';
 import { WatchDirectory, StopWatching } from '../../../../bindings/iofabrik/services/filewatcherservice';
 import { IsDefaultBranchSyncEligible } from '../../../../bindings/iofabrik/services/integrationsessionservice';
@@ -178,7 +177,6 @@ import type {
   GitIdentityPromptReason,
   GitIdentityPromptState,
   DefaultBranchSyncPromptState,
-  GitHubAuthStatus,
   GitHubAuthResult,
   GitHubDeviceFlowResult,
   GitHubRepo,
@@ -346,10 +344,10 @@ export function RepoProvider({ children }: RepoProviderProps) {
   const [packagesInstallMessage, setPackagesInstallMessage] = useState('');
   const [packagesInstallPercent, setPackagesInstallPercent] = useState<number | null>(null);
 
-  const [ghInstalled, setGhInstalled] = useState(false);
-  const [ghVersion, setGhVersion] = useState('');
-  const [ghAuthStatus, setGhAuthStatus] = useState<GitHubAuthStatus | null>(null);
-  const [isCheckingGhAuth, setIsCheckingGhAuth] = useState(false);
+  const {
+    ghInstalled, setGhInstalled, ghVersion, ghAuthStatus, isCheckingGhAuth,
+    isOffline, checkGitHubAuth, resetGitHubAuth,
+  } = useGitHubAuthStatus();
   const [ghRepos, setGhRepos] = useState<GitHubRepo[]>([]);
   const [isLoadingGhRepos, setIsLoadingGhRepos] = useState(false);
   const [changeRequestRepository, setChangeRequestRepository] = useState<GitHubChangeRequestRepository | null>(null);
@@ -2758,31 +2756,6 @@ export function RepoProvider({ children }: RepoProviderProps) {
 
   // ===== GitHub Handlers (Phase 2) =====
 
-  // Check GitHub CLI installation and auth status
-  const checkGitHubAuth = useCallback(async (): Promise<void> => {
-    setIsCheckingGhAuth(true);
-    try {
-      const installed = await IsGHInstalled();
-      setGhInstalled(installed);
-      
-      if (installed) {
-        const version = await GetGHVersion();
-        setGhVersion(version);
-        
-        const status = await AuthStatus();
-        setGhAuthStatus(status as GitHubAuthStatus);
-      } else {
-        setGhVersion('');
-        setGhAuthStatus(null);
-      }
-    } catch (err) {
-      console.error('Failed to check GitHub auth:', err);
-      setGhAuthStatus(null);
-    } finally {
-      setIsCheckingGhAuth(false);
-    }
-  }, []);
-
   // Login to GitHub
   const loginGitHub = useCallback(async (): Promise<GitHubAuthResult> => {
     try {
@@ -2856,8 +2829,9 @@ export function RepoProvider({ children }: RepoProviderProps) {
     try {
       const result = await AuthLogout();
       if (result.success) {
-        setGhAuthStatus(null);
+        resetGitHubAuth();
         setGhRepos([]);
+        await checkGitHubAuth();
         showMessage('success', 'Disconnected from GitHub');
       } else {
         showMessage('error', result.error || 'GitHub logout failed');
@@ -2872,7 +2846,7 @@ export function RepoProvider({ children }: RepoProviderProps) {
       showMessage('error', result.error!);
       return result;
     }
-  }, [showMessage]);
+  }, [checkGitHubAuth, resetGitHubAuth, showMessage]);
 
   // Load GitHub repositories
   const loadGitHubRepos = useCallback(async (
@@ -3604,11 +3578,6 @@ export function RepoProvider({ children }: RepoProviderProps) {
     initializeToolchain();
   }, [refreshToolchainStatus, installRequiredPackages, isWindowsPlatform]);
 
-  // Check GitHub auth status on mount
-  useEffect(() => {
-    checkGitHubAuth();
-  }, [checkGitHubAuth]);
-
   // Load last opened repository on mount
   useEffect(() => {
     const loadLastRepo = async () => {
@@ -3933,6 +3902,7 @@ export function RepoProvider({ children }: RepoProviderProps) {
     ghInstalled,
     ghVersion,
     ghAuthStatus,
+    isOffline,
     isCheckingGhAuth,
     ghRepos,
     isLoadingGhRepos,
@@ -4011,7 +3981,7 @@ export function RepoProvider({ children }: RepoProviderProps) {
     createBranchFromDetached,
     removeAllStaleLocks,
     // GitHub dependencies
-    ghInstalled, ghVersion, ghAuthStatus, isCheckingGhAuth, ghRepos, isLoadingGhRepos,
+    ghInstalled, ghVersion, ghAuthStatus, isOffline, isCheckingGhAuth, ghRepos, isLoadingGhRepos,
     changeRequestRepository, changeRequestViewerLogin, changeRequests, omittedExternalChangeRequestCount, changeRequestsMayHaveMore, isLoadingChangeRequests, changeRequestError,
     selectedChangeRequest, changeRequestFiles, changeRequestTotalFiles, isChangeRequestFilesTruncated, selectedChangeRequestFilePath, isLoadingChangeRequestDetail, changeRequestDetailError,
     changeRequestSnapshot, isPreparingChangeRequestSnapshot, changeRequestSnapshotError,
