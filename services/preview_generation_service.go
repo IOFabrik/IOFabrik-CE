@@ -145,6 +145,17 @@ func (s *PreviewGenerationService) reconcileSDK(boot string) error {
 		if err := json.Unmarshal(data, &prior); err != nil || prior.BootID == "" || !validPreviewOperationID(prior.OperationID) {
 			return fmt.Errorf("invalid SDK operation record")
 		}
+		if strings.HasPrefix(boot, "kernel-event-v1:") && !strings.HasPrefix(prior.BootID, "kernel-event-v1:") {
+			// Older builds stored only the environment GUID. Establish the new
+			// evidence now, then require a further boot; changing formats alone
+			// must never be treated as proof that an SDK operation stopped.
+			prior.BootID = boot
+			prior.Observed = false
+			if err := previewWriteJSON(path, prior); err != nil {
+				return err
+			}
+			return fmt.Errorf("fresh kernel startup evidence is required")
+		}
 		if prior.BootID == boot && !(prior.Observed && os.IsNotExist(markerErr)) {
 			return fmt.Errorf("SDK cleanup remains uncertain")
 		}

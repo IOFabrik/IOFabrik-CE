@@ -437,3 +437,21 @@ func TestPreviewStructuredSDKFailureRequiresRestart(t *testing.T) {
 		t.Fatal("SDK recovery state was discarded")
 	}
 }
+
+func TestPreviewLegacyBootEvidenceRequiresAnotherRestart(t *testing.T) {
+	s, root, source := previewTestService(t)
+	s.runHelper = func(context.Context, string, io.Writer, io.Writer, string, ...string) CommandResult {
+		return CommandResult{Error: "interrupted"}
+	}
+	_ = generateTestPreview(t, s, root, source)
+	s.bootID = func() (string, error) { return "kernel-event-v1:machine:100", nil }
+	s.runHelper = previewFakeHelper(t, nil)
+	if result := generateTestPreview(t, s, root, source); result.Error != previewSDKCleanupMessage {
+		t.Fatalf("format migration bypassed recovery: %+v", result)
+	}
+	if result := generateTestPreview(t, s, root, source); result.Error != previewSDKCleanupMessage {
+		t.Fatalf("same startup bypassed recovery: %+v", result)
+	}
+	s.bootID = func() (string, error) { return "kernel-event-v1:machine:200", nil }
+	requirePreviewSuccess(t, generateTestPreview(t, s, root, source))
+}
