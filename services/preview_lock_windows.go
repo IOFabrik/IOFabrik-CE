@@ -5,11 +5,20 @@ package services
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"runtime"
 	"unsafe"
 
 	"golang.org/x/sys/windows"
 )
+
+func platformPreviewStateDirectory() string {
+	root, err := windows.KnownFolderPath(windows.FOLDERID_LocalAppData, 0)
+	if err != nil {
+		return ""
+	}
+	return filepath.Join(root, "IOFabrik", "LDSDK")
+}
 
 func lockPreviewFile(file *os.File, exclusive bool) error {
 	flags := uint32(windows.LOCKFILE_FAIL_IMMEDIATELY)

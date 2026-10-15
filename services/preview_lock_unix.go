@@ -6,7 +6,12 @@ import (
 	"fmt"
 	"golang.org/x/sys/unix"
 	"os"
+	"path/filepath"
 )
+
+func platformPreviewStateDirectory() string {
+	return filepath.Join(GetDataLocationsSnapshot().LocalDataDir, "LDSDK")
+}
 
 func lockPreviewFile(file *os.File, exclusive bool) error {
 	mode := unix.LOCK_SH

@@ -11,15 +11,18 @@ import (
 const previewBusyMessage = "A preview is being generated for this project. Wait for it to finish, then try again."
 const previewRecoveryMessage = "A preview was interrupted. Select Generate preview again to restore complete project files before saving."
 
-func previewStateDirectory() string {
-	return filepath.Join(GetDataLocationsSnapshot().LocalDataDir, "LDSDK")
-}
+// Match the helper's Windows Known Folder, including when a launcher overrides
+// LOCALAPPDATA for UI settings. SDK coordination must remain per Windows user.
+var previewStateDirectory = platformPreviewStateDirectory
 
 func previewPathKey(path string) string {
 	return fmt.Sprintf("%x", sha256.Sum256([]byte(normalizeRepositoryKey(path))))
 }
 
 func acquirePreviewLock(path string, exclusive bool) (func(), error) {
+	if !filepath.IsAbs(path) {
+		return nil, fmt.Errorf("cannot resolve preview storage")
+	}
 	if err := os.MkdirAll(filepath.Dir(path), 0700); err != nil {
 		return nil, err
 	}
@@ -111,6 +114,14 @@ func (r *CommandRunner) previewCommandLease(workDir, name string, args []string)
 	switch command {
 	case "rev-parse", "status", "diff", "log", "show", "ls-files", "ls-tree", "cat-file", "check-attr", "check-ignore", "merge-base", "rev-list", "for-each-ref", "version", "ls-remote", "check-ref-format":
 		return func() {}, nil
+	case "branch":
+		if len(args) == 2 && args[1] == "--show-current" {
+			return func() {}, nil
+		}
+	case "config":
+		if len(args) == 3 && (args[1] == "--get" || args[1] == "--get-all") {
+			return func() {}, nil
+		}
 	case "symbolic-ref":
 		// Only the existing query forms are read-only; setting/deleting a
 		// symbolic reference must hold a mutation lease too.

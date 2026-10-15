@@ -18,6 +18,9 @@ import (
 func previewTestService(t *testing.T) (*PreviewGenerationService, string, string) {
 	t.Helper()
 	data := t.TempDir()
+	previousStateDirectory := previewStateDirectory
+	previewStateDirectory = func() string { return filepath.Join(data, "IOFabrik", "LDSDK") }
+	t.Cleanup(func() { previewStateDirectory = previousStateDirectory })
 	t.Setenv("XDG_CACHE_HOME", data)
 	if os.PathSeparator == '\\' {
 		t.Setenv("LOCALAPPDATA", data)
@@ -357,6 +360,9 @@ func TestPreviewBusyBlocksMutationsAndNormalExitWaits(t *testing.T) {
 	}
 	if result := NewCommandRunner().RunGit(root, "status", "--porcelain"); !result.Success {
 		t.Fatal("read-only status was blocked")
+	}
+	if result := NewCommandRunner().RunGit(root, "branch", "--show-current"); !result.Success {
+		t.Fatal("read-only branch query was blocked")
 	}
 	if result := NewGitService().CheckoutNewBranch(root, "must-not-switch"); result.Success {
 		t.Fatal("branch changed during conversion")

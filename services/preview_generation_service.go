@@ -60,6 +60,9 @@ func NewPreviewGenerationService() *PreviewGenerationService {
 
 func (s *PreviewGenerationService) SetApp(app *application.App) {
 	s.app = app
+	if !filepath.IsAbs(s.stateDir) {
+		return
+	}
 	// Reconcile interrupted directory swaps before the first project is opened.
 	entries, _ := os.ReadDir(filepath.Join(s.stateDir, "transactions"))
 	for _, entry := range entries {
@@ -186,6 +189,9 @@ func (s *PreviewGenerationService) GeneratePreview(repoPath, sourcePath, operati
 	}
 	if !validPreviewOperationID(operationID) {
 		return fail("This preview request is invalid. Select Generate preview again.", nil)
+	}
+	if !filepath.IsAbs(s.stateDir) {
+		return fail("Cannot locate Windows app storage. Check your Windows profile and reopen the app.", nil)
 	}
 	if runtime.GOOS != "windows" && s.platformReady == nil {
 		return fail("Preview generation requires Windows x64 with Logix Designer SDK installed.", nil)
