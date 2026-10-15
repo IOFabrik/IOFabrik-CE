@@ -160,6 +160,12 @@ func parseGitProgress(line string) (phase string, percent int, message string) {
 // prune: if true, adds --prune to remove stale remote-tracking branches
 // tags: if true, adds --tags to fetch all tags
 func (p *ProgressService) SyncWithProgress(repoPath, operationID string, prune bool, tags bool) SyncResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedSync(previewErr.Error())
+	}
+	defer previewRelease()
+
 	p.mu.Lock()
 	defer p.mu.Unlock()
 	defer p.publishRepoMutation(repoPath, RepoMutationPull)
@@ -345,6 +351,12 @@ func (p *ProgressService) getCurrentBranch(repoPath string) string {
 
 // PullWithProgress performs git pull with progress updates
 func (p *ProgressService) PullWithProgress(repoPath, operationID string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	p.mu.Lock()
 	defer p.mu.Unlock()
 	defer p.publishRepoMutation(repoPath, RepoMutationPull)
@@ -371,6 +383,12 @@ func (p *ProgressService) PullWithProgress(repoPath, operationID string) Operati
 
 // PushWithProgress performs git push with progress updates
 func (p *ProgressService) PushWithProgress(repoPath, operationID string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	p.mu.Lock()
 	defer p.mu.Unlock()
 

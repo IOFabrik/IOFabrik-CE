@@ -102,6 +102,7 @@ import {
   TrackPattern,
   EnsurePortableToolchainIfNeeded,
   SyncWithProgress,
+  GeneratePreview,
   GetAppSettings,
   SaveAppSettings,
   EnsureIdentity,
@@ -379,6 +380,8 @@ export function RepoProvider({ children }: RepoProviderProps) {
     operationId: null,
     title: '',
   });
+  const [previewError, setPreviewError] = useState<string | null>(null);
+  const dismissPreviewError = useCallback(() => setPreviewError(null), []);
   
   // ===== Refs =====
   const operationIdCounter = useRef(0);
@@ -1327,6 +1330,30 @@ export function RepoProvider({ children }: RepoProviderProps) {
   const closeProgressModal = useCallback(() => {
     setProgressModal({ isOpen: false, operationId: null, title: '' });
   }, []);
+
+  const generatePreview = useCallback(async (filePath: string): Promise<boolean> => {
+    if (!repoPath) return false;
+    const result = await withOperationLock('Generating preview', async () => {
+      setPreviewError(null);
+      const operationId = crypto.randomUUID();
+      setProgressModal({ isOpen: true, operationId, title: 'Generating preview', kind: 'preview' });
+      try {
+        const generated = await GeneratePreview(repoPath, filePath, operationId);
+        if (!generated.success) {
+          setPreviewError(generated.error || 'The preview could not be generated. Check the selected ACD and try again.');
+          return false;
+        }
+        return true;
+      } catch {
+        setPreviewError('The preview did not finish. Reopen the app, check the SDK installation, then try again.');
+        return false;
+      } finally {
+        closeProgressModal();
+        await refreshAll();
+      }
+    });
+    return result ?? false;
+  }, [repoPath, withOperationLock, closeProgressModal, refreshAll]);
 
   const runStartupAutoPull = useCallback(async (): Promise<void> => {
     if (!startupAutoPullDueRef.current || startupAutoPullDoneRef.current) return;
@@ -3818,6 +3845,9 @@ export function RepoProvider({ children }: RepoProviderProps) {
     
     // Progress modal state
     progressModal,
+    generatePreview,
+    previewError,
+    dismissPreviewError,
     handleProgressComplete,
     
     // Feedback
@@ -3974,7 +4004,7 @@ export function RepoProvider({ children }: RepoProviderProps) {
     operationInProgress, operationLabel,
     hasRemote, refreshRemotes,
     repoSettings, refreshRepoSettings, projectDefaultState,
-    progressModal, handleProgressComplete,
+    progressModal, handleProgressComplete, generatePreview, previewError, dismissPreviewError,
     showMessage,
     nonGitFolderPromptPath, dismissNonGitFolderPrompt,
     gitIdentityPrompt, submitGitIdentityPrompt, cancelGitIdentityPrompt,

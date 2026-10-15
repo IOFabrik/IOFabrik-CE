@@ -24,8 +24,9 @@ type CommandResult struct {
 
 // CommandRunner executes shell commands with working directory support
 type CommandRunner struct {
-	Timeout     time.Duration
-	credentials *gitCredentialProfile
+	Timeout      time.Duration
+	credentials  *gitCredentialProfile
+	previewOwner bool
 }
 
 // NewCommandRunner creates a new CommandRunner with default timeout
@@ -50,12 +51,23 @@ func (r *CommandRunner) prepare(ctx context.Context, workDir, name string, args 
 	cmd.Dir = workDir
 	cmd.SysProcAttr = hideWindowAttr()
 	cmd.Env = buildCommandEnv(name)
+	// Status queries may run during generation, but must not refresh the index
+	// behind the exclusive publication lease. Required mutation locks are
+	// unaffected by disabling Git's optional locks.
+	if r.previewOwner || name == GitPath() || name == "git" {
+		cmd.Env = setEnvCaseInsensitive(cmd.Env, "GIT_OPTIONAL_LOCKS", "0")
+	}
 	return cmd
 }
 
 // runWithWriters keeps caller-owned parsing and logging, and bounds waits on
 // inherited pipes after cancellation. The supplied context owns the timeout.
 func (r *CommandRunner) runWithWriters(ctx context.Context, workDir string, stdout, stderr io.Writer, name string, args ...string) CommandResult {
+	release, guardErr := r.previewCommandLease(workDir, name, args)
+	if guardErr != nil {
+		return CommandResult{ExitCode: -1, Error: guardErr.Error(), Stderr: guardErr.Error()}
+	}
+	defer release()
 	cmd := r.prepare(ctx, workDir, name, args)
 	cmd.Stdout = stdout
 	cmd.Stderr = stderr
@@ -85,6 +97,11 @@ func (r *CommandRunner) Run(workDir string, name string, args ...string) Command
 
 // RunWithContext executes a command with a custom context
 func (r *CommandRunner) RunWithContext(ctx context.Context, workDir string, name string, args ...string) CommandResult {
+	release, guardErr := r.previewCommandLease(workDir, name, args)
+	if guardErr != nil {
+		return CommandResult{ExitCode: -1, Error: guardErr.Error(), Stderr: guardErr.Error()}
+	}
+	defer release()
 	logger := GetDebugLogger()
 	start := time.Now()
 
@@ -153,6 +170,11 @@ func (r *CommandRunner) RunGit(repoPath string, args ...string) CommandResult {
 // Use for binary content (images, etc.) where string conversion corrupts data.
 // Returns the raw bytes and any error encountered.
 func (r *CommandRunner) RunGitRaw(repoPath string, args ...string) ([]byte, error) {
+	release, guardErr := r.previewCommandLease(repoPath, GitPath(), args)
+	if guardErr != nil {
+		return nil, guardErr
+	}
+	defer release()
 	logger := GetDebugLogger()
 	start := time.Now()
 
@@ -253,6 +275,11 @@ func (r *CommandRunner) RunWithStdin(workDir string, stdinInput string, name str
 
 // RunWithContextAndStdin executes a command with a custom context and stdin input
 func (r *CommandRunner) RunWithContextAndStdin(ctx context.Context, workDir string, stdinInput string, name string, args ...string) CommandResult {
+	release, guardErr := r.previewCommandLease(workDir, name, args)
+	if guardErr != nil {
+		return CommandResult{ExitCode: -1, Error: guardErr.Error(), Stderr: guardErr.Error()}
+	}
+	defer release()
 	logger := GetDebugLogger()
 	start := time.Now()
 

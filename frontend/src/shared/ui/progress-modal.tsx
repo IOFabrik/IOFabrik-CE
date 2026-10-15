@@ -5,7 +5,7 @@
  */
 import { memo, useEffect, useState, useRef } from "react";
 import { Loader2, CheckCircle, XCircle } from "lucide-react";
-import { onEvent } from "../runtime/events";
+import { onEvent, type AppEvent } from "../runtime/events";
 import { cn } from "../utils/misc";
 import { Progress } from "./progress";
 import { BlockingDialog, DialogContent } from "./dialog";
@@ -28,12 +28,13 @@ interface ProgressModalProps {
   operationId: string;
   title?: string;
   onComplete?: (success: boolean, error?: string) => void;
+  eventName?: AppEvent;
 }
 
 /**
  * ProgressModal - Displays a blocking modal during git operations.
  */
-function ProgressModal({ open, operationId, title = "Processing...", onComplete }: ProgressModalProps) {
+function ProgressModal({ open, operationId, title = "Processing...", onComplete, eventName = "git-progress" }: ProgressModalProps) {
   const [phase, setPhase] = useState("starting");
   const [percent, setPercent] = useState(-1); // -1 = indeterminate
   const [message, setMessage] = useState("Initializing...");
@@ -104,7 +105,7 @@ function ProgressModal({ open, operationId, title = "Processing...", onComplete 
       }
     };
 
-    const unsubscribe = onEvent("git-progress", handleProgress);
+    const unsubscribe = onEvent(eventName, handleProgress);
 
     return () => {
       unsubscribe();
@@ -112,7 +113,7 @@ function ProgressModal({ open, operationId, title = "Processing...", onComplete 
         clearTimeout(pendingUpdateRef.current);
       }
     };
-  }, [open, operationId]);
+  }, [open, operationId, eventName]);
 
   // Call onComplete after showing result briefly
   useEffect(() => {

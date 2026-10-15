@@ -667,22 +667,19 @@ function Toolbar({
   );
 }
 
-function showGeneratePreviewPlaceholder() {
-  toast.info('Preview generation is not available yet.');
-}
-
-function GeneratePreviewMenuItem({ fileName }: { fileName: string }) {
+const GeneratePreviewMenuItem = memo(function GeneratePreviewMenuItem({ fileName, onGenerate }: { fileName: string; onGenerate: () => void }) {
+  const { operationInProgress } = useRepo();
   // Menu content mounts on open, so eligibility uses the current file's basename.
   const parts = fileName.split('.');
   const eligible = parts.length === 2 && parts[0].length > 0 && parts[1].toLowerCase() === 'acd';
 
   return (
-    <ContextMenuItem disabled={!eligible} onSelect={showGeneratePreviewPlaceholder}>
+    <ContextMenuItem disabled={!eligible || operationInProgress} onSelect={onGenerate}>
       <FileSearch size={ICON_SIZES.sm} className="mr-2" />
       <span>Generate preview</span>
     </ContextMenuItem>
   );
-}
+});
 
 interface FileItemGridProps {
   file: FileEntry;
@@ -768,7 +765,7 @@ function FileItemGrid({ file, gitStatus, isLfs, lockOwner, isOwnLock, isSelected
             <ContextMenuShortcut>␣</ContextMenuShortcut>
           </ContextMenuItem>
         )}
-        {!file.isDirectory && <GeneratePreviewMenuItem fileName={file.name} />}
+        {!file.isDirectory && <GeneratePreviewMenuItem fileName={file.name} onGenerate={() => onContextAction?.('generate-preview', file)} />}
         <ContextMenuSeparator />
         <ContextMenuItem
           disabled={lockDisabled}
@@ -842,6 +839,7 @@ interface FileItemListProps {
 type FileContextAction = 
   | 'open'
   | 'preview'
+  | 'generate-preview'
   | 'lfs-lock'
   | 'lfs-unlock'
   | 'lfs-unlock-force'
@@ -996,7 +994,7 @@ const FileTableRow = memo(function FileTableRow({ file, gitStatus, isLfs, lockOw
             <ContextMenuShortcut>␣</ContextMenuShortcut>
           </ContextMenuItem>
         )}
-        {!file.isDirectory && <GeneratePreviewMenuItem fileName={file.name} />}
+        {!file.isDirectory && <GeneratePreviewMenuItem fileName={file.name} onGenerate={() => onContextAction?.('generate-preview', file)} />}
         <ContextMenuSeparator />
         <ContextMenuItem
           disabled={lockDisabled}
@@ -1486,7 +1484,7 @@ function SimpleFileBrowser({ repoPath }: SimpleFileBrowserProps) {
     owner: '',
   });
   
-  const { repoStatus, syncRepo, isSyncing, refreshProjectDefaultBranch } = useRepo();
+  const { repoStatus, syncRepo, isSyncing, refreshProjectDefaultBranch, generatePreview } = useRepo();
   const { openExplorerTab } = useLayout();
 
   const isOwnLockByName = useMemo(() => {
@@ -1861,6 +1859,10 @@ function SimpleFileBrowser({ repoPath }: SimpleFileBrowserProps) {
       case 'preview':
         handlePreview(file);
         break;
+      case 'generate-preview':
+        await generatePreview(file.path);
+        setRefreshTrigger(previous => previous + 1);
+        break;
       case 'lfs-lock':
         if (!repoPath) {
           toast.error('No repository open');
@@ -1939,7 +1941,7 @@ function SimpleFileBrowser({ repoPath }: SimpleFileBrowserProps) {
         setSelectedPath(file.path);
         break;
     }
-  }, [getRepoRelativePath, handleItemDoubleClick, handleMoveToTrash, handlePreview, lockOwnerByName, repoPath]);
+  }, [getRepoRelativePath, handleItemDoubleClick, handleMoveToTrash, handlePreview, lockOwnerByName, repoPath, generatePreview]);
 
   const selectedLockOwner = selectedFile ? lockOwnerByName[selectedFile.name] : undefined;
   const selectedIsOwnLock = selectedFile ? isOwnLockByName[selectedFile.name] : undefined;

@@ -1,0 +1,146 @@
+{
+  "version": "0.1.0",
+  "commit": "1c7ddf2b019594149eacddee6dd48b84150a6853",
+  "files": [
+    {
+      "path": "FtspAdapter.exe",
+      "bytes": 851792,
+      "sha256": "5d715c73119390eac0725228b0cef165565172040001cce362fadc89efbb449a"
+    },
+    {
+      "path": "Google.Protobuf.dll",
+      "bytes": 483944,
+      "sha256": "9406842ba3e5edce5b1a0abfb26f6d91aaa29bd4ebdb00b8bcc6b4d7a31c5545"
+    },
+    {
+      "path": "Grpc.Core.Api.dll",
+      "bytes": 70248,
+      "sha256": "abd635b34af98e9297d8ae247f611d430a800f13541d7b0eb8a5f9e164a6c43b"
+    },
+    {
+      "path": "Grpc.Net.Client.dll",
+      "bytes": 301160,
+      "sha256": "5527261a8ae10a705747a8e57c2970ff01ab7614b0186fa22d9ea0a7e4b2d566"
+    },
+    {
+      "path": "Grpc.Net.Common.dll",
+      "bytes": 22120,
+      "sha256": "d840e28db322bade9f1a3f31f5f941fff30e270ad6a2b523b5b19d5870c0fd7e"
+    },
+    {
+      "path": "L5xploderLib.dll",
+      "bytes": 65536,
+      "sha256": "8ea62da71da53ab49110f2803565e3880996d7c32cb8d2ce26b81ed2facdb82d"
+    },
+    {
+      "path": "L5xploderLib.pdb",
+      "bytes": 30256,
+      "sha256": "582bb8f8461917ef6d536afb6260d1d952ed9b9bebdfcdde3ecf10ab554cb55e"
+    },
+    {
+      "path": "LDSDK.Core.dll",
+      "bytes": 23552,
+      "sha256": "6618b7eba110ee58872d6026130b1f5f9378064342acacda2966f5b5b4636a0c"
+    },
+    {
+      "path": "LDSDK.Core.pdb",
+      "bytes": 15324,
+      "sha256": "0bdcdc96dd588fb2ab6a664bbf02ac36abd3899231e4bb43f511a90dd752e7c5"
+    },
+    {
+      "path": "LDSDK.Helper.deps.json",
+      "bytes": 13924,
+      "sha256": "8d56eedf0149a225549301f44823da34f34271567d7ec05ef6f9e2c63eadb969"
+    },
+    {
+      "path": "LDSDK.Helper.dll",
+      "bytes": 9728,
+      "sha256": "2c1096d5a6e2ce69653d2c2599e5664d7f6931fcf24cceab88cfa6efd4338b31"
+    },
+    {
+      "path": "LDSDK.Helper.exe",
+      "bytes": 162304,
+      "sha256": "dce9c5af3b52fda5a9efd234a11114190ff9c3ed2df6f7b33c779d6e33dd6dd1"
+    },
+    {
+      "path": "LDSDK.Helper.pdb",
+      "bytes": 14096,
+      "sha256": "f7918a6590dc80eab3b5805bec4fda65c44b9f85e8ca212e5dcdf752f2c5e901"
+    },
+    {
+      "path": "LDSDK.Helper.runtimeconfig.json",
+      "bytes": 330,
+      "sha256": "9950d4583cfc9a106857c0d5b8a75b53e8774852b57b80bc3823a74d44a4d87f"
+    },
+    {
+      "path": "Microsoft.Extensions.Configuration.Abstractions.dll",
+      "bytes": 27936,
+      "sha256": "fefcdb267a73099cb90e5af56b5ef2bca59bed974339b3a6810352bde23537a6"
+    },
+    {
+      "path": "Microsoft.Extensions.Configuration.EnvironmentVariables.dll",
+      "bytes": 21280,
+      "sha256": "797b3034fd173caff0850cd580428a5f4aeb7da27bf03369ad7f2b0996019399"
+    },
+    {
+      "path": "Microsoft.Extensions.Configuration.FileExtensions.dll",
+      "bytes": 27936,
+      "sha256": "acf5896d0f34fa1a43295797584b3805c24743ce25ee87538eeec83b012bbf4f"
+    },
+    {
+      "path": "Microsoft.Extensions.Configuration.Json.dll",
+      "bytes": 26920,
+      "sha256": "15e1262880f263806a2808d750688739662323b20ccd9835222fff8c30899a4a"
+    },
+    {
+      "path": "Microsoft.Extensions.Configuration.dll",
+      "bytes": 43800,
+      "sha256": "b5cd9da2c3364a5b201cecb0c80e25227d27ba44d96343d2894ff8ef3fd81550"
+    },
+    {
+      "path": "Microsoft.Extensions.FileProviders.Abstractions.dll",
+      "bytes": 22176,
+      "sha256": "f08b1f597abb3647ab6e844282ded763e6078dbef6dd54b9d956ca419fac42fe"
+    },
+    {
+      "path": "Microsoft.Extensions.FileProviders.Physical.dll",
+      "bytes": 44808,
+      "sha256": "9f67076c79a953f5068c0792114f9722527cfa17ed7414c73fd14833bfe59918"
+    },
+    {
+      "path": "Microsoft.Extensions.FileSystemGlobbing.dll",
+      "bytes": 45848,
+      "sha256": "ed0855b522f09b5a9ddbb85de62042c25e07d10044086da8620c845de41e473c"
+    },
+    {
+      "path": "Microsoft.Extensions.Logging.Abstractions.dll",
+      "bytes": 62064,
+      "sha256": "d575c9d1543ca726ce14dbdffd103e93ea527cd46bb28316da1f4122dbc55d56"
+    },
+    {
+      "path": "Microsoft.Extensions.Primitives.dll",
+      "bytes": 43680,
+      "sha256": "446ff16e903e7479558816e213a3adee9a1c1adad65a56d853801b10933e29d7"
+    },
+    {
+      "path": "Newtonsoft.Json.dll",
+      "bytes": 712464,
+      "sha256": "22c649f75fce5be7c7ccda8880473b634ef69ecf33f5d1ab8ad892caf47d5a07"
+    },
+    {
+      "path": "RockwellAutomation.LogixDesigner.LogixProject.CSClient.dll",
+      "bytes": 905512,
+      "sha256": "77eb45515535f40cf26d9fdf9f08ce4ef9c5a7e6d82fecdc08a3e72d6ef8e846"
+    },
+    {
+      "path": "YamlDotNet.dll",
+      "bytes": 300032,
+      "sha256": "d618138109a40e4a7250e49e2abad8c450e3636bee18d7499ab231e37fa9150a"
+    },
+    {
+      "path": "notices/custom-tools-LICENSE.txt",
+      "bytes": 1075,
+      "sha256": "21cba811110c25c2bca1e4cef90bc5496c6a2dd6aa409a21bbd14c875be2a9b0"
+    }
+  ]
+}

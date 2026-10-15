@@ -75,6 +75,7 @@ func main() {
 	integrationSessionService.SetSettings(settingsService)
 	progressService := services.NewProgressService(integrationSessionService)
 	progressService.SetRepoEventBus(repoEventBus)
+	previewGenerationService := services.NewPreviewGenerationService()
 
 	// Create a new Wails application by providing the necessary options.
 	// Variables 'Name' and 'Description' are for application metadata.
@@ -85,6 +86,7 @@ func main() {
 		Windows:     application.WindowsOptions{WebviewUserDataPath: services.GetDataLocationsSnapshot().WebView2Dir},
 		Name:        "iofabrik",
 		Description: "IOFabrik",
+		OnShutdown:  func() { _ = previewGenerationService.ServiceShutdown() },
 		Services: []application.Service{
 			application.NewService(gitService),
 			application.NewService(services.NewLFSService()),
@@ -101,6 +103,7 @@ func main() {
 			application.NewService(localBinService),
 			application.NewService(conflictQueueService),
 			application.NewService(integrationSessionService),
+			application.NewService(previewGenerationService),
 		},
 		Assets: application.AssetOptions{
 			Handler: application.AssetFileServerFS(assets),
@@ -134,6 +137,7 @@ func main() {
 	localBinService.SetApp(app)
 	conflictQueueService.SetApp(app)
 	integrationSessionService.SetApp(app)
+	previewGenerationService.SetApp(app)
 
 	// An unfinished review from a previous run must be reconciled before the
 	// user can act on it. This only reports damage; it never moves a ref.

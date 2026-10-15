@@ -173,7 +173,16 @@ func validateOutput(root string) error {
 	if err != nil || len(entries) != 1 || entries[0].Name() != "RSLogix5000Content" || !entries[0].IsDir() {
 		return errors.New("unexpected helper output layout")
 	}
-	err = filepath.WalkDir(root, func(path string, entry os.DirEntry, err error) error {
+	return ValidateContent(filepath.Join(root, "RSLogix5000Content"))
+}
+
+// ValidateContent recognizes compatible vendor content without imposing any
+// ownership on unrelated siblings in the preview wrapper.
+func ValidateContent(content string) error {
+	if err := requirePhysicalPath(content); err != nil {
+		return err
+	}
+	err := filepath.WalkDir(content, func(path string, entry os.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
@@ -185,7 +194,6 @@ func validateOutput(root string) error {
 	if err != nil {
 		return err
 	}
-	content := filepath.Join(root, "RSLogix5000Content")
 	document, err := os.Open(filepath.Join(content, "RSLogix5000Content.xml"))
 	if err != nil {
 		return err

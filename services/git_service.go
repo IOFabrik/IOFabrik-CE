@@ -593,6 +593,12 @@ type OperationResult struct {
 // This is a composite operation that combines AddAll + Commit.
 // For finer control, use AddAll() and Commit() separately.
 func (g *GitService) CommitAll(repoPath string, message string) (opResult OperationResult) {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	defer g.publishRepoMutation(repoPath, RepoMutationCommit)
 	done := LogMethod("GitService.CommitAll", map[string]interface{}{"repoPath": repoPath, "message": message})
 	defer func() { done(opResult, nil) }()
@@ -804,6 +810,12 @@ func (g *GitService) rollbackBranchRename(repoPath string, currentName string, o
 // Add stages a specific file or directory for commit.
 // Equivalent to: git add <path>
 func (g *GitService) Add(repoPath string, path string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	if path == "" {
 		return failedOp("Path is required")
 	}
@@ -817,6 +829,12 @@ func (g *GitService) Add(repoPath string, path string) OperationResult {
 // AddAll stages all changes in the repository.
 // Equivalent to: git add .
 func (g *GitService) AddAll(repoPath string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	result := g.runner.RunGit(repoPath, "add", ".")
 	if !result.Success {
 		return failedOp("Failed to stage changes: " + getErrorMessage(result))
@@ -827,6 +845,12 @@ func (g *GitService) AddAll(repoPath string) OperationResult {
 // AddFiles stages multiple files for commit.
 // Equivalent to: git add -- <paths...>
 func (g *GitService) AddFiles(repoPath string, paths []string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	if len(paths) == 0 {
 		return failedOp("At least one path is required")
 	}
@@ -841,6 +865,12 @@ func (g *GitService) AddFiles(repoPath string, paths []string) OperationResult {
 // Unstage removes a file from the staging area without discarding changes.
 // Equivalent to: git restore --staged <path> (Git 2.23+) or git reset HEAD <path>
 func (g *GitService) Unstage(repoPath string, path string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	if path == "" {
 		return failedOp("Path is required")
 	}
@@ -859,6 +889,12 @@ func (g *GitService) Unstage(repoPath string, path string) OperationResult {
 // UnstageAll removes all files from the staging area.
 // Equivalent to: git restore --staged . (Git 2.23+) or git reset HEAD
 func (g *GitService) UnstageAll(repoPath string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	var result CommandResult
 	if g.SupportsRestore() {
 		result = g.runner.RunGit(repoPath, "restore", "--staged", ".")
@@ -875,6 +911,12 @@ func (g *GitService) UnstageAll(repoPath string) OperationResult {
 // Does NOT affect staged changes - use Unstage first if needed.
 // Equivalent to: git restore <path> (Git 2.23+) or git checkout -- <path>
 func (g *GitService) Restore(repoPath string, path string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	g = g.forGitOperation()
 	if path == "" {
 		return failedOp("Path is required")
@@ -895,6 +937,12 @@ func (g *GitService) Restore(repoPath string, path string) OperationResult {
 // Does NOT remove untracked files - use Clean for that.
 // Equivalent to: git restore . (Git 2.23+) or git checkout -- .
 func (g *GitService) RestoreAll(repoPath string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	g = g.forGitOperation()
 	var result CommandResult
 	if g.SupportsRestore() {
@@ -912,6 +960,12 @@ func (g *GitService) RestoreAll(repoPath string) OperationResult {
 // Does NOT remove ignored files by default.
 // Equivalent to: git clean -fd
 func (g *GitService) Clean(repoPath string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	result := g.runner.RunGit(repoPath, "clean", "-fd")
 	if !result.Success {
 		return failedOp("Failed to clean untracked files: " + getErrorMessage(result))
@@ -947,6 +1001,12 @@ func (g *GitService) CleanDryRun(repoPath string) ([]string, error) {
 // Does NOT auto-stage anything - use Add/AddAll first.
 // Equivalent to: git commit -m <message>
 func (g *GitService) Commit(repoPath string, message string) (opResult OperationResult) {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	defer g.publishRepoMutation(repoPath, RepoMutationCommit)
 	done := LogMethod("GitService.Commit", map[string]interface{}{"repoPath": repoPath, "message": message})
 	defer func() { done(opResult, nil) }()
@@ -971,6 +1031,12 @@ func (g *GitService) Commit(repoPath string, message string) (opResult Operation
 // Fetch downloads objects and refs from the remote without merging.
 // Equivalent to: git fetch [remote] [branch]
 func (g *GitService) Fetch(repoPath string, remote string, branch string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	g = g.forGitOperation()
 	done := LogMethod("GitService.Fetch", map[string]interface{}{"repoPath": repoPath, "remote": remote, "branch": branch})
 	defer func() { done(nil, nil) }()
@@ -999,6 +1065,12 @@ func (g *GitService) Fetch(repoPath string, remote string, branch string) Operat
 // FetchAll fetches from all remotes.
 // Equivalent to: git fetch --all
 func (g *GitService) FetchAll(repoPath string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	g = g.forGitOperation()
 	if !g.hasAnyRemote(repoPath) {
 		return failedOp("No remote repository configured. Publish to cloud first.")
@@ -1014,6 +1086,12 @@ func (g *GitService) FetchAll(repoPath string) OperationResult {
 // For safer operations with checks, use CheckoutBranch.
 // Equivalent to: git checkout <ref>
 func (g *GitService) Checkout(repoPath string, ref string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	g = g.forGitOperation()
 	defer g.publishRepoMutation(repoPath, RepoMutationCheckout)
 	done := LogMethod("GitService.Checkout", map[string]interface{}{"repoPath": repoPath, "ref": ref})
@@ -1032,6 +1110,12 @@ func (g *GitService) Checkout(repoPath string, ref string) OperationResult {
 // For safer operations with checks, use CreateBranchAndCheckout.
 // Equivalent to: git checkout -b <branch>
 func (g *GitService) CheckoutNewBranch(repoPath string, branchName string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	g = g.forGitOperation()
 	defer g.publishRepoMutation(repoPath, RepoMutationCheckout)
 	done := LogMethod("GitService.CheckoutNewBranch", map[string]interface{}{"repoPath": repoPath, "branchName": branchName})
@@ -1054,6 +1138,12 @@ func (g *GitService) CheckoutNewBranch(repoPath string, branchName string) Opera
 // WARNING: This is destructive - all uncommitted changes are lost.
 // Equivalent to: git reset --hard <ref>
 func (g *GitService) ResetHard(repoPath string, ref string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	g = g.forGitOperation()
 	defer g.publishRepoMutation(repoPath, RepoMutationOther)
 	if ref == "" {
@@ -1069,6 +1159,12 @@ func (g *GitService) ResetHard(repoPath string, ref string) OperationResult {
 // ResetSoft resets HEAD to a specific commit but keeps all changes staged.
 // Equivalent to: git reset --soft <ref>
 func (g *GitService) ResetSoft(repoPath string, ref string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	if ref == "" {
 		return failedOp("Reference is required")
 	}
@@ -1083,6 +1179,12 @@ func (g *GitService) ResetSoft(repoPath string, ref string) OperationResult {
 // This is the default git reset behavior.
 // Equivalent to: git reset <ref>
 func (g *GitService) ResetMixed(repoPath string, ref string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	defer g.publishRepoMutation(repoPath, RepoMutationOther)
 	if ref == "" {
 		ref = "HEAD"
@@ -1123,6 +1225,12 @@ func (g *GitService) HasStagedChanges(repoPath string) (bool, error) {
 // RemoveFile removes a file from the working tree and stages the removal.
 // Equivalent to: git rm <path>
 func (g *GitService) RemoveFile(repoPath string, path string, cached bool) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	if path == "" {
 		return failedOp("Path is required")
 	}
@@ -1141,6 +1249,12 @@ func (g *GitService) RemoveFile(repoPath string, path string, cached bool) Opera
 // MoveFile renames/moves a file and stages the change.
 // Equivalent to: git mv <source> <destination>
 func (g *GitService) MoveFile(repoPath string, source string, destination string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	if source == "" || destination == "" {
 		return failedOp("Source and destination paths are required")
 	}
@@ -1158,6 +1272,12 @@ func (g *GitService) MoveFile(repoPath string, source string, destination string
 
 // Pull fetches and merges changes from the remote
 func (g *GitService) Pull(repoPath string) (opResult OperationResult) {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	g = g.forGitOperation()
 	defer g.publishRepoMutation(repoPath, RepoMutationPull)
 	done := LogMethod("GitService.Pull", map[string]interface{}{"repoPath": repoPath})
@@ -1189,6 +1309,12 @@ func (g *GitService) Pull(repoPath string) (opResult OperationResult) {
 
 // Push pushes local commits to the remote
 func (g *GitService) Push(repoPath string) (opResult OperationResult) {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	g = g.forGitOperation()
 	done := LogMethod("GitService.Push", map[string]interface{}{"repoPath": repoPath})
 	defer func() { done(opResult, nil) }()
@@ -1272,6 +1398,12 @@ func (g *GitService) Push(repoPath string) (opResult OperationResult) {
 
 // Sync performs a git pull (merge) followed by git push
 func (g *GitService) Sync(repoPath string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	g = g.forGitOperation()
 	defer g.publishRepoMutation(repoPath, RepoMutationPull)
 	done := LogMethod("GitService.Sync", map[string]interface{}{"repoPath": repoPath})
@@ -2584,6 +2716,12 @@ func (g *GitService) tryFetchLFSForFile(repoPath string, filePath string, refs .
 // PDF, L5X, 3D) can ensure LFS content is available before attempting to load
 // file contents at those revisions.
 func (g *GitService) EnsureLFSForRefs(repoPath string, filePath string, refs ...string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	g = g.forGitOperation()
 	done := LogMethod("GitService.EnsureLFSForRefs", map[string]interface{}{"repoPath": repoPath, "filePath": filePath, "refs": refs})
 	defer func() { done(nil, nil) }()
@@ -2637,6 +2775,12 @@ func (g *GitService) EnsureLFSForRefs(repoPath string, filePath string, refs ...
 // A missing git-lfs installation is explicit but non-fatal because snapshots can
 // still be used for non-LFS files.
 func (g *GitService) EnsureOriginLFSForRef(repoPath string, ref string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	g = g.forGitOperation()
 	if repoPath == "" {
 		return failedOp("Repository path is required")
@@ -2789,6 +2933,12 @@ func (g *GitService) Branches(repoPath string) BranchList {
 // CheckoutBranch switches to an existing branch.
 // Fails if there are uncommitted changes to prevent accidental loss.
 func (g *GitService) CheckoutBranch(repoPath string, branchName string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	g = g.forGitOperation()
 	defer g.publishRepoMutation(repoPath, RepoMutationCheckout)
 	done := LogMethod("GitService.CheckoutBranch", map[string]interface{}{"repoPath": repoPath, "branchName": branchName})
@@ -2816,6 +2966,12 @@ func (g *GitService) CheckoutBranch(repoPath string, branchName string) Operatio
 // CreateBranchAndCheckout creates a new branch and switches to it.
 // Fails if there are uncommitted changes or if the branch name is invalid.
 func (g *GitService) CreateBranchAndCheckout(repoPath string, branchName string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	g = g.forGitOperation()
 	defer g.publishRepoMutation(repoPath, RepoMutationCheckout)
 	done := LogMethod("GitService.CreateBranchAndCheckout", map[string]interface{}{"repoPath": repoPath, "branchName": branchName})
@@ -2850,6 +3006,12 @@ func (g *GitService) CreateBranchAndCheckout(repoPath string, branchName string)
 // This operation is all-or-fail: on remote failures, it attempts best-effort rollback.
 // Requires confirm=true as a safety measure.
 func (g *GitService) RenameBranch(repoPath string, oldName string, newName string, confirm bool) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	done := LogMethod("GitService.RenameBranch", map[string]interface{}{"repoPath": repoPath, "oldName": oldName, "newName": newName, "confirm": confirm})
 	defer func() { done(nil, nil) }()
 
@@ -2927,6 +3089,12 @@ func (g *GitService) RenameBranch(repoPath string, oldName string, newName strin
 // DeleteBranch deletes a local branch and, when it has an upstream, deletes the remote branch too.
 // Requires confirm=true as a safety measure.
 func (g *GitService) DeleteBranch(repoPath string, branchName string, confirm bool) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	done := LogMethod("GitService.DeleteBranch", map[string]interface{}{"repoPath": repoPath, "branchName": branchName, "confirm": confirm})
 	defer func() { done(nil, nil) }()
 
@@ -2988,6 +3156,12 @@ func (g *GitService) DeleteBranch(repoPath string, branchName string, confirm bo
 // This is a composite operation that combines ResetHard("HEAD") + Clean().
 // For finer control, use ResetHard() and Clean() separately.
 func (g *GitService) ResetHardHead(repoPath string, confirm bool) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	defer g.publishRepoMutation(repoPath, RepoMutationOther)
 	done := LogMethod("GitService.ResetHardHead", map[string]interface{}{"repoPath": repoPath, "confirm": confirm})
 	defer func() { done(nil, nil) }()
@@ -3020,6 +3194,12 @@ func (g *GitService) ResetHardHead(repoPath string, confirm bool) OperationResul
 // Requires confirm=true as a safety measure for destructive operations.
 // This is a wrapper around ResetSoft() with validation.
 func (g *GitService) ResetSoftHead(repoPath string, n int, confirm bool) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	done := LogMethod("GitService.ResetSoftHead", map[string]interface{}{"repoPath": repoPath, "n": n, "confirm": confirm})
 	defer func() { done(nil, nil) }()
 	if err := requireConfirmation(confirm); err != nil {
@@ -3052,6 +3232,12 @@ func (g *GitService) ResetSoftHead(repoPath string, n int, confirm bool) Operati
 // This is a composite operation that combines UnstageAll() + RestoreAll() + Clean().
 // For finer control, use those methods separately.
 func (g *GitService) DiscardAll(repoPath string, confirm bool) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	defer g.publishRepoMutation(repoPath, RepoMutationOther)
 	done := LogMethod("GitService.DiscardAll", map[string]interface{}{"repoPath": repoPath, "confirm": confirm})
 	defer func() { done(nil, nil) }()
@@ -3088,6 +3274,12 @@ func (g *GitService) DiscardAll(repoPath string, confirm bool) OperationResult {
 // This is a composite operation that combines Unstage() + Restore() or file deletion.
 // For finer control, use those methods separately.
 func (g *GitService) DiscardFile(repoPath string, filePath string, confirm bool) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	defer g.publishRepoMutation(repoPath, RepoMutationOther)
 	done := LogMethod("GitService.DiscardFile", map[string]interface{}{"repoPath": repoPath, "filePath": filePath, "confirm": confirm})
 	defer func() { done(nil, nil) }()
@@ -3140,6 +3332,12 @@ type StashEntry struct {
 // StashPush creates a new stash with an optional message.
 // Stashes all tracked changes (staged and unstaged).
 func (g *GitService) StashPush(repoPath string, message string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	done := LogMethod("GitService.StashPush", map[string]interface{}{"repoPath": repoPath, "message": message})
 	defer func() { done(nil, nil) }()
 	status := g.Status(repoPath)
@@ -3162,6 +3360,12 @@ func (g *GitService) StashPush(repoPath string, message string) OperationResult 
 
 // StashPop applies the most recent stash and removes it from the stash list.
 func (g *GitService) StashPop(repoPath string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	g = g.forGitOperation()
 	defer g.publishRepoMutation(repoPath, RepoMutationStash)
 	done := LogMethod("GitService.StashPop", map[string]interface{}{"repoPath": repoPath})
@@ -3240,6 +3444,12 @@ func (g *GitService) StashList(repoPath string) ([]StashEntry, error) {
 // StashDrop removes a specific stash entry by index.
 // Requires confirm=true as a safety measure.
 func (g *GitService) StashDrop(repoPath string, index int, confirm bool) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	done := LogMethod("GitService.StashDrop", map[string]interface{}{"repoPath": repoPath, "index": index, "confirm": confirm})
 	defer func() { done(nil, nil) }()
 	if err := requireConfirmation(confirm); err != nil {
@@ -3263,6 +3473,12 @@ func (g *GitService) StashDrop(repoPath string, index int, confirm bool) Operati
 // Flow: stash push → checkout (or checkout -b if createNew) → stash pop
 // If the stash pop fails due to conflicts, the stash is preserved.
 func (g *GitService) StashAndSwitchBranch(repoPath string, targetBranch string, createNew bool) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	g = g.forGitOperation()
 	defer g.publishRepoMutation(repoPath, RepoMutationStash)
 	done := LogMethod("GitService.StashAndSwitchBranch", map[string]interface{}{"repoPath": repoPath, "targetBranch": targetBranch, "createNew": createNew})
@@ -3581,6 +3797,12 @@ func (g *GitService) GetConflictedFiles(repoPath string) ([]ConflictedFile, erro
 // ResolveConflictKeepOurs resolves a conflict by keeping our version.
 // Runs: git checkout --ours <path> && git add <path>
 func (g *GitService) ResolveConflictKeepOurs(repoPath string, filePath string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	done := LogMethod("GitService.ResolveConflictKeepOurs", map[string]interface{}{"repoPath": repoPath, "filePath": filePath})
 	defer func() { done(nil, nil) }()
 	if filePath == "" {
@@ -3593,6 +3815,12 @@ func (g *GitService) ResolveConflictKeepOurs(repoPath string, filePath string) O
 // ResolveConflictKeepTheirs resolves a conflict by keeping their version.
 // Runs: git checkout --theirs <path> && git add <path>
 func (g *GitService) ResolveConflictKeepTheirs(repoPath string, filePath string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	done := LogMethod("GitService.ResolveConflictKeepTheirs", map[string]interface{}{"repoPath": repoPath, "filePath": filePath})
 	defer func() { done(nil, nil) }()
 	if filePath == "" {
@@ -3607,6 +3835,12 @@ func (g *GitService) ResolveConflictKeepTheirs(repoPath string, filePath string)
 // The local (mine) version is saved with a timestamp suffix to avoid collisions.
 // For example: file.txt becomes incoming version, file_COPY_20260115_143052.txt is local version.
 func (g *GitService) ResolveConflictKeepBoth(repoPath string, filePath string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	g = g.forGitOperation()
 	done := LogMethod("GitService.ResolveConflictKeepBoth", map[string]interface{}{"repoPath": repoPath, "filePath": filePath})
 	defer func() { done(nil, nil) }()
@@ -3654,6 +3888,12 @@ func (g *GitService) ResolveConflictKeepBoth(repoPath string, filePath string) O
 // MarkResolved marks a file as resolved after manual editing.
 // Runs: git add <path>
 func (g *GitService) MarkResolved(repoPath string, filePath string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	done := LogMethod("GitService.MarkResolved", map[string]interface{}{"repoPath": repoPath, "filePath": filePath})
 	defer func() { done(nil, nil) }()
 	if filePath == "" {
@@ -3759,6 +3999,12 @@ func (g *GitService) prepareMergeTargetBaseline(repoPath string, targetBranch st
 //   - targetBranch: The branch to merge INTO (e.g., "main") - required
 //   - sourceBranch: The branch to merge FROM (optional, defaults to current branch)
 func (g *GitService) StartMerge(repoPath string, targetBranch string, sourceBranch ...string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	g = g.forGitOperation()
 	defer g.publishRepoMutation(repoPath, RepoMutationMerge)
 	done := LogMethod("GitService.StartMerge", map[string]interface{}{"repoPath": repoPath, "targetBranch": targetBranch})
@@ -3907,6 +4153,12 @@ type MergeOptions struct {
 // - All changes appear as a single commit authored by the user
 // - Results in cleaner, linear history
 func (g *GitService) StartMergeWithOptions(repoPath string, targetBranch string, sourceBranch string, options MergeOptions) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	g = g.forGitOperation()
 	defer g.publishRepoMutation(repoPath, RepoMutationMerge)
 	if targetBranch == "" {
@@ -4269,6 +4521,12 @@ func safeRepoRelativePath(repoPath string, relativePath string) (string, error) 
 // Prefer using CompleteMerge which auto-detects the merge type and delegates here
 // for squash merges. This method is kept public for backward compatibility.
 func (g *GitService) CompleteSquashMerge(repoPath string, message string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	defer g.publishRepoMutation(repoPath, RepoMutationMerge)
 	if message == "" {
 		return failedOp("Commit message is required for squash merge")
@@ -4293,6 +4551,12 @@ func (g *GitService) CompleteSquashMerge(repoPath string, message string) Operat
 // Returns the repository to the state before the merge started.
 // Handles both regular merges (MERGE_HEAD) and squash merges (SQUASH_MSG).
 func (g *GitService) AbortMerge(repoPath string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	g = g.forGitOperation()
 	defer g.publishRepoMutation(repoPath, RepoMutationAbort)
 	done := LogMethod("GitService.AbortMerge", map[string]interface{}{"repoPath": repoPath})
@@ -4332,6 +4596,12 @@ func (g *GitService) AbortMerge(repoPath string) OperationResult {
 // AbortCherryPick aborts the current cherry-pick operation.
 // Runs: git cherry-pick --abort
 func (g *GitService) AbortCherryPick(repoPath string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	defer g.publishRepoMutation(repoPath, RepoMutationAbort)
 	state := g.GetMergeState(repoPath)
 	if !state.InCherryPick {
@@ -4349,6 +4619,12 @@ func (g *GitService) AbortCherryPick(repoPath string) OperationResult {
 // ContinueCherryPick continues the cherry-pick after conflicts are resolved.
 // Runs: git cherry-pick --continue
 func (g *GitService) ContinueCherryPick(repoPath string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	defer g.publishRepoMutation(repoPath, RepoMutationContinue)
 	state := g.GetMergeState(repoPath)
 	if !state.InCherryPick {
@@ -4389,6 +4665,12 @@ func (g *GitService) ContinueCherryPick(repoPath string) OperationResult {
 // SkipCherryPickCommit skips the current commit in a cherry-pick sequence.
 // Runs: git cherry-pick --skip
 func (g *GitService) SkipCherryPickCommit(repoPath string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	defer g.publishRepoMutation(repoPath, RepoMutationContinue)
 	state := g.GetMergeState(repoPath)
 	if !state.InCherryPick {
@@ -4419,6 +4701,12 @@ func (g *GitService) SkipCherryPickCommit(repoPath string) OperationResult {
 // Use AbortRevert() to cancel or ContinueRevert() after resolving conflicts.
 // Runs: git revert --no-edit <commitHash>
 func (g *GitService) RevertCommit(repoPath string, commitHash string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	g = g.forGitOperation()
 	defer g.publishRepoMutation(repoPath, RepoMutationRevert)
 	done := LogMethod("GitService.RevertCommit", map[string]interface{}{"repoPath": repoPath, "commitHash": commitHash})
@@ -4504,6 +4792,12 @@ func (g *GitService) RevertCommit(repoPath string, commitHash string) OperationR
 // Requires a clean working tree (no uncommitted changes).
 // Runs: git revert -m <message> <commitHash> (via stdin for message)
 func (g *GitService) RevertCommitWithMessage(repoPath string, commitHash string, message string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	g = g.forGitOperation()
 	defer g.publishRepoMutation(repoPath, RepoMutationRevert)
 	if commitHash == "" {
@@ -4576,6 +4870,12 @@ func (g *GitService) RevertCommitWithMessage(repoPath string, commitHash string,
 // AbortRevert aborts the current revert operation.
 // Runs: git revert --abort
 func (g *GitService) AbortRevert(repoPath string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	g = g.forGitOperation()
 	defer g.publishRepoMutation(repoPath, RepoMutationAbort)
 	state := g.GetMergeState(repoPath)
@@ -4594,6 +4894,12 @@ func (g *GitService) AbortRevert(repoPath string) OperationResult {
 // ContinueRevert continues the revert after conflicts are resolved.
 // Runs: git revert --continue
 func (g *GitService) ContinueRevert(repoPath string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	g = g.forGitOperation()
 	defer g.publishRepoMutation(repoPath, RepoMutationContinue)
 	state := g.GetMergeState(repoPath)
@@ -4635,6 +4941,12 @@ func (g *GitService) ContinueRevert(repoPath string) OperationResult {
 // SkipRevertCommit skips the current commit in a revert sequence.
 // Runs: git revert --skip
 func (g *GitService) SkipRevertCommit(repoPath string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	g = g.forGitOperation()
 	defer g.publishRepoMutation(repoPath, RepoMutationContinue)
 	state := g.GetMergeState(repoPath)
@@ -4662,6 +4974,12 @@ func (g *GitService) SkipRevertCommit(repoPath string) OperationResult {
 // AbortBisect aborts the current bisect session.
 // Runs: git bisect reset
 func (g *GitService) AbortBisect(repoPath string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	g = g.forGitOperation()
 	defer g.publishRepoMutation(repoPath, RepoMutationAbort)
 	state := g.GetMergeState(repoPath)
@@ -4732,6 +5050,12 @@ func (g *GitService) GetBisectState(repoPath string) map[string]interface{} {
 // AbortAM aborts the current AM (patch application) operation.
 // Runs: git am --abort
 func (g *GitService) AbortAM(repoPath string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	defer g.publishRepoMutation(repoPath, RepoMutationAbort)
 	state := g.GetMergeState(repoPath)
 	if !state.InAM {
@@ -4749,6 +5073,12 @@ func (g *GitService) AbortAM(repoPath string) OperationResult {
 // SkipAMPatch skips the current patch in an AM sequence.
 // Runs: git am --skip
 func (g *GitService) SkipAMPatch(repoPath string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	defer g.publishRepoMutation(repoPath, RepoMutationContinue)
 	state := g.GetMergeState(repoPath)
 	if !state.InAM {
@@ -4781,6 +5111,12 @@ func (g *GitService) IsDetachedHead(repoPath string) bool {
 // CreateBranchFromDetached creates a new branch from the current detached HEAD position.
 // This saves the user's work by attaching it to a named branch.
 func (g *GitService) CreateBranchFromDetached(repoPath string, branchName string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	g = g.forGitOperation()
 	if branchName == "" {
 		return failedOp("Branch name is required")
@@ -4817,6 +5153,12 @@ func (g *GitService) CheckForStaleLocks(repoPath string) []string {
 // RemoveStaleLock removes a specific lock file from the .git directory.
 // This is a potentially dangerous operation - requires confirmation.
 func (g *GitService) RemoveStaleLock(repoPath string, lockFile string, confirm bool) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	if !confirm {
 		return failedOp("Confirmation required to remove lock file")
 	}
@@ -4853,6 +5195,12 @@ func (g *GitService) RemoveStaleLock(repoPath string, lockFile string, confirm b
 // RemoveAllStaleLocks removes all stale lock files from the .git directory.
 // This is a convenience method that removes all known lock files at once.
 func (g *GitService) RemoveAllStaleLocks(repoPath string, confirm bool) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	if !confirm {
 		return failedOp("Confirmation required to remove lock files")
 	}
@@ -4892,6 +5240,12 @@ func (g *GitService) RemoveAllStaleLocks(repoPath string, confirm bool) Operatio
 // AbortCurrentOperation aborts whatever stuck operation is currently in progress.
 // This is a convenience method that detects the state and calls the appropriate abort.
 func (g *GitService) AbortCurrentOperation(repoPath string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	defer g.publishRepoMutation(repoPath, RepoMutationAbort)
 	state := g.GetMergeState(repoPath)
 
@@ -4931,6 +5285,12 @@ func (g *GitService) AbortCurrentOperation(repoPath string) OperationResult {
 // CompleteMerge completes the merge by committing after all conflicts are resolved.
 // Supports both regular merges (MERGE_HEAD) and squash merges (SQUASH_MSG).
 func (g *GitService) CompleteMerge(repoPath string, message string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	g = g.forGitOperation()
 	defer g.publishRepoMutation(repoPath, RepoMutationMerge)
 	state := g.GetMergeState(repoPath)
@@ -5476,6 +5836,12 @@ func (g *GitService) CheckLockFile(repoPath string) LockFileInfo {
 // CAUTION: Only call this when you are certain no other Git operation is in progress.
 // Removing a lock file while another Git process is running can cause corruption.
 func (g *GitService) RemoveLockFile(repoPath string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	// First verify this is a valid git repository
 	repoInfo := g.DetectRepo(repoPath)
 	if !repoInfo.IsRepo {
