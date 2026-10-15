@@ -8,7 +8,7 @@ function Wordmark(): JSX.Element {
       aria-label="IOFabrik"
       className="inline-flex h-8 shrink-0 items-center gap-2 whitespace-nowrap font-sans text-lg leading-5 font-semibold text-theme-primary"
     >
-      <img src={iofabrikMark} alt="" width={ICON_SIZES.lg} height={ICON_SIZES.lg} />
+      <img src={iofabrikMark} alt="" className="dark:invert" width={ICON_SIZES.lg} height={ICON_SIZES.lg} />
       <span aria-hidden="true">IOFabrik</span>
     </span>
   );

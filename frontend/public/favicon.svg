@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" fill="currentColor"><path d="M78 14H14V186H186V14H122" fill="none" stroke="currentColor" stroke-width="18"/>
+<style>svg { color: #111; } @media (prefers-color-scheme: dark) { svg { color: #fff; } }</style>
+<rect x="56" y="14" width="22" height="104"/>
+<path fill-rule="evenodd" d="M88 116a40 40 0 1 0 80 0a40 40 0 1 0-80 0Z M115 112a21 21 0 1 0 42 0a21 21 0 1 0-42 0Z"/>
+</svg>

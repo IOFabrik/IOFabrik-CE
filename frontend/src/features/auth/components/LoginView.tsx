@@ -316,7 +316,7 @@ function LoginView({
       <div className="relative z-10 w-full max-w-sm px-4 animate-screen-enter">
         {/* Branding */}
         <div className="mb-8 flex flex-col items-center gap-3 text-center select-none">
-          <img src={iofabrikMark} alt="" className="h-12 w-12" />
+          <img src={iofabrikMark} alt="" className="h-12 w-12 dark:invert" />
           <div>
             <h1 className="text-xl font-semibold tracking-tight text-theme-primary">
               IO<span className="text-blue-500">Fabrik</span>
