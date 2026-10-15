@@ -415,3 +415,25 @@ func TestPreviewExternalIndexChangeRefusesPublication(t *testing.T) {
 		t.Fatal("published despite external staging change")
 	}
 }
+
+func TestPreviewStructuredSDKFailureRequiresRestart(t *testing.T) {
+	s, root, source := previewTestService(t)
+	s.runHelper = func(_ context.Context, work string, _, _ io.Writer, _ string, _ ...string) CommandResult {
+		requestData, _ := os.ReadFile(filepath.Join(work, "request.json"))
+		var request ldsdkprotocol.Request
+		_ = json.Unmarshal(requestData, &request)
+		result := ldsdkprotocol.Result{ProtocolVersion: 1, OperationID: request.OperationID,
+			HelperVersion: ldsdkprotocol.HelperVersion, VendorRevision: ldsdkprotocol.VendorRevision,
+			FailureCode: "exportFailed", SDKCleanupConfirmed: false}
+		if err := previewWriteJSON(filepath.Join(work, "result.json"), result); err != nil {
+			t.Fatal(err)
+		}
+		return CommandResult{ExitCode: 1}
+	}
+	if result := generateTestPreview(t, s, root, source); result.Error != previewSDKCleanupMessage {
+		t.Fatalf("SDK uncertainty did not explain required restart: %+v", result)
+	}
+	if _, err := os.Stat(filepath.Join(s.stateDir, "app-inflight.json")); err != nil {
+		t.Fatal("SDK recovery state was discarded")
+	}
+}

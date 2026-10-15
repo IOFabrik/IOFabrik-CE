@@ -301,7 +301,11 @@ func (s *PreviewGenerationService) GeneratePreview(repoPath, sourcePath, operati
 	}
 	if !result.Success {
 		diagnostics, _ := previewReadLimited(filepath.Join(work, "diagnostics.log"), 16384)
-		return fail(previewFailureMessage(result.FailureCode), fmt.Errorf("helper failure %s; diagnostics: %s; %s", result.FailureCode, diagnostics, stderr.String()))
+		message := previewFailureMessage(result.FailureCode)
+		if !result.SDKCleanupConfirmed {
+			message = previewSDKCleanupMessage
+		}
+		return fail(message, fmt.Errorf("helper failure %s; diagnostics: %s; %s", result.FailureCode, diagnostics, stderr.String()))
 	}
 	s.emit(operationID, "publish")
 	if err := s.publishPreview(before, result.OutputRoot, operationID); err != nil {

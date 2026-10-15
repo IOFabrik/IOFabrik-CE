@@ -57,6 +57,14 @@ func (r *CommandRunner) prepare(ctx context.Context, workDir, name string, args 
 	if r.previewOwner || name == GitPath() || name == "git" {
 		cmd.Env = setEnvCaseInsensitive(cmd.Env, "GIT_OPTIONAL_LOCKS", "0")
 	}
+	if r.previewOwner && runtime.GOOS == "windows" {
+		// The SDK and its authentication adapter share the Windows user's
+		// native profile. A launcher may redirect the app's UI settings, but
+		// must not redirect the SDK's profile/cache with them.
+		if state := platformPreviewStateDirectory(); state != "" {
+			cmd.Env = setEnvCaseInsensitive(cmd.Env, "LOCALAPPDATA", filepath.Dir(filepath.Dir(state)))
+		}
+	}
 	return cmd
 }
 
