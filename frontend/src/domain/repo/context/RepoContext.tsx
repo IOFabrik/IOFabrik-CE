@@ -1310,7 +1310,7 @@ export function RepoProvider({ children }: RepoProviderProps) {
 
           showMessage('success', 'Changes saved successfully');
           await refreshAll();
-          return true;
+          return session === repoRefreshSession.current;
         } catch (err) {
           const error = err as Error;
           trackCommitCreated({
@@ -1784,8 +1784,9 @@ const generateOperationId = useCallback((): string => {
           showMessage('success', `Created branch "${branchName}" and saved changes`);
           clearSelection();
           await refreshAll();
+          if (session !== repoRefreshSession.current) return false;
           await refreshBranches();
-          return true;
+          return session === repoRefreshSession.current;
         } catch (err) {
           const error = err as Error;
           showMessage('error', `Failed: ${error.message || err}`);

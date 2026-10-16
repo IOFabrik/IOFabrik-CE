@@ -437,6 +437,21 @@ describe('RepoContext identity and GitHub authentication', () => {
     expect(CommitAll).toHaveBeenCalledExactlyOnceWith('/tmp/repo', 'First snapshot');
   });
 
+  it.each(['save', 'branch-save'])('suppresses %s completion after switching projects during refresh', async (action) => {
+    EnsureIdentity.mockResolvedValue({ wasAutoSet: false, name: 'Engineer', email: 'engineer@example.com' });
+    let api!: ReturnType<typeof useRepo>;
+    renderHarness(value => { api = value; });
+    await act(async () => { await api.openRepo('/tmp/first'); });
+    let finishRefresh!: (result: { hasError: boolean; commits: never[] }) => void;
+    GetCommitGraph.mockImplementationOnce(() => new Promise(resolve => { finishRefresh = resolve; }));
+    let saving!: Promise<boolean>;
+    act(() => { saving = action === 'save' ? api.commitChanges('Saved work') : api.branchAndCommit('work', 'Saved work'); });
+    await waitFor(() => expect(finishRefresh).toBeDefined());
+    await act(async () => { await api.openRepo('/tmp/second'); });
+    await act(async () => { finishRefresh({ hasError: false, commits: [] }); });
+    expect(await saving).toBe(false);
+  });
+
   it.each([
     ['release/2026', true], ['main', false], ['master', false], ['Release/2026', false],
   ])('classifies branch-and-save analytics from %s using the effective default', async (branch, expected) => {

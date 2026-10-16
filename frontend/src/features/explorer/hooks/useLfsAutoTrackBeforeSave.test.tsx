@@ -60,4 +60,43 @@ describe('Save readiness before automatic file tracking', () => {
     expect(mocks.TrackPattern).not.toHaveBeenCalled();
     expect(save).not.toHaveBeenCalled();
   });
+
+  it('does not track files or save after cancelling during readiness validation', async () => {
+    const { result } = harness();
+    const save = vi.fn().mockResolvedValue(true);
+    const onSuccess = vi.fn();
+    await act(async () => { await result.current.runBeforeSave(save, onSuccess); });
+    let finishReadiness!: (branch: string) => void;
+    mocks.ensureProjectDefaultBranch.mockImplementationOnce(() => new Promise<string>(resolve => { finishReadiness = resolve; }));
+    let confirming!: Promise<void>;
+    act(() => { confirming = result.current.confirmAndContinue(); });
+    act(() => { result.current.cancelModal(); });
+    await act(async () => { finishReadiness('trunk'); await confirming; });
+
+    expect(result.current.modalOpen).toBe(false);
+    expect(mocks.TrackPattern).not.toHaveBeenCalled();
+    expect(save).not.toHaveBeenCalled();
+    expect(onSuccess).not.toHaveBeenCalled();
+  });
+
+  it('does not let a cancelled confirmation apply a replacement Save request', async () => {
+    const { result } = harness();
+    const save = vi.fn().mockResolvedValue(true);
+    await act(async () => { await result.current.runBeforeSave(save); });
+    let finishReadiness!: (branch: string) => void;
+    mocks.ensureProjectDefaultBranch.mockImplementationOnce(() => new Promise<string>(resolve => { finishReadiness = resolve; }));
+    let confirming!: Promise<void>;
+    act(() => { confirming = result.current.confirmAndContinue(); });
+    act(() => { result.current.cancelModal(); });
+    // Reusing the same Save callback still represents a new confirmation.
+    await act(async () => { await result.current.runBeforeSave(save); });
+    await act(async () => { finishReadiness('trunk'); await confirming; });
+    expect(result.current.modalOpen).toBe(true);
+    expect(mocks.TrackPattern).not.toHaveBeenCalled();
+    expect(save).not.toHaveBeenCalled();
+
+    await act(async () => { await result.current.confirmAndContinue(); });
+    expect(mocks.TrackPattern).toHaveBeenCalledTimes(1);
+    expect(save).toHaveBeenCalledTimes(1);
+  });
 });

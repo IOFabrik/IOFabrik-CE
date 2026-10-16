@@ -30,20 +30,9 @@ vi.mock('../../integration', () => ({
   useIntegrationSession: () => integrationStore.current,
 }));
 
-vi.mock('../hooks/useLfsAutoTrackBeforeSave', () => ({
-  useLfsAutoTrackBeforeSave: () => ({
-    modalOpen: false,
-    candidates: [],
-    selectedFilePaths: new Set<string>(),
-    isApplying: false,
-    runBeforeSave: async (action: () => Promise<boolean>, onSuccess?: () => void) => {
-      if (await action()) onSuccess?.();
-    },
-    toggleCandidate: vi.fn(),
-    toggleSelectAll: vi.fn(),
-    cancelModal: vi.fn(),
-    confirmAndContinue: vi.fn(),
-  }),
+vi.mock('../../../../bindings/iofabrik/services/lfsservice', () => ({
+  GetTrackedPatterns: vi.fn().mockResolvedValue([]),
+  TrackPattern: vi.fn().mockResolvedValue({ success: true }),
 }));
 
 vi.mock('../../../../bindings/iofabrik/services/settingsservice', () => ({
@@ -223,7 +212,41 @@ describe('SidebarCommitPanel conflict check option', () => {
     expect(onCommit).not.toHaveBeenCalled();
     await act(async () => { select('trunk'); });
     await waitFor(() => expect(onCommit).toHaveBeenCalledExactlyOnceWith('Pending message'));
-    expect(repoStore.ensureProjectDefaultBranch).toHaveBeenCalledTimes(1);
+    expect(repoStore.ensureProjectDefaultBranch).toHaveBeenCalledTimes(2);
+  });
+
+  it('starts the requested conflict check after Save removes the commit panel', async () => {
+    let finishSave!: (success: boolean) => void;
+    const onCommit = vi.fn(() => new Promise<boolean>(resolve => { finishSave = resolve; }));
+    integrationStore.current.startUpdate.mockResolvedValue({ state: 'needs-decisions' });
+    const panel = renderPanel({ onCommit });
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Check for conflicts' }));
+    await enterMessageAndSave();
+    expect(onCommit).toHaveBeenCalledTimes(1);
+
+    // Status becomes clean before the remaining Save refreshes finish.
+    panel.unmount();
+    await act(async () => { finishSave(true); });
+    expect(integrationStore.current.startUpdate).toHaveBeenCalledTimes(1);
+    expect(layoutStore.openExplorerMergeModal).toHaveBeenCalledTimes(1);
+  });
+
+  it('remembers the choice when Save removes the panel before completing', async () => {
+    let finishSave!: (success: boolean) => void;
+    const onCommit = vi.fn(() => new Promise<boolean>(resolve => { finishSave = resolve; }));
+    const panel = renderPanel({ currentBranch: 'main', repoPath: '/remember-unmounted', onCommit });
+    await enterMessageAndSave();
+    fireEvent.click(screen.getByRole('radio', { name: /Save on main/ }));
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Remember my choice for this session' }));
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Confirm' })); });
+    expect(onCommit).toHaveBeenCalledTimes(1);
+    panel.unmount();
+    await act(async () => { finishSave(true); });
+
+    const next = renderPanel({ currentBranch: 'main', repoPath: '/remember-unmounted' });
+    await enterMessageAndSave();
+    expect(next.onCommit).toHaveBeenCalledExactlyOnceWith('Update valve timing');
+    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
   });
 
   it('remembers a successful choice only for the same project and effective default', async () => {

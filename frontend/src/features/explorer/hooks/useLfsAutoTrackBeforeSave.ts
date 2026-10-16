@@ -21,6 +21,11 @@ interface UseLfsAutoTrackBeforeSaveResult {
   confirmAndContinue: () => Promise<void>;
 }
 
+interface PendingSave {
+  action: () => Promise<boolean>;
+  onSuccess?: () => void;
+}
+
 export function useLfsAutoTrackBeforeSave({
   repoPath,
   changedFiles,
@@ -36,8 +41,7 @@ export function useLfsAutoTrackBeforeSave({
   const [selectedFilePaths, setSelectedFilePaths] = useState<Set<string>>(new Set());
   const [isApplying, setIsApplying] = useState(false);
 
-  const pendingSaveActionRef = useRef<(() => Promise<boolean>) | null>(null);
-  const pendingOnSuccessRef = useRef<(() => void) | null>(null);
+  const pendingSaveRef = useRef<PendingSave | null>(null);
 
   useEffect(() => {
     activeSession.current = { repoPath };
@@ -49,36 +53,34 @@ export function useLfsAutoTrackBeforeSave({
     return () => {
       mounted.current = false;
       if (activeSession.current === session) activeSession.current = { repoPath: undefined };
-      pendingSaveActionRef.current = null;
-      pendingOnSuccessRef.current = null;
+      pendingSaveRef.current = null;
     };
   }, [repoPath]);
 
   const runPendingSave = useCallback(async () => {
-    const action = pendingSaveActionRef.current;
-    const session = activeSession.current;
-    if (!action) {
+    const pending = pendingSaveRef.current;
+    if (!pending) {
       return;
     }
 
-    const onSuccess = pendingOnSuccessRef.current;
-    pendingSaveActionRef.current = null;
-    pendingOnSuccessRef.current = null;
+    pendingSaveRef.current = null;
 
-    const success = await action();
-    if (success && mounted.current && session === activeSession.current) {
-      onSuccess?.();
+    // RepoContext validates the repository session through completion. A clean
+    // status can unmount this panel during that refresh; successful follow-up
+    // actions (conflict checks and remembered choices) must still run.
+    const success = await pending.action();
+    if (success) {
+      pending.onSuccess?.();
     }
   }, []);
 
   const runBeforeSave = useCallback(async (saveAction: () => Promise<boolean>, onSuccess?: () => void): Promise<void> => {
-    if (preparing.current || pendingSaveActionRef.current) return;
+    if (preparing.current || pendingSaveRef.current) return;
     preparing.current = true;
     try {
       const session = activeSession.current;
       if (!await ensureProjectDefaultBranch() || !mounted.current || session !== activeSession.current) return;
-      pendingSaveActionRef.current = saveAction;
-      pendingOnSuccessRef.current = onSuccess ?? null;
+      pendingSaveRef.current = { action: saveAction, onSuccess };
 
       if (!repoPath) {
         await runPendingSave();
@@ -132,16 +134,19 @@ export function useLfsAutoTrackBeforeSave({
     setModalOpen(false);
     setCandidates([]);
     setSelectedFilePaths(new Set());
-    pendingSaveActionRef.current = null;
-    pendingOnSuccessRef.current = null;
+    pendingSaveRef.current = null;
   }, []);
 
   const confirmAndContinue = useCallback(async (): Promise<void> => {
-    if (applying.current || !pendingSaveActionRef.current) return;
+    const pending = pendingSaveRef.current;
+    if (applying.current || !pending) return;
     applying.current = true;
     try {
       const session = activeSession.current;
       if (!await ensureProjectDefaultBranch() || !mounted.current || session !== activeSession.current) return;
+      // Cancel can run while readiness is pending. A later Save, even with the
+      // same callback, needs its own confirmation before changing attributes.
+      if (pending !== pendingSaveRef.current) return;
       if (!repoPath) {
         setModalOpen(false);
         await runPendingSave();
@@ -154,7 +159,7 @@ export function useLfsAutoTrackBeforeSave({
         const uniquePatterns = Array.from(new Set(selectedCandidates.map(c => c.pattern)));
 
         for (const pattern of uniquePatterns) {
-          if (!mounted.current || session !== activeSession.current) return;
+          if (!mounted.current || session !== activeSession.current || pending !== pendingSaveRef.current) return;
           const result = await TrackPattern(repoPath, pattern);
           if (!result.success) {
             toast.error(result.error || `Failed to track ${pattern}`);
@@ -162,7 +167,7 @@ export function useLfsAutoTrackBeforeSave({
             return;
           }
         }
-        if (!mounted.current || session !== activeSession.current) return;
+        if (!mounted.current || session !== activeSession.current || pending !== pendingSaveRef.current) return;
 
         if (uniquePatterns.length > 0) {
           toast.success(`Tracked ${uniquePatterns.length} LFS pattern${uniquePatterns.length === 1 ? '' : 's'}`);
