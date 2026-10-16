@@ -1,4 +1,4 @@
-import { act, renderHook } from '@testing-library/react';
+import { act, fireEvent, render, renderHook, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
@@ -9,6 +9,26 @@ vi.mock('../../../../bindings/iofabrik/services/lfsservice', () => mocks);
 vi.mock('sonner', () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
 
 import { useLfsAutoTrackBeforeSave } from './useLfsAutoTrackBeforeSave';
+import LFSAutoTrackModal from '../components/LFSAutoTrackModal';
+
+function DialogHarness({ save }: { save: () => Promise<boolean> }) {
+  const flow = useLfsAutoTrackBeforeSave({
+    repoPath: '/first', changedFiles: [{ path: 'Controller.ACD', name: 'Controller.ACD', status: 'untracked' }],
+  });
+  return <>
+    <button onClick={() => void flow.runBeforeSave(save)}>Start Save</button>
+    <LFSAutoTrackModal
+      open={flow.modalOpen}
+      candidates={flow.candidates}
+      selectedFilePaths={flow.selectedFilePaths}
+      isApplying={flow.isApplying}
+      onOpenChange={open => { if (!open) flow.cancelModal(); }}
+      onToggleFile={flow.toggleCandidate}
+      onToggleSelectAll={flow.toggleSelectAll}
+      onConfirm={flow.confirmAndContinue}
+    />
+  </>;
+}
 
 function harness() {
   return renderHook(({ repoPath }) => useLfsAutoTrackBeforeSave({
@@ -97,6 +117,38 @@ describe('Save readiness before automatic file tracking', () => {
 
     await act(async () => { await result.current.confirmAndContinue(); });
     expect(mocks.TrackPattern).toHaveBeenCalledTimes(1);
+    expect(save).toHaveBeenCalledTimes(1);
+  });
+
+  it('saves once when the real dialog is confirmed twice during readiness validation', async () => {
+    const save = vi.fn().mockResolvedValue(true);
+    render(<DialogHarness save={save} />);
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Start Save' })); });
+    let finishReadiness!: (branch: string) => void;
+    mocks.ensureProjectDefaultBranch.mockImplementationOnce(() => new Promise<string>(resolve => { finishReadiness = resolve; }));
+    const confirm = screen.getByRole('button', { name: 'Remember & Save' });
+    await act(async () => { fireEvent.click(confirm); fireEvent.click(confirm); });
+    expect(screen.getByRole('alertdialog')).toBeInTheDocument();
+    await act(async () => { finishReadiness('trunk'); });
+    expect(mocks.TrackPattern).toHaveBeenCalledTimes(1);
+    expect(save).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
+  });
+
+  it('keeps a replacement dialog open when an old cancelled confirmation finishes', async () => {
+    const save = vi.fn().mockResolvedValue(true);
+    render(<DialogHarness save={save} />);
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Start Save' })); });
+    let finishReadiness!: (branch: string) => void;
+    mocks.ensureProjectDefaultBranch.mockImplementationOnce(() => new Promise<string>(resolve => { finishReadiness = resolve; }));
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Remember & Save' })); });
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Start Save' })); });
+    await act(async () => { finishReadiness('trunk'); });
+    expect(screen.getByRole('alertdialog')).toBeInTheDocument();
+    expect(mocks.TrackPattern).not.toHaveBeenCalled();
+    expect(save).not.toHaveBeenCalled();
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Remember & Save' })); });
     expect(save).toHaveBeenCalledTimes(1);
   });
 });

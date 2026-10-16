@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useCallback, type MouseEvent } from 'react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -33,6 +33,12 @@ function LFSAutoTrackModal({
   onConfirm,
 }: LFSAutoTrackModalProps): JSX.Element {
   const allSelected = candidates.length > 0 && selectedFilePaths.size === candidates.length;
+  const handleConfirm = useCallback((event: MouseEvent<HTMLButtonElement>) => {
+    // The Save flow owns closing. Ignored or cancelled async confirmations
+    // must not close a pending (or replacement) request through the primitive.
+    event.preventDefault();
+    return onConfirm();
+  }, [onConfirm]);
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -88,7 +94,7 @@ function LFSAutoTrackModal({
           <AlertDialogCancel disabled={isApplying}>Cancel</AlertDialogCancel>
           <AlertDialogAction
             variant="default"
-            onClick={onConfirm}
+            onClick={handleConfirm}
             disabled={isApplying}
           >
             {isApplying ? 'Working…' : 'Remember & Save'}
