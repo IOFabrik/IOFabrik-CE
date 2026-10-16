@@ -165,7 +165,7 @@ func (r *CommandRunner) previewCommandLease(workDir, name string, args []string)
 	case "symbolic-ref":
 		// Only the existing query forms are read-only; setting/deleting a
 		// symbolic reference must hold a mutation lease too.
-		if len(args) == 3 && (args[1] == "-q" || args[1] == "--short") && args[2] == "HEAD" {
+		if len(args) == 3 && (args[1] == "-q" || args[1] == "--quiet" || args[1] == "--short") && args[2] == "HEAD" {
 			return func() {}, nil
 		}
 	}
