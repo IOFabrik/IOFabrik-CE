@@ -268,7 +268,7 @@ func TestPreviewAttributeOverridePreservesPreviousOutput(t *testing.T) {
 }
 
 func TestPreviewPublicationFaultsRollback(t *testing.T) {
-	for _, stage := range []string{"prepared", "moved-previous", "installed"} {
+	for _, stage := range []string{"staged", "prepared", "moved-previous", "installed"} {
 		t.Run(stage, func(t *testing.T) {
 			s, root, source := previewTestService(t)
 			requirePreviewSuccess(t, generateTestPreview(t, s, root, source))
@@ -436,4 +436,22 @@ func TestPreviewStructuredSDKFailureRequiresRestart(t *testing.T) {
 	if _, err := os.Stat(filepath.Join(s.stateDir, "app-inflight.json")); err != nil {
 		t.Fatal("SDK recovery state was discarded")
 	}
+}
+
+func TestPreviewLegacyBootEvidenceRequiresAnotherRestart(t *testing.T) {
+	s, root, source := previewTestService(t)
+	s.runHelper = func(context.Context, string, io.Writer, io.Writer, string, ...string) CommandResult {
+		return CommandResult{Error: "interrupted"}
+	}
+	_ = generateTestPreview(t, s, root, source)
+	s.bootID = func() (string, error) { return "kernel-event-v1:machine:100", nil }
+	s.runHelper = previewFakeHelper(t, nil)
+	if result := generateTestPreview(t, s, root, source); result.Error != previewSDKCleanupMessage {
+		t.Fatalf("format migration bypassed recovery: %+v", result)
+	}
+	if result := generateTestPreview(t, s, root, source); result.Error != previewSDKCleanupMessage {
+		t.Fatalf("same startup bypassed recovery: %+v", result)
+	}
+	s.bootID = func() (string, error) { return "kernel-event-v1:machine:200", nil }
+	requirePreviewSuccess(t, generateTestPreview(t, s, root, source))
 }

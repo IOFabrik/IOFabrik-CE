@@ -20,6 +20,7 @@ type previewTransaction struct {
 	PreviousID          string `json:"previousId"`
 	NewID               string `json:"newId"`
 	Committed           bool   `json:"committed"`
+	StageInProject      bool   `json:"stageInProject,omitempty"`
 }
 
 func previewWriteJSON(path string, value any) error {
@@ -52,8 +53,8 @@ func previewJournalPath(state, root string) string {
 	return filepath.Join(state, "transactions", previewPathKey(root)+".json")
 }
 
-func previewStagePath(root, id string) string {
-	return filepath.Join(filepath.Dir(root), ".iofabrik-preview-"+id)
+func previewStagePath(destination, id string) string {
+	return filepath.Join(filepath.Dir(destination), ".iofabrik-preview-"+id)
 }
 
 // Recovery uses recorded filesystem identities, never a marker in tracked
@@ -98,8 +99,12 @@ func recoverPreviewPublication(state, root string) error {
 	if err != nil || currentGitDir != record.GitDir {
 		return fmt.Errorf("project storage location changed")
 	}
+	// Older journals locate staging beside the project rather than inside it.
 	stage := previewStagePath(root, record.OperationID)
-	if err := previewPhysicalPath(stage); err != nil {
+	if record.StageInProject {
+		stage = previewStagePath(destination, record.OperationID)
+	}
+	if err := previewPhysicalPath(stage); err != nil && !os.IsNotExist(err) {
 		return err
 	}
 	liveID, liveErr := previewFileIdentity(destination)
@@ -116,7 +121,7 @@ func recoverPreviewPublication(state, root string) error {
 			return fmt.Errorf("completed output was replaced externally")
 		}
 	} else {
-		if liveID == record.NewID {
+		if record.NewID != "" && liveID == record.NewID {
 			// Keep the complete replacement available while restoring the prior
 			// complete wrapper. Both renames stay on the destination filesystem.
 			if err := os.Rename(destination, filepath.Join(stage, "new")); err != nil {
@@ -136,13 +141,12 @@ func recoverPreviewPublication(state, root string) error {
 			return fmt.Errorf("destination was created externally")
 		}
 	}
-	// Remove the journal before disposable staging; a crash during cleanup
-	// leaves only an unreferenced private staging directory, never partial output.
-	if err := os.Remove(journal); err != nil {
+	// Staging is in the working tree. Keep saves blocked until it is gone;
+	// recovery also accepts a missing stage if cleanup finished before a crash.
+	if err := os.RemoveAll(stage); err != nil {
 		return err
 	}
-	_ = os.RemoveAll(stage)
-	return nil
+	return os.Remove(journal)
 }
 
 func verifyPreviewAttributes(runner *CommandRunner, root, destination, staged, shadow string) error {
@@ -228,10 +232,7 @@ func verifyPreviewAttributes(runner *CommandRunner, root, destination, staged, s
 }
 
 func (s *PreviewGenerationService) publishPreview(before previewContext, output, id string) (err error) {
-	if filepath.Dir(before.Root) == before.Root {
-		return fmt.Errorf("cannot stage a project at the filesystem root")
-	}
-	stage := previewStagePath(before.Root, id)
+	stage := previewStagePath(before.Destination, id)
 	if err := os.Mkdir(stage, 0700); err != nil {
 		return err
 	}
@@ -246,6 +247,16 @@ func (s *PreviewGenerationService) publishPreview(before previewContext, output,
 			}
 		}
 	}()
+	rel, _ := filepath.Rel(before.Root, before.Destination)
+	record := previewTransaction{OperationID: id, Root: before.Root, GitDir: before.GitDir, RootID: before.RootID, GitID: before.GitID,
+		RelativeDestination: rel, PreviousID: before.DestinationID, StageInProject: true}
+	journal := previewJournalPath(s.stateDir, before.Root)
+	// Record ownership before copying any files into the working tree, so an
+	// interrupted preparation cannot be included in an ordinary save.
+	if err := previewWriteJSON(journal, record); err != nil {
+		return err
+	}
+	journalWritten = true
 	newRoot := filepath.Join(stage, "new")
 	if err := os.Mkdir(newRoot, 0700); err != nil {
 		return err
@@ -277,6 +288,11 @@ func (s *PreviewGenerationService) publishPreview(before previewContext, output,
 	if err := os.WriteFile(filepath.Join(newRoot, ".gitattributes"), []byte(previewAttributes), 0600); err != nil {
 		return err
 	}
+	if s.publicationFault != nil {
+		if err := s.publicationFault("staged"); err != nil {
+			return err
+		}
+	}
 	if err := ldsdkprotocol.ValidateContent(filepath.Join(newRoot, "RSLogix5000Content")); err != nil {
 		return err
 	}
@@ -297,14 +313,10 @@ func (s *PreviewGenerationService) publishPreview(before previewContext, output,
 	if err != nil {
 		return err
 	}
-	rel, _ := filepath.Rel(before.Root, before.Destination)
-	record := previewTransaction{OperationID: id, Root: before.Root, GitDir: before.GitDir, RootID: before.RootID, GitID: before.GitID,
-		RelativeDestination: rel, PreviousID: before.DestinationID, NewID: newID}
-	journal := previewJournalPath(s.stateDir, before.Root)
+	record.NewID = newID
 	if err := previewWriteJSON(journal, record); err != nil {
 		return err
 	}
-	journalWritten = true
 	if s.publicationFault != nil {
 		if err := s.publicationFault("prepared"); err != nil {
 			return err

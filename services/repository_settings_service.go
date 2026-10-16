@@ -592,12 +592,6 @@ func (r *RepositorySettingsService) GetTaskStatuses() map[string]*BackgroundTask
 
 // StartBackgroundTasks starts background tasks for a repository
 func (r *RepositorySettingsService) StartBackgroundTasks(repoPath string) OperationResult {
-	previewRelease, previewErr := previewMutationLease(repoPath)
-	if previewErr != nil {
-		return failedOp(previewErr.Error())
-	}
-	defer previewRelease()
-
 	settings, err := r.GetSettings(repoPath)
 	if err != nil {
 		return failedOp(err.Error())
@@ -642,12 +636,6 @@ func (r *RepositorySettingsService) StartBackgroundTasks(repoPath string) Operat
 
 // StopBackgroundTasks stops all background tasks for a repository
 func (r *RepositorySettingsService) StopBackgroundTasks(repoPath string) OperationResult {
-	previewRelease, previewErr := previewMutationLease(repoPath)
-	if previewErr != nil {
-		return failedOp(previewErr.Error())
-	}
-	defer previewRelease()
-
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
@@ -666,12 +654,6 @@ func (r *RepositorySettingsService) StopBackgroundTasks(repoPath string) Operati
 
 // RestartBackgroundTasks restarts all background tasks for a repository
 func (r *RepositorySettingsService) RestartBackgroundTasks(repoPath string) OperationResult {
-	previewRelease, previewErr := previewMutationLease(repoPath)
-	if previewErr != nil {
-		return failedOp(previewErr.Error())
-	}
-	defer previewRelease()
-
 	r.StopBackgroundTasks(repoPath)
 	return r.StartBackgroundTasks(repoPath)
 }
@@ -782,12 +764,6 @@ func (r *RepositorySettingsService) GetGitConfig(repoPath string, key string) (s
 
 // SetGitConfig sets a git config value for the repository
 func (r *RepositorySettingsService) SetGitConfig(repoPath string, key string, value string) OperationResult {
-	previewRelease, previewErr := previewMutationLease(repoPath)
-	if previewErr != nil {
-		return failedOp(previewErr.Error())
-	}
-	defer previewRelease()
-
 	result := r.runner.RunGit(repoPath, "config", "--local", key, value)
 	if !result.Success {
 		return failedOp("Failed to set config: " + result.Stderr)
@@ -797,12 +773,6 @@ func (r *RepositorySettingsService) SetGitConfig(repoPath string, key string, va
 
 // UnsetGitConfig removes a git config value from the repository
 func (r *RepositorySettingsService) UnsetGitConfig(repoPath string, key string) OperationResult {
-	previewRelease, previewErr := previewMutationLease(repoPath)
-	if previewErr != nil {
-		return failedOp(previewErr.Error())
-	}
-	defer previewRelease()
-
 	result := r.runner.RunGit(repoPath, "config", "--local", "--unset", key)
 	if !result.Success && result.ExitCode != 5 { // Exit code 5 means key doesn't exist
 		return failedOp("Failed to unset config: " + result.Stderr)

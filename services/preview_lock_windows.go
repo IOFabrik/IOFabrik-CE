@@ -3,10 +3,14 @@
 package services
 
 import (
+	"encoding/xml"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"runtime"
+	"strconv"
+	"strings"
 	"unsafe"
 
 	"golang.org/x/sys/windows"
@@ -87,8 +91,9 @@ func previewPlatformReady() error {
 	return nil
 }
 
-// Windows assigns a new identifier on boot. Unlike wall-clock/uptime
-// arithmetic this remains reliable when the user adjusts the clock.
+// The environment GUID can survive a Windows restart. Combine it with the
+// kernel's latest startup event record, which is stable during this boot and
+// independent of wall-clock adjustments. Missing/cleared evidence fails closed.
 func previewBootID() (string, error) {
 	var environment [32]byte
 	var length uint32
@@ -100,5 +105,47 @@ func previewBootID() (string, error) {
 	if length < 16 {
 		return "", fmt.Errorf("missing boot identity")
 	}
-	return fmt.Sprintf("%x", environment[:16]), nil
+	systemDirectory, err := windows.GetSystemDirectory()
+	if err != nil {
+		return "", err
+	}
+	runner := NewCommandRunner()
+	runner.previewOwner = true
+	result := runner.Run("", filepath.Join(systemDirectory, "wevtutil.exe"), "qe", "System",
+		"/q:*[System[Provider[@Name='Microsoft-Windows-Kernel-General'] and EventID=12]]",
+		"/rd:true", "/c:1", "/f:xml", "/uni:false")
+	if !result.Success || len(result.Stdout) > 65536 {
+		return "", fmt.Errorf("cannot read kernel startup evidence")
+	}
+	decoder := xml.NewDecoder(strings.NewReader(result.Stdout))
+	for {
+		token, err := decoder.Token()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return "", err
+		}
+		start, ok := token.(xml.StartElement)
+		if !ok || start.Name.Local != "Event" {
+			continue
+		}
+		var event struct {
+			System struct {
+				Provider struct {
+					Name string `xml:"Name,attr"`
+				}
+				EventID       uint32
+				EventRecordID uint64
+			}
+		}
+		if err := decoder.DecodeElement(&event, &start); err != nil {
+			return "", err
+		}
+		if event.System.Provider.Name != "Microsoft-Windows-Kernel-General" || event.System.EventID != 12 || event.System.EventRecordID == 0 {
+			return "", fmt.Errorf("invalid kernel startup evidence")
+		}
+		return fmt.Sprintf("kernel-event-v1:%x:%s", environment[:16], strconv.FormatUint(event.System.EventRecordID, 10)), nil
+	}
+	return "", fmt.Errorf("missing kernel startup evidence")
 }

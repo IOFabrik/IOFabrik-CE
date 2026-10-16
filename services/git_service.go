@@ -810,12 +810,6 @@ func (g *GitService) rollbackBranchRename(repoPath string, currentName string, o
 // Add stages a specific file or directory for commit.
 // Equivalent to: git add <path>
 func (g *GitService) Add(repoPath string, path string) OperationResult {
-	previewRelease, previewErr := previewMutationLease(repoPath)
-	if previewErr != nil {
-		return failedOp(previewErr.Error())
-	}
-	defer previewRelease()
-
 	if path == "" {
 		return failedOp("Path is required")
 	}
@@ -829,12 +823,6 @@ func (g *GitService) Add(repoPath string, path string) OperationResult {
 // AddAll stages all changes in the repository.
 // Equivalent to: git add .
 func (g *GitService) AddAll(repoPath string) OperationResult {
-	previewRelease, previewErr := previewMutationLease(repoPath)
-	if previewErr != nil {
-		return failedOp(previewErr.Error())
-	}
-	defer previewRelease()
-
 	result := g.runner.RunGit(repoPath, "add", ".")
 	if !result.Success {
 		return failedOp("Failed to stage changes: " + getErrorMessage(result))
@@ -845,12 +833,6 @@ func (g *GitService) AddAll(repoPath string) OperationResult {
 // AddFiles stages multiple files for commit.
 // Equivalent to: git add -- <paths...>
 func (g *GitService) AddFiles(repoPath string, paths []string) OperationResult {
-	previewRelease, previewErr := previewMutationLease(repoPath)
-	if previewErr != nil {
-		return failedOp(previewErr.Error())
-	}
-	defer previewRelease()
-
 	if len(paths) == 0 {
 		return failedOp("At least one path is required")
 	}
@@ -865,12 +847,6 @@ func (g *GitService) AddFiles(repoPath string, paths []string) OperationResult {
 // Unstage removes a file from the staging area without discarding changes.
 // Equivalent to: git restore --staged <path> (Git 2.23+) or git reset HEAD <path>
 func (g *GitService) Unstage(repoPath string, path string) OperationResult {
-	previewRelease, previewErr := previewMutationLease(repoPath)
-	if previewErr != nil {
-		return failedOp(previewErr.Error())
-	}
-	defer previewRelease()
-
 	if path == "" {
 		return failedOp("Path is required")
 	}
@@ -889,12 +865,6 @@ func (g *GitService) Unstage(repoPath string, path string) OperationResult {
 // UnstageAll removes all files from the staging area.
 // Equivalent to: git restore --staged . (Git 2.23+) or git reset HEAD
 func (g *GitService) UnstageAll(repoPath string) OperationResult {
-	previewRelease, previewErr := previewMutationLease(repoPath)
-	if previewErr != nil {
-		return failedOp(previewErr.Error())
-	}
-	defer previewRelease()
-
 	var result CommandResult
 	if g.SupportsRestore() {
 		result = g.runner.RunGit(repoPath, "restore", "--staged", ".")
@@ -911,12 +881,6 @@ func (g *GitService) UnstageAll(repoPath string) OperationResult {
 // Does NOT affect staged changes - use Unstage first if needed.
 // Equivalent to: git restore <path> (Git 2.23+) or git checkout -- <path>
 func (g *GitService) Restore(repoPath string, path string) OperationResult {
-	previewRelease, previewErr := previewMutationLease(repoPath)
-	if previewErr != nil {
-		return failedOp(previewErr.Error())
-	}
-	defer previewRelease()
-
 	g = g.forGitOperation()
 	if path == "" {
 		return failedOp("Path is required")
@@ -937,12 +901,6 @@ func (g *GitService) Restore(repoPath string, path string) OperationResult {
 // Does NOT remove untracked files - use Clean for that.
 // Equivalent to: git restore . (Git 2.23+) or git checkout -- .
 func (g *GitService) RestoreAll(repoPath string) OperationResult {
-	previewRelease, previewErr := previewMutationLease(repoPath)
-	if previewErr != nil {
-		return failedOp(previewErr.Error())
-	}
-	defer previewRelease()
-
 	g = g.forGitOperation()
 	var result CommandResult
 	if g.SupportsRestore() {
@@ -960,12 +918,6 @@ func (g *GitService) RestoreAll(repoPath string) OperationResult {
 // Does NOT remove ignored files by default.
 // Equivalent to: git clean -fd
 func (g *GitService) Clean(repoPath string) OperationResult {
-	previewRelease, previewErr := previewMutationLease(repoPath)
-	if previewErr != nil {
-		return failedOp(previewErr.Error())
-	}
-	defer previewRelease()
-
 	result := g.runner.RunGit(repoPath, "clean", "-fd")
 	if !result.Success {
 		return failedOp("Failed to clean untracked files: " + getErrorMessage(result))
@@ -1001,12 +953,6 @@ func (g *GitService) CleanDryRun(repoPath string) ([]string, error) {
 // Does NOT auto-stage anything - use Add/AddAll first.
 // Equivalent to: git commit -m <message>
 func (g *GitService) Commit(repoPath string, message string) (opResult OperationResult) {
-	previewRelease, previewErr := previewMutationLease(repoPath)
-	if previewErr != nil {
-		return failedOp(previewErr.Error())
-	}
-	defer previewRelease()
-
 	defer g.publishRepoMutation(repoPath, RepoMutationCommit)
 	done := LogMethod("GitService.Commit", map[string]interface{}{"repoPath": repoPath, "message": message})
 	defer func() { done(opResult, nil) }()
@@ -1086,12 +1032,6 @@ func (g *GitService) FetchAll(repoPath string) OperationResult {
 // For safer operations with checks, use CheckoutBranch.
 // Equivalent to: git checkout <ref>
 func (g *GitService) Checkout(repoPath string, ref string) OperationResult {
-	previewRelease, previewErr := previewMutationLease(repoPath)
-	if previewErr != nil {
-		return failedOp(previewErr.Error())
-	}
-	defer previewRelease()
-
 	g = g.forGitOperation()
 	defer g.publishRepoMutation(repoPath, RepoMutationCheckout)
 	done := LogMethod("GitService.Checkout", map[string]interface{}{"repoPath": repoPath, "ref": ref})
@@ -1110,12 +1050,6 @@ func (g *GitService) Checkout(repoPath string, ref string) OperationResult {
 // For safer operations with checks, use CreateBranchAndCheckout.
 // Equivalent to: git checkout -b <branch>
 func (g *GitService) CheckoutNewBranch(repoPath string, branchName string) OperationResult {
-	previewRelease, previewErr := previewMutationLease(repoPath)
-	if previewErr != nil {
-		return failedOp(previewErr.Error())
-	}
-	defer previewRelease()
-
 	g = g.forGitOperation()
 	defer g.publishRepoMutation(repoPath, RepoMutationCheckout)
 	done := LogMethod("GitService.CheckoutNewBranch", map[string]interface{}{"repoPath": repoPath, "branchName": branchName})
@@ -1138,12 +1072,6 @@ func (g *GitService) CheckoutNewBranch(repoPath string, branchName string) Opera
 // WARNING: This is destructive - all uncommitted changes are lost.
 // Equivalent to: git reset --hard <ref>
 func (g *GitService) ResetHard(repoPath string, ref string) OperationResult {
-	previewRelease, previewErr := previewMutationLease(repoPath)
-	if previewErr != nil {
-		return failedOp(previewErr.Error())
-	}
-	defer previewRelease()
-
 	g = g.forGitOperation()
 	defer g.publishRepoMutation(repoPath, RepoMutationOther)
 	if ref == "" {
@@ -1159,12 +1087,6 @@ func (g *GitService) ResetHard(repoPath string, ref string) OperationResult {
 // ResetSoft resets HEAD to a specific commit but keeps all changes staged.
 // Equivalent to: git reset --soft <ref>
 func (g *GitService) ResetSoft(repoPath string, ref string) OperationResult {
-	previewRelease, previewErr := previewMutationLease(repoPath)
-	if previewErr != nil {
-		return failedOp(previewErr.Error())
-	}
-	defer previewRelease()
-
 	if ref == "" {
 		return failedOp("Reference is required")
 	}
@@ -1179,12 +1101,6 @@ func (g *GitService) ResetSoft(repoPath string, ref string) OperationResult {
 // This is the default git reset behavior.
 // Equivalent to: git reset <ref>
 func (g *GitService) ResetMixed(repoPath string, ref string) OperationResult {
-	previewRelease, previewErr := previewMutationLease(repoPath)
-	if previewErr != nil {
-		return failedOp(previewErr.Error())
-	}
-	defer previewRelease()
-
 	defer g.publishRepoMutation(repoPath, RepoMutationOther)
 	if ref == "" {
 		ref = "HEAD"

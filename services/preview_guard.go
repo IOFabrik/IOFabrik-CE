@@ -26,9 +26,13 @@ func acquirePreviewLock(path string, exclusive bool) (func(), error) {
 	if err := os.MkdirAll(filepath.Dir(path), 0700); err != nil {
 		return nil, err
 	}
-	if err := previewPhysicalPath(filepath.Dir(path)); err != nil {
+	// Cache roots may be symlinks. Resolve the directory so aliases acquire
+	// the same lock, while still rejecting a linked lock file itself.
+	dir, err := filepath.EvalSymlinks(filepath.Dir(path))
+	if err != nil {
 		return nil, err
 	}
+	path = filepath.Join(dir, filepath.Base(path))
 	file, err := os.OpenFile(path, os.O_CREATE|os.O_RDWR, 0600)
 	if err != nil {
 		return nil, err
@@ -109,16 +113,52 @@ func (r *CommandRunner) previewCommandLease(workDir, name string, args []string)
 			continue
 		}
 		command = arg
+		args = args[i:]
 		break
 	}
 	switch command {
-	case "rev-parse", "status", "diff", "log", "show", "ls-files", "ls-tree", "cat-file", "check-attr", "check-ignore", "merge-base", "rev-list", "for-each-ref", "version", "ls-remote", "check-ref-format":
+	case "rev-parse", "status", "diff", "log", "show", "show-ref", "ls-files", "ls-tree", "cat-file", "check-attr", "check-ignore", "merge-base", "rev-list", "for-each-ref", "version", "ls-remote", "check-ref-format":
 		return func() {}, nil
 	case "branch":
-		if len(args) == 2 && args[1] == "--show-current" {
+		if len(args) == 2 && (args[1] == "--show-current" || args[1] == "-vv" || args[1] == "-r") {
+			return func() {}, nil
+		}
+		if len(args) == 3 && args[1] == "-a" && strings.HasPrefix(args[2], "--format=") {
+			return func() {}, nil
+		}
+	case "remote":
+		if len(args) == 1 || (len(args) == 2 && args[1] == "-v") || (len(args) == 3 && args[1] == "get-url") {
+			return func() {}, nil
+		}
+	case "stash":
+		if len(args) == 3 && args[1] == "list" && strings.HasPrefix(args[2], "--pretty=") {
+			return func() {}, nil
+		}
+	case "reflog":
+		if len(args) == 4 && strings.HasPrefix(args[1], "--format=") && args[2] == "-n" {
+			return func() {}, nil
+		}
+	case "clean":
+		if len(args) == 2 && args[1] == "-fdn" {
+			return func() {}, nil
+		}
+	case "lfs":
+		if len(args) == 2 && (args[1] == "env" || args[1] == "locks") {
+			return func() {}, nil
+		}
+		if len(args) == 3 && ((args[1] == "ls-files" && args[2] == "--name-only") ||
+			(args[1] == "status" && args[2] == "--porcelain") ||
+			(args[1] == "pointer" && strings.HasPrefix(args[2], "--file=")) ||
+			(args[1] == "prune" && args[2] == "--dry-run")) {
 			return func() {}, nil
 		}
 	case "config":
+		if len(args) > 1 && args[1] == "--local" {
+			args = args[1:]
+		}
+		if len(args) == 2 && (args[1] == "--list" || !strings.HasPrefix(args[1], "-")) {
+			return func() {}, nil
+		}
 		if len(args) == 3 && (args[1] == "--get" || args[1] == "--get-all") {
 			return func() {}, nil
 		}
