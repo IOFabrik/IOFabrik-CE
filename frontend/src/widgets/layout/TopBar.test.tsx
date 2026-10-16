@@ -126,6 +126,29 @@ describe('unified Windows top bar', () => {
     expect(screen.queryByRole('button', { name: /^Pull|^Push/ })).not.toBeInTheDocument();
   });
 
+  it('uses only the native tooltip for Sync, like Undo', () => {
+    render(<TopBar />);
+    const sync = screen.getByRole('button', { name: 'Sync Changes' });
+    const undo = screen.getByRole('button', { name: 'Undo Last Save' });
+    expect(sync.title).toContain('Sync pulls shared updates');
+    expect(undo.title).toBe('Undo Last Save');
+    fireEvent.focus(sync);
+    expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+  });
+
+  it('keeps the disabled Sync explanation available to keyboard users', () => {
+    mocks.repo.hasRemote = false;
+    render(<TopBar />);
+    const explanation = screen.getByLabelText(
+      'Connect this project to a remote repository to sync changes.'
+    );
+    expect(explanation).toHaveAttribute('tabindex', '0');
+    expect(explanation).toHaveAttribute('title', explanation.getAttribute('aria-label'));
+    expect(screen.getByRole('button', { name: 'Sync Changes' })).not.toHaveAttribute('title');
+    fireEvent.focus(explanation);
+    expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+  });
+
   it.each([
     { behind: 0, ahead: 0 },
     { behind: 3, ahead: 0 },
@@ -150,6 +173,7 @@ describe('unified Windows top bar', () => {
     const { rerender } = render(<TopBar />);
     expect(screen.getByRole('button', { name: 'Sync Changes' })).toBeDisabled();
     expect(screen.getByRole('combobox', { name: 'Switch branch' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Switch project' })).toBeDisabled();
     expect(screen.getByRole('button', { name: 'Undo Last Save' })).toBeDisabled();
     mocks.repo.operationInProgress = false;
     mocks.repo.hasRemote = false;

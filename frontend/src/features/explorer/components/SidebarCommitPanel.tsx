@@ -303,7 +303,7 @@ function SidebarCommitPanel({
               checked={checkForConflicts}
               onChange={(event) => setCheckForConflicts(event.target.checked)}
               disabled={saveControlsDisabled || showAutoTrackModal || isApplyingAutoTrack}
-              className="h-4 w-4 rounded border-theme-default accent-blue-500"
+              className="h-4 w-4 rounded border-theme-default"
             />
             <span>Check for conflicts</span>
           </label>

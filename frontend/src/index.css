@@ -10,6 +10,11 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Shared by app checkboxes and the pinned L5X viewer's native controls. */
+input[type="checkbox"] {
+  accent-color: var(--color-accent-primary);
+}
+
 /* Top-bar controls inherit the bar's typography; the wordmark keeps its own style. */
 .app-top-bar button {
   font-family: inherit;
@@ -24,6 +29,9 @@
 
 /* Light theme (default) */
 :root {
+  /* Native controls follow the resolved app theme, including viewer controls. */
+  color-scheme: light;
+
   /* Backgrounds */
   --color-bg-base: #FFFFFF;
   --color-bg-surface: #F5F5F6;
@@ -116,6 +124,8 @@
 
 /* Dark theme */
 .dark {
+  color-scheme: dark;
+
   /* Backgrounds */
   --color-bg-base: #181818;
   --color-bg-surface: #1D1D1E;

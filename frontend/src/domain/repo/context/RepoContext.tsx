@@ -115,6 +115,8 @@ import {
   RevealInFinder,
   OpenInTerminal,
 } from '../services/repo-commands';
+import { isActivePreviewStagingPath } from '../utils/preview-staging';
+import { usePreviewGeneration } from '../hooks/usePreviewGeneration';
 import { useProjectDefaultBranch } from '../hooks/useProjectDefaultBranch';
 import { useStatusPolling } from '../polling/useStatusPolling';
 import { useGitHubAuthStatus } from '../polling/useGitHubAuthStatus';
@@ -709,6 +711,8 @@ export function RepoProvider({ children }: RepoProviderProps) {
     await Promise.all([refreshStatus(), refreshCommits(), refreshProjectDefaultBranch()]);
   }, [refreshStatus, refreshCommits, refreshProjectDefaultBranch]);
 
+  const { previewNotification, dismissPreviewNotification, generatePreview, previewRunningRef } = usePreviewGeneration(repoPath, withOperationLock, refreshAll);
+
   // Check if repository has remotes configured
   const refreshRemotes = useCallback(async (): Promise<boolean> => {
     if (!repoPath) {
@@ -778,6 +782,10 @@ export function RepoProvider({ children }: RepoProviderProps) {
 
   // Close the current repository
   const closeRepo = useCallback(async (): Promise<void> => {
+    if (previewRunningRef.current) {
+      toast.info('Wait for preview generation to finish before switching projects.');
+      return;
+    }
     // Previous-project responses must not repopulate state after closing.
     repoRefreshSession.current = { path: null };
     clearProjectDefaultBranch();
@@ -833,7 +841,7 @@ export function RepoProvider({ children }: RepoProviderProps) {
 
   // Open a folder by path
   const openRepo = useCallback(async (path: string): Promise<boolean> => {
-    if (isLoading) return false;
+    if (isLoading || previewRunningRef.current) return false;
     if (path === repoPath) return true;
     
     setIsLoading(true);
@@ -1248,6 +1256,7 @@ export function RepoProvider({ children }: RepoProviderProps) {
 
   // Save on the active branch after locally validating the project default.
   const commitChanges = useCallback(async (message: string, _force = false): Promise<boolean> => {
+    if (previewRunningRef.current) return false;
     if (!repoPath) {
       showMessage('error', 'No repository open');
       return false;
@@ -1662,6 +1671,7 @@ const generateOperationId = useCallback((): string => {
 
   // Rename an existing branch (local + remote when upstream exists)
   const renameBranch = useCallback(async (oldName: string, newName: string): Promise<boolean> => {
+    if (previewRunningRef.current) return false;
     if (!repoPath) {
       showMessage('error', 'No repository open');
       return false;
@@ -1687,6 +1697,7 @@ const generateOperationId = useCallback((): string => {
 
   // Delete an existing branch (local + remote when upstream exists)
   const deleteBranch = useCallback(async (branchName: string): Promise<boolean> => {
+    if (previewRunningRef.current) return false;
     if (!repoPath) {
       showMessage('error', 'No repository open');
       return false;
@@ -2683,6 +2694,7 @@ const generateOperationId = useCallback((): string => {
   }, [repoPath, showMessage, refreshAll]);
 
   const revertCommit = useCallback(async (commitHash: string): Promise<boolean> => {
+    if (previewRunningRef.current) return false;
     if (!repoPath) return false;
     try {
       const result = await RevertCommit(repoPath, commitHash);
@@ -3287,6 +3299,7 @@ const generateOperationId = useCallback((): string => {
     isPrivate: boolean,
     owner?: string
   ): Promise<GitHubRepoCreateResult> => {
+    if (previewRunningRef.current) return { success: false, error: 'Wait for preview generation to finish, then publish the project.' };
     if (!repoPath) {
       return {
         success: false,
@@ -3823,12 +3836,19 @@ const generateOperationId = useCallback((): string => {
     }
   }, [repoPath, refreshBranches]);
 
+  // Publication workspaces are internal; retain other files and recovery remnants.
+  const displayRepoStatus = useMemo(() => {
+    if (!repoStatus?.changedFiles) return repoStatus;
+    const changedFiles = repoStatus.changedFiles.filter(file => !isActivePreviewStagingPath(file.path, previewNotification));
+    return changedFiles.length === repoStatus.changedFiles.length ? repoStatus : { ...repoStatus, changedFiles, hasChanges: changedFiles.length > 0 };
+  }, [repoStatus, previewNotification]);
+
   // ===== Memoized Context Value =====
   const value = useMemo<RepoContextValue>(() => ({
     // State
     repoPath,
     repoInfo,
-    repoStatus,
+    repoStatus: displayRepoStatus,
     commits: graphCommits,
     graphCommits,
     branches,
@@ -3866,6 +3886,9 @@ const generateOperationId = useCallback((): string => {
     
     // Progress modal state
     progressModal,
+    generatePreview,
+    previewNotification,
+    dismissPreviewNotification,
     handleProgressComplete,
     
     // Feedback
@@ -4015,14 +4038,14 @@ const generateOperationId = useCallback((): string => {
     // Project creation (Welcome Screen)
     createProject,
   }), [
-    repoPath, repoInfo, repoStatus, graphCommits, branches, selectedFileIndex,
+    repoPath, repoInfo, displayRepoStatus, graphCommits, branches, selectedFileIndex,
     selectedCommit, selectedCommitFile, currentDiff,
     isLoading, isSyncing, isCommitting, isDiffLoading,
     gitInstalled, lfsInstalled, isInstallingPackages, packagesInstallMessage, packagesInstallPercent,
     operationInProgress, operationLabel,
     hasRemote, refreshRemotes,
     repoSettings, refreshRepoSettings, projectDefaultState,
-    progressModal, handleProgressComplete,
+    progressModal, handleProgressComplete, generatePreview, previewNotification, dismissPreviewNotification,
     showMessage,
     nonGitFolderPromptPath, dismissNonGitFolderPrompt,
     gitIdentityPrompt, submitGitIdentityPrompt, cancelGitIdentityPrompt,

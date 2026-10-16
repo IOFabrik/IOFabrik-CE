@@ -28,6 +28,7 @@ export type AppEvent =
   | 'file:reveal-in-finder'
   | 'file:open-in-terminal'
   | 'git-progress'
+  | 'preview-progress'
   | 'local-bin:progress'
   | 'debug:new-log'
   | 'debug:state-changed'

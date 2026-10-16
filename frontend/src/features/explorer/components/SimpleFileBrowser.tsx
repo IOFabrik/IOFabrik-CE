@@ -1,3 +1,4 @@
+import { isActivePreviewStagingPath } from '../../../domain/repo/utils/preview-staging';
 /**
  * SimpleFileBrowser - A lightweight file browser component.
  * 
@@ -460,6 +461,7 @@ function Toolbar({
   repoPath,
 }: ToolbarProps) {
   const { width } = useWindowSize();
+  const { operationInProgress } = useRepo();
 
   const showButtonLabels = width >= TOOLBAR_BREAKPOINTS.compactLabels;
   const showSecondaryActionsInline = width >= TOOLBAR_BREAKPOINTS.overflowSecondaryActions;
@@ -605,7 +607,7 @@ function Toolbar({
               onClick={() => void onSync()}
               className="flex items-center gap-1.5 px-2 py-1.5 hover:bg-fb-hover rounded text-theme-muted hover:text-theme-primary transition-colors text-sm leading-5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent shrink-0"
               title="Sync with Cloud"
-              disabled={!repoPath || isSyncing}
+              disabled={!repoPath || isSyncing || operationInProgress}
             >
               <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
               {showButtonLabels && <span>{isSyncing ? 'Syncing...' : 'Sync'}</span>}
@@ -630,7 +632,7 @@ function Toolbar({
                 <Cloud className="mr-2 h-4 w-4" />
                 View in Cloud
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => void onSync()} disabled={!repoPath || isSyncing}>
+              <DropdownMenuItem onClick={() => void onSync()} disabled={!repoPath || isSyncing || operationInProgress}>
                 <RefreshCw className={`mr-2 h-4 w-4 ${isSyncing ? 'animate-spin' : ''}`} />
                 {isSyncing ? 'Syncing...' : 'Sync'}
               </DropdownMenuItem>
@@ -667,22 +669,19 @@ function Toolbar({
   );
 }
 
-function showGeneratePreviewPlaceholder() {
-  toast.info('Preview generation is not available yet.');
-}
-
-function GeneratePreviewMenuItem({ fileName }: { fileName: string }) {
+const GeneratePreviewMenuItem = memo(function GeneratePreviewMenuItem({ fileName, onGenerate }: { fileName: string; onGenerate: () => void }) {
+  const { operationInProgress } = useRepo();
   // Menu content mounts on open, so eligibility uses the current file's basename.
   const parts = fileName.split('.');
   const eligible = parts.length === 2 && parts[0].length > 0 && parts[1].toLowerCase() === 'acd';
 
   return (
-    <ContextMenuItem disabled={!eligible} onSelect={showGeneratePreviewPlaceholder}>
+    <ContextMenuItem disabled={!eligible || operationInProgress} onSelect={onGenerate}>
       <FileSearch size={ICON_SIZES.sm} className="mr-2" />
       <span>Generate preview</span>
     </ContextMenuItem>
   );
-}
+});
 
 interface FileItemGridProps {
   file: FileEntry;
@@ -701,6 +700,7 @@ interface FileItemGridProps {
  * File item component for grid view
  */
 function FileItemGrid({ file, gitStatus, isLfs, lockOwner, isOwnLock, isSelected, onSelect, onDoubleClick, onPreview, onContextAction }: FileItemGridProps) {
+  const { operationInProgress } = useRepo();
   const Icon = getFileIcon(file.name, file.isDirectory);
   // Only apply git status color to files, not folders
   const statusColor = (gitStatus && !file.isDirectory) ? GIT_STATUS_COLORS[gitStatus] : '';
@@ -768,24 +768,24 @@ function FileItemGrid({ file, gitStatus, isLfs, lockOwner, isOwnLock, isSelected
             <ContextMenuShortcut>␣</ContextMenuShortcut>
           </ContextMenuItem>
         )}
-        {!file.isDirectory && <GeneratePreviewMenuItem fileName={file.name} />}
+        {!file.isDirectory && <GeneratePreviewMenuItem fileName={file.name} onGenerate={() => onContextAction?.('generate-preview', file)} />}
         <ContextMenuSeparator />
         <ContextMenuItem
-          disabled={lockDisabled}
+          disabled={operationInProgress || lockDisabled}
           onClick={() => onContextAction?.('lfs-lock', file)}
         >
           <Lock className="mr-2 h-4 w-4" />
           <span>Lock File (LFS)</span>
         </ContextMenuItem>
         <ContextMenuItem
-          disabled={unlockDisabled}
+          disabled={operationInProgress || unlockDisabled}
           onClick={() => onContextAction?.('lfs-unlock', file)}
         >
           <Lock className="mr-2 h-4 w-4" />
           <span>Unlock File (LFS)</span>
         </ContextMenuItem>
         <ContextMenuItem
-          disabled={forceUnlockDisabled}
+          disabled={operationInProgress || forceUnlockDisabled}
           onClick={() => onContextAction?.('lfs-unlock-force', file)}
         >
           <Lock className="mr-2 h-4 w-4" />
@@ -810,7 +810,7 @@ function FileItemGrid({ file, gitStatus, isLfs, lockOwner, isOwnLock, isSelected
           <Share2 className="mr-2 h-4 w-4" />
           <span>Share...</span>
         </ContextMenuItem>
-        <ContextMenuItem onClick={() => onContextAction?.('move-to-trash', file)}>
+        <ContextMenuItem disabled={operationInProgress} onClick={() => onContextAction?.('move-to-trash', file)}>
           <Trash2 className="mr-2 h-4 w-4" />
           <span>Move to Trash</span>
           <ContextMenuShortcut>{IS_MAC_OS ? '⌘⌫' : 'Del'}</ContextMenuShortcut>
@@ -842,6 +842,7 @@ interface FileItemListProps {
 type FileContextAction = 
   | 'open'
   | 'preview'
+  | 'generate-preview'
   | 'lfs-lock'
   | 'lfs-unlock'
   | 'lfs-unlock-force'
@@ -872,6 +873,7 @@ const GitStatusIcon = memo(function GitStatusIcon({ status }: { status?: string 
  * File item component for table view (used in virtualized list)
  */
 const FileTableRow = memo(function FileTableRow({ file, gitStatus, isLfs, lockOwner, isOwnLock, columnVisibility = { showSize: true, showModified: true }, onDoubleClick, isSelected, onSelect, onPreview, onContextAction }: FileItemListProps) {
+  const { operationInProgress } = useRepo();
   const Icon = getFileIcon(file.name, file.isDirectory);
   const statusColor = (gitStatus && !file.isDirectory) ? GIT_STATUS_COLORS[gitStatus] : '';
   
@@ -996,24 +998,24 @@ const FileTableRow = memo(function FileTableRow({ file, gitStatus, isLfs, lockOw
             <ContextMenuShortcut>␣</ContextMenuShortcut>
           </ContextMenuItem>
         )}
-        {!file.isDirectory && <GeneratePreviewMenuItem fileName={file.name} />}
+        {!file.isDirectory && <GeneratePreviewMenuItem fileName={file.name} onGenerate={() => onContextAction?.('generate-preview', file)} />}
         <ContextMenuSeparator />
         <ContextMenuItem
-          disabled={lockDisabled}
+          disabled={operationInProgress || lockDisabled}
           onClick={() => onContextAction?.('lfs-lock', file)}
         >
           <Lock className="mr-2 h-4 w-4" />
           <span>Lock File (LFS)</span>
         </ContextMenuItem>
         <ContextMenuItem
-          disabled={unlockDisabled}
+          disabled={operationInProgress || unlockDisabled}
           onClick={() => onContextAction?.('lfs-unlock', file)}
         >
           <Lock className="mr-2 h-4 w-4" />
           <span>Unlock File (LFS)</span>
         </ContextMenuItem>
         <ContextMenuItem
-          disabled={forceUnlockDisabled}
+          disabled={operationInProgress || forceUnlockDisabled}
           onClick={() => onContextAction?.('lfs-unlock-force', file)}
         >
           <Lock className="mr-2 h-4 w-4" />
@@ -1038,7 +1040,7 @@ const FileTableRow = memo(function FileTableRow({ file, gitStatus, isLfs, lockOw
           <Share2 className="mr-2 h-4 w-4" />
           <span>Share...</span>
         </ContextMenuItem>
-        <ContextMenuItem onClick={() => onContextAction?.('move-to-trash', file)}>
+        <ContextMenuItem disabled={operationInProgress} onClick={() => onContextAction?.('move-to-trash', file)}>
           <Trash2 className="mr-2 h-4 w-4" />
           <span>Move to Trash</span>
           <ContextMenuShortcut>{IS_MAC_OS ? '⌘⌫' : 'Del'}</ContextMenuShortcut>
@@ -1136,6 +1138,7 @@ interface FileDetailsSidebarProps {
  * Right sidebar showing file details and actions
  */
 const FileDetailsSidebar = memo(function FileDetailsSidebar({ file, gitStatus, isLfs, lockOwner, isOwnLock, onClose, onPreview, onOpenInApp, onMoveToTrash, onLockLfs, onUnlockLfs }: FileDetailsSidebarProps) {
+  const { operationInProgress } = useRepo();
   const Icon = file ? getFileIcon(file.name, file.isDirectory) : File;
   const statusColor = gitStatus ? GIT_STATUS_COLORS[gitStatus] : '';
   const statusLabel = gitStatus ? GIT_STATUS_LABELS[gitStatus] : '';
@@ -1292,7 +1295,7 @@ const FileDetailsSidebar = memo(function FileDetailsSidebar({ file, gitStatus, i
             {/* Git LFS Lock */}
             {!file.isDirectory && (
               <button
-                disabled={lockDisabled}
+                disabled={operationInProgress || lockDisabled}
                 title={lockDisabled ? 'Only available for Git LFS tracked files' : 'Lock this file with Git LFS'}
                 className={`flex items-center gap-2 w-full px-3 py-2 text-sm rounded transition-colors ${
                   lockDisabled
@@ -1307,7 +1310,7 @@ const FileDetailsSidebar = memo(function FileDetailsSidebar({ file, gitStatus, i
             )}
             {!file.isDirectory && (
               <button
-                disabled={unlockDisabled}
+                disabled={operationInProgress || unlockDisabled}
                 title={unlockDisabled ? 'Only available for files locked by you' : 'Unlock this file'}
                 className={`flex items-center gap-2 w-full px-3 py-2 text-sm rounded transition-colors ${
                   unlockDisabled
@@ -1322,7 +1325,7 @@ const FileDetailsSidebar = memo(function FileDetailsSidebar({ file, gitStatus, i
             )}
             {!file.isDirectory && (
               <button
-                disabled={forceUnlockDisabled}
+                disabled={operationInProgress || forceUnlockDisabled}
                 title={forceUnlockDisabled ? 'Only available for files locked by someone else' : 'Force unlock this file'}
                 className={`flex items-center gap-2 w-full px-3 py-2 text-sm rounded transition-colors ${
                   forceUnlockDisabled
@@ -1344,6 +1347,7 @@ const FileDetailsSidebar = memo(function FileDetailsSidebar({ file, gitStatus, i
             </button>
             <button
               className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 rounded transition-colors"
+              disabled={operationInProgress}
               onClick={handleMoveToTrash}
             >
               <Trash2 className="w-4 h-4" />
@@ -1462,7 +1466,7 @@ function SimpleFileBrowser({ repoPath }: SimpleFileBrowserProps) {
   const showDetailsPanel = width >= DETAILS_PANEL_BREAKPOINT;
 
   const [currentPath, setCurrentPath] = useState<string | null>(repoPath);
-  const [files, setFiles] = useState<FileEntry[] | null>(null);
+  const [listedFiles, setFiles] = useState<FileEntry[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showHidden, setShowHidden] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
@@ -1486,8 +1490,10 @@ function SimpleFileBrowser({ repoPath }: SimpleFileBrowserProps) {
     owner: '',
   });
   
-  const { repoStatus, syncRepo, isSyncing, refreshProjectDefaultBranch } = useRepo();
+  const { repoStatus, syncRepo, isSyncing, refreshProjectDefaultBranch, generatePreview, operationInProgress, previewNotification } = useRepo();
   const { openExplorerTab } = useLayout();
+
+  const files = useMemo(() => listedFiles?.filter(file => !isActivePreviewStagingPath(file.path, previewNotification)) ?? null, [listedFiles, previewNotification]);
 
   const isOwnLockByName = useMemo(() => {
     const out: Record<string, boolean> = {};
@@ -1797,6 +1803,7 @@ function SimpleFileBrowser({ repoPath }: SimpleFileBrowserProps) {
 
   // Move file/folder to system trash
   const handleMoveToTrash = useCallback(async (file: FileEntry) => {
+    if (operationInProgress) return;
     try {
       const result = await MoveToTrash(file.path);
       if (!result.success) {
@@ -1814,7 +1821,7 @@ function SimpleFileBrowser({ repoPath }: SimpleFileBrowserProps) {
       console.error('MoveToTrash error:', err);
       toast.error(`Failed to move '${file.name}' to trash`);
     }
-  }, [selectedPath]);
+  }, [selectedPath, operationInProgress]);
 
   // Find the selected file object
   const selectedFile = useMemo(() => {
@@ -1854,12 +1861,17 @@ function SimpleFileBrowser({ repoPath }: SimpleFileBrowserProps) {
 
   // Handle context menu actions
   const handleContextAction = useCallback(async (action: FileContextAction, file: FileEntry) => {
+    if (operationInProgress && ['generate-preview', 'move-to-trash', 'lfs-lock', 'lfs-unlock', 'lfs-unlock-force'].includes(action)) return;
     switch (action) {
       case 'open':
         handleItemDoubleClick(file);
         break;
       case 'preview':
         handlePreview(file);
+        break;
+      case 'generate-preview':
+        await generatePreview(file.path);
+        setRefreshTrigger(previous => previous + 1);
         break;
       case 'lfs-lock':
         if (!repoPath) {
@@ -1939,7 +1951,7 @@ function SimpleFileBrowser({ repoPath }: SimpleFileBrowserProps) {
         setSelectedPath(file.path);
         break;
     }
-  }, [getRepoRelativePath, handleItemDoubleClick, handleMoveToTrash, handlePreview, lockOwnerByName, repoPath]);
+  }, [getRepoRelativePath, handleItemDoubleClick, handleMoveToTrash, handlePreview, lockOwnerByName, repoPath, generatePreview, operationInProgress]);
 
   const selectedLockOwner = selectedFile ? lockOwnerByName[selectedFile.name] : undefined;
   const selectedIsOwnLock = selectedFile ? isOwnLockByName[selectedFile.name] : undefined;

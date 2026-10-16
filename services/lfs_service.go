@@ -96,6 +96,12 @@ func (l *LFSService) IsLFSEnabled(repoPath string) LFSInfo {
 // InitializeLFS initializes Git LFS for a repository
 // This runs `git lfs install` in the repo context
 func (l *LFSService) InitializeLFS(repoPath string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	done := LogMethod("LFSService.InitializeLFS", map[string]interface{}{"repoPath": repoPath})
 	defer func() { done(nil, nil) }()
 
@@ -168,6 +174,12 @@ func (l *LFSService) GetTrackedPatterns(repoPath string) ([]TrackedPattern, erro
 // TrackPattern adds a file pattern to be tracked by Git LFS
 // Runs: git lfs track "<pattern>"
 func (l *LFSService) TrackPattern(repoPath string, pattern string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	done := LogMethod("LFSService.TrackPattern", map[string]interface{}{"repoPath": repoPath, "pattern": pattern})
 	defer func() { done(nil, nil) }()
 
@@ -190,6 +202,12 @@ func (l *LFSService) TrackPattern(repoPath string, pattern string) OperationResu
 // UntrackPattern removes a file pattern from Git LFS tracking
 // Runs: git lfs untrack "<pattern>"
 func (l *LFSService) UntrackPattern(repoPath string, pattern string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	done := LogMethod("LFSService.UntrackPattern", map[string]interface{}{"repoPath": repoPath, "pattern": pattern})
 	defer func() { done(nil, nil) }()
 
@@ -327,6 +345,12 @@ func (l *LFSService) LFSStatus(repoPath string) ([]LFSFileStatus, error) {
 // LFSFetch downloads LFS objects for the current ref or specified refs.
 // Equivalent to: git lfs fetch [remote] [refs...]
 func (l *LFSService) LFSFetch(repoPath string, remote string, refs ...string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	runner := l.runner.forGitOperation()
 	done := LogMethod("LFSService.LFSFetch", map[string]interface{}{"repoPath": repoPath, "remote": remote})
 	defer func() { done(nil, nil) }()
@@ -352,6 +376,12 @@ func (l *LFSService) LFSFetch(repoPath string, remote string, refs ...string) Op
 // LFSFetchAll fetches LFS objects for all refs.
 // Equivalent to: git lfs fetch --all
 func (l *LFSService) LFSFetchAll(repoPath string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	runner := l.runner.forGitOperation()
 	done := LogMethod("LFSService.LFSFetchAll", map[string]interface{}{"repoPath": repoPath})
 	defer func() { done(nil, nil) }()
@@ -371,6 +401,12 @@ func (l *LFSService) LFSFetchAll(repoPath string) OperationResult {
 // LFSPull downloads LFS objects and checks them out into the working tree.
 // Equivalent to: git lfs pull [remote]
 func (l *LFSService) LFSPull(repoPath string, remote string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	runner := l.runner.forGitOperation()
 	done := LogMethod("LFSService.LFSPull", map[string]interface{}{"repoPath": repoPath, "remote": remote})
 	defer func() { done(nil, nil) }()
@@ -395,6 +431,12 @@ func (l *LFSService) LFSPull(repoPath string, remote string) OperationResult {
 // LFSPush uploads LFS objects to the remote.
 // Equivalent to: git lfs push [remote] [ref]
 func (l *LFSService) LFSPush(repoPath string, remote string, ref string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	runner := l.runner.forGitOperation()
 	done := LogMethod("LFSService.LFSPush", map[string]interface{}{"repoPath": repoPath, "remote": remote, "ref": ref})
 	defer func() { done(nil, nil) }()
@@ -424,6 +466,12 @@ func (l *LFSService) LFSPush(repoPath string, remote string, ref string) Operati
 // LFSPushAll uploads all LFS objects for all refs.
 // Equivalent to: git lfs push --all [remote]
 func (l *LFSService) LFSPushAll(repoPath string, remote string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	runner := l.runner.forGitOperation()
 	done := LogMethod("LFSService.LFSPushAll", map[string]interface{}{"repoPath": repoPath, "remote": remote})
 	defer func() { done(nil, nil) }()
@@ -447,6 +495,12 @@ func (l *LFSService) LFSPushAll(repoPath string, remote string) OperationResult 
 // LFSPrune removes old LFS files from the local cache.
 // Equivalent to: git lfs prune
 func (l *LFSService) LFSPrune(repoPath string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	done := LogMethod("LFSService.LFSPrune", map[string]interface{}{"repoPath": repoPath})
 	defer func() { done(nil, nil) }()
 
@@ -685,6 +739,12 @@ func (l *LFSService) LFSLocks(repoPath string) ([]LFSLock, error) {
 
 // LFSLock locks a file to prevent others from modifying it
 func (l *LFSService) LFSLock(repoPath string, filePath string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	runner := l.runner.forGitOperation()
 	done := LogMethod("LFSService.LFSLock", map[string]interface{}{"repoPath": repoPath, "filePath": filePath})
 	defer func() { done(nil, nil) }()
@@ -716,6 +776,12 @@ func (l *LFSService) LFSLock(repoPath string, filePath string) OperationResult {
 
 // LFSUnlock unlocks a file. If force is true, can unlock files locked by others.
 func (l *LFSService) LFSUnlock(repoPath string, filePath string, force bool) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	runner := l.runner.forGitOperation()
 	done := LogMethod("LFSService.LFSUnlock", map[string]interface{}{"repoPath": repoPath, "filePath": filePath, "force": force})
 	defer func() { done(nil, nil) }()

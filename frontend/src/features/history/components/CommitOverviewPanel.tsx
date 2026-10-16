@@ -75,6 +75,7 @@ interface CommitOverviewPanelProps {
   onSelectFile: (filePath: string) => void;
   onBackToCommit?: () => void;
   onRestoreCommit: (commitHash: string) => Promise<boolean>;
+  operationInProgress?: boolean;
 }
 
 const iconStyle: CSSProperties = { width: ICON_SIZES.sm, height: ICON_SIZES.sm };
@@ -149,6 +150,7 @@ interface CommitHeaderProps {
   onBack?: () => void;
   onRestore?: () => void;
   isRestoring?: boolean;
+  operationInProgress?: boolean;
 }
 
 const CommitHeader = memo(function CommitHeader({
@@ -157,6 +159,7 @@ const CommitHeader = memo(function CommitHeader({
   onBack,
   onRestore,
   isRestoring,
+  operationInProgress,
 }: CommitHeaderProps): JSX.Element {
   const parentCount = commit.parentHashes?.length ?? 0;
   const hasMergeLikeMessage = useMemo(() => {
@@ -235,7 +238,7 @@ const CommitHeader = memo(function CommitHeader({
               variant="default"
               size="sm"
               onClick={onRestore}
-              disabled={isRestoring}
+              disabled={isRestoring || operationInProgress}
               className="shrink-0 bg-theme-muted hover:bg-theme-elevated text-theme-primary border border-theme-default"
             >
               <RotateCcw style={iconStyle} className={isRestoring ? 'animate-spin' : ''} />
@@ -290,9 +293,10 @@ const CommitHeader = memo(function CommitHeader({
 interface CommitFileListProps {
   files: CommitFile[];
   onFileSelect: (filePath: string) => void;
+  operationInProgress?: boolean;
 }
 
-const CommitFileList = memo(function CommitFileList({ files, onFileSelect }: CommitFileListProps): JSX.Element {
+const CommitFileList = memo(function CommitFileList({ files, onFileSelect, operationInProgress }: CommitFileListProps): JSX.Element {
   const statusColors: Record<string, string> = {
     added: 'text-green-400',
     modified: 'text-yellow-400',
@@ -411,7 +415,7 @@ const CommitFileList = memo(function CommitFileList({ files, onFileSelect }: Com
                     </Button>
                   </TableCell>
                   <TableCell className="py-2 text-right">
-                    <Button size="sm" variant="ghost" className="h-6 px-2 text-[11px]" onClick={() => handleRowRestore(file)}>
+                    <Button size="sm" variant="ghost" disabled={operationInProgress} className="h-6 px-2 text-[11px]" onClick={() => handleRowRestore(file)}>
                       <RotateCcw style={iconXsStyle} />
                       <span>Restore</span>
                     </Button>
@@ -439,6 +443,7 @@ function CommitOverviewPanel({
   onSelectFile,
   onBackToCommit,
   onRestoreCommit,
+  operationInProgress = false,
 }: CommitOverviewPanelProps): JSX.Element {
   const [showRestoreConfirm, setShowRestoreConfirm] = useState(false);
   const [isRestoring, setIsRestoring] = useState(false);
@@ -461,6 +466,7 @@ function CommitOverviewPanel({
   }, []);
 
   const handleRestoreConfirm = useCallback(async (): Promise<void> => {
+    if (operationInProgress) return;
     setIsRestoring(true);
     try {
       await onRestoreCommit(commit.hash);
@@ -468,7 +474,7 @@ function CommitOverviewPanel({
       setIsRestoring(false);
       setShowRestoreConfirm(false);
     }
-  }, [commit.hash, onRestoreCommit]);
+  }, [commit.hash, onRestoreCommit, operationInProgress]);
 
   if (isDiffLoading) {
     return <LoadingState />;
@@ -488,7 +494,7 @@ function CommitOverviewPanel({
           <AlertDialogCancel disabled={isRestoring}>Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={handleRestoreConfirm}
-            disabled={isRestoring}
+            disabled={isRestoring || operationInProgress}
           >
             {isRestoring ? 'Restoring...' : 'Restore'}
           </AlertDialogAction>
@@ -506,6 +512,7 @@ function CommitOverviewPanel({
           onBack={onBackToCommit}
           onRestore={handleRestoreClick}
           isRestoring={isRestoring}
+        operationInProgress={operationInProgress}
         />
         <div className="flex-1 overflow-hidden min-h-0">
           <DiffRenderer
@@ -534,11 +541,13 @@ function CommitOverviewPanel({
         branchName={branchName}
         onRestore={handleRestoreClick}
         isRestoring={isRestoring}
+        operationInProgress={operationInProgress}
       />
       <CommitFileList
         key={commit.hash}
         files={(commit.files || []) as CommitFile[]}
         onFileSelect={onSelectFile}
+        operationInProgress={operationInProgress}
       />
       {restoreConfirmModal}
     </div>

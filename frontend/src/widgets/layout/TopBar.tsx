@@ -4,14 +4,7 @@ import { ArrowDown, ArrowUp, GitBranch, Menu, RefreshCw, Undo2 } from 'lucide-re
 import { useLayout, useRepo } from '../../context';
 import { VIEWS } from '../../shared/constants';
 import { useWindowSize } from '../../shared/hooks';
-import {
-  Button,
-  UndoLastSaveDialog,
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '../../shared/ui';
+import { Button, UndoLastSaveDialog } from '../../shared/ui';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -72,10 +65,11 @@ function TopBar(): JSX.Element {
       : `Sync pulls shared updates and pushes saved work as needed. ${incoming === null ? 'Incoming count is unavailable until this branch tracks a remote branch.' : `${incoming} incoming saved changes, based on the last check.`} ${outgoing} outgoing saved changes. Counts describe saved snapshots, not uncommitted files.`;
 
   const handleSwitchProject = useCallback(async () => {
+    if (busy) return;
     await closeRepo();
     setActiveView(VIEWS.EXPLORER);
     setSidebarCollapsed(false);
-  }, [closeRepo, setActiveView, setSidebarCollapsed]);
+  }, [busy, closeRepo, setActiveView, setSidebarCollapsed]);
   const handleUndo = useCallback(async () => {
     await undoLastCommit();
   }, [undoLastCommit]);
@@ -107,6 +101,7 @@ function TopBar(): JSX.Element {
         data-testid="top-bar"
       >
         <Wordmark />
+        <span aria-hidden="true" className="w-2 shrink-0" />
         <div {...windowControlProps} className="flex min-w-0 items-center gap-1">
           <span className="shrink-0 text-sm leading-5 font-normal text-theme-secondary">Repository:</span>
           <RepoSwitcher onSwitchProjects={handleOpenSwitchProject} />
@@ -130,48 +125,42 @@ function TopBar(): JSX.Element {
           className="mx-1 h-4 w-px shrink-0 bg-theme-muted"
         />
         <div {...windowControlProps} className="flex shrink-0 items-center gap-1">
-          <TooltipProvider delayDuration={250}>
-            <Tooltip>
-              <TooltipTrigger asChild>
+          <span
+            className="inline-flex"
+            tabIndex={syncDisabled ? 0 : undefined}
+            aria-label={syncDisabled ? syncDescription : undefined}
+            title={syncDisabled ? syncDescription : undefined}
+          >
+            <Button
+              variant="secondary"
+              onClick={handleSync}
+              disabled={syncDisabled}
+              loading={isSyncing}
+              aria-label={isSyncing ? 'Syncing changes' : 'Sync Changes'}
+              title={syncDisabled ? undefined : syncDescription}
+            >
+              {!isSyncing && <RefreshCw style={ICON_STYLES.sm} />}
+              <span>{isSyncing ? 'syncing...' : 'sync'}</span>
+              {incoming !== null && incoming > 0 ? (
                 <span
-                  className="inline-flex"
-                  tabIndex={syncDisabled ? 0 : undefined}
-                  aria-label={syncDisabled ? syncDescription : undefined}
+                  className="ml-1 inline-flex items-center gap-0.5 text-theme-muted"
+                  aria-label={`${incoming} incoming saved changes`}
                 >
-                  <Button
-                    variant="secondary"
-                    onClick={handleSync}
-                    disabled={syncDisabled}
-                    loading={isSyncing}
-                    aria-label={isSyncing ? 'Syncing changes' : 'Sync Changes'}
-                    title={syncDescription}
-                  >
-                    {!isSyncing && <RefreshCw style={ICON_STYLES.sm} />}
-                    <span>{isSyncing ? 'syncing...' : 'sync'}</span>
-                    {incoming !== null && incoming > 0 ? (
-                      <span
-                        className="ml-1 inline-flex items-center gap-0.5 text-theme-muted"
-                        aria-label={`${incoming} incoming saved changes`}
-                      >
-                        <ArrowDown style={ICON_STYLES.xs} />
-                        {incoming}
-                      </span>
-                    ) : null}
-                    {outgoing > 0 ? (
-                      <span
-                        className="inline-flex items-center gap-0.5 text-theme-muted"
-                        aria-label={`${outgoing} outgoing saved changes`}
-                      >
-                        <ArrowUp style={ICON_STYLES.xs} />
-                        {outgoing}
-                      </span>
-                    ) : null}
-                  </Button>
+                  <ArrowDown style={ICON_STYLES.xs} />
+                  {incoming}
                 </span>
-              </TooltipTrigger>
-              <TooltipContent className="max-w-xs">{syncDescription}</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+              ) : null}
+              {outgoing > 0 ? (
+                <span
+                  className="inline-flex items-center gap-0.5 text-theme-muted"
+                  aria-label={`${outgoing} outgoing saved changes`}
+                >
+                  <ArrowUp style={ICON_STYLES.xs} />
+                  {outgoing}
+                </span>
+              ) : null}
+            </Button>
+          </span>
           {isCompactTopBar ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

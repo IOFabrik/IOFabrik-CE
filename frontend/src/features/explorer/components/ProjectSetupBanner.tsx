@@ -53,6 +53,7 @@ interface ProjectSetupBannerProps {
   onLoadOrganizations?: () => Promise<GitHubOrganizationsResult>;
   /** Whether tracking/init is in progress */
   isLoading?: boolean;
+  operationInProgress?: boolean;
   /** Whether publishing is in progress */
   isPublishing?: boolean;
   /** GitHub CLI installed? */
@@ -133,6 +134,7 @@ function ProjectSetupBanner({
   onConnectGitHub,
   onLoadOrganizations,
   isLoading = false,
+  operationInProgress = false,
   isPublishing = false,
   ghInstalled = false,
   ghAuthStatus,
@@ -223,7 +225,7 @@ function ProjectSetupBanner({
 
         {/* Primary CTA (compact, in the header row) */}
         {isUntrackedState && (
-          <Button size="sm" onClick={handleEnableVC} loading={isLoading || isInstallingPackages}>
+          <Button size="sm" disabled={operationInProgress} onClick={handleEnableVC} loading={isLoading || isInstallingPackages}>
             <GitBranch size={ICON_SIZES.xs} />
             {isInstallingPackages ? 'Checking Tools...' : untrackedActionLabel}
           </Button>
@@ -234,6 +236,7 @@ function ProjectSetupBanner({
             <Button
               size="sm"
               onClick={() => setIsPublishModalOpen(true)}
+              disabled={operationInProgress}
               variant="secondary"
             >
               <CloudUpload size={ICON_SIZES.xs} />

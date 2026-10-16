@@ -644,6 +644,11 @@ func (f *FileSystemService) CopyToClipboard(text string) OpenFileResult {
 
 // MoveToTrash moves a file or directory to the system trash/recycle bin.
 func (f *FileSystemService) MoveToTrash(path string) OpenFileResult {
+	previewRelease, previewErr := previewMutationLease(path)
+	if previewErr != nil {
+		return OpenFileResult{Error: previewErr.Error()}
+	}
+	defer previewRelease()
 	done := LogMethod("FileSystemService.MoveToTrash", map[string]interface{}{"path": path})
 	defer func() { done(nil, nil) }()
 

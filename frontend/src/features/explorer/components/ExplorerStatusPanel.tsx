@@ -302,6 +302,7 @@ function ExplorerStatusPanel({
             </div>
             <Button 
               onClick={() => setIsPublishModalOpen(true)}
+              disabled={operationInProgress}
               size="sm"
               variant="secondary"
               className="w-full"

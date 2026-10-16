@@ -17,6 +17,8 @@ const mocks = vi.hoisted(() => ({
   lfsUnlock: vi.fn(),
   openExplorerTab: vi.fn(),
   syncRepo: vi.fn(),
+  generatePreview: vi.fn(),
+  generationBusy: false,
   openExternalUrl: vi.fn(),
   toastInfo: vi.fn(),
   toastSuccess: vi.fn(),
@@ -51,7 +53,7 @@ vi.mock('@wailsio/runtime', async (importOriginal) => ({
 }));
 
 vi.mock('../../../context', () => ({
-  useRepo: () => ({ repoStatus: mocks.repoStatus, syncRepo: mocks.syncRepo, isSyncing: false, refreshProjectDefaultBranch: vi.fn() }),
+  useRepo: () => ({ repoStatus: mocks.repoStatus, syncRepo: mocks.syncRepo, isSyncing: false, refreshProjectDefaultBranch: vi.fn(), generatePreview: mocks.generatePreview, operationInProgress: mocks.generationBusy }),
   useLayout: () => ({ openExplorerTab: mocks.openExplorerTab }),
 }));
 
@@ -121,6 +123,8 @@ describe.each<Layout>(['grid', 'list'])('Generate preview in the %s layout', { t
     vi.clearAllMocks();
     vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} });
     mocks.repoStatus.changedFiles = [];
+    mocks.generationBusy = false;
+    mocks.generatePreview.mockResolvedValue(true);
     mocks.getGitUser.mockResolvedValue('Engineer');
     mocks.lfsLsFiles.mockResolvedValue([]);
     mocks.lfsLocks.mockResolvedValue([]);
@@ -198,7 +202,7 @@ describe.each<Layout>(['grid', 'list'])('Generate preview in the %s layout', { t
     }
   });
 
-  it('only shows placeholder feedback when selected, without backend calls or opening a viewer', async () => {
+  it('generates the selected file and refreshes the browser without opening a viewer', async () => {
     await renderBrowser(layout, [fileEntry('Controller.ACD')]);
     await waitFor(() => {
       expect(mocks.getGitUser).toHaveBeenCalled();
@@ -207,16 +211,31 @@ describe.each<Layout>(['grid', 'list'])('Generate preview in the %s layout', { t
     });
     vi.clearAllMocks();
     fireEvent.click(await openFileMenu(layout, 'Controller.ACD'));
-    expect(mocks.toastInfo).toHaveBeenCalledExactlyOnceWith('Preview generation is not available yet.');
+    expect(mocks.generatePreview).toHaveBeenCalledExactlyOnceWith('/projects/Line.1/Controller.ACD');
     await waitFor(() => expect(screen.queryByRole('menu')).not.toBeInTheDocument());
+    await waitFor(() => expect(mocks.listDirectory).toHaveBeenCalled());
     for (const method of [
-      Call.ByID, mocks.listDirectory, mocks.getGitUser, mocks.lfsLsFiles, mocks.lfsLocks,
+      Call.ByID,
       mocks.lfsLock, mocks.lfsUnlock, mocks.getRemoteURL, mocks.openFile, mocks.moveToTrash,
       mocks.revealInFinder, mocks.copyToClipboard, mocks.openExplorerTab, mocks.syncRepo, mocks.openExternalUrl,
     ]) {
       expect(method).not.toHaveBeenCalled();
     }
     expect(mocks.toastSuccess).not.toHaveBeenCalled();
+  });
+
+  it('disables generation while a project operation is running', async () => {
+    mocks.generationBusy = true;
+    await renderBrowser(layout, [fileEntry('Controller.ACD')]);
+    const item = await openFileMenu(layout, 'Controller.ACD');
+    expect(item).toHaveAttribute('aria-disabled', 'true');
+    fireEvent.click(item);
+    expect(mocks.generatePreview).not.toHaveBeenCalled();
+    for (const name of ['Move to Trash', 'Lock File (LFS)', 'Unlock File (LFS)', 'Force Unlock (LFS)']) {
+      expect(screen.getByRole('menuitem', { name: new RegExp(name.replace(/[()]/g, '\\$&')) })).toHaveAttribute('aria-disabled', 'true');
+    }
+    expect(screen.getByRole('menuitem', { name: /^Open/ })).not.toHaveAttribute('aria-disabled', 'true');
+    expect(screen.getByRole('menuitem', { name: 'Copy Name' })).not.toHaveAttribute('aria-disabled', 'true');
   });
 
   it('does not offer generation for a directory named Controller.ACD', async () => {
