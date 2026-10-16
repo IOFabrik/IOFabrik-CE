@@ -75,13 +75,15 @@ function SidebarCommitPanel({
   const [defaultBranchName, setDefaultBranchName] = useState('');
 
   useEffect(() => {
-    if (repoPath && rememberedSaveChoices.get(repoPath)?.branch !== effectiveDefaultBranch) {
+    // A reopened project's status may arrive before its default. Wait for a
+    // validated result before treating the saved preference as obsolete.
+    if (repoPath && projectDefaultBranch && rememberedSaveChoices.get(repoPath)?.branch !== effectiveDefaultBranch) {
       rememberedSaveChoices.delete(repoPath);
     }
     if (showMainBranchChoiceModal && (choiceDefaultBranch !== effectiveDefaultBranch || currentBranch !== effectiveDefaultBranch)) {
       setShowMainBranchChoiceModal(false);
     }
-  }, [repoPath, effectiveDefaultBranch, currentBranch, choiceDefaultBranch, showMainBranchChoiceModal]);
+  }, [repoPath, projectDefaultBranch, effectiveDefaultBranch, currentBranch, choiceDefaultBranch, showMainBranchChoiceModal]);
 
   const {
     modalOpen: showAutoTrackModal,

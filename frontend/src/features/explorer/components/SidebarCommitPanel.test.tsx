@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const { layoutStore, integrationStore, repoStore } = vi.hoisted(() => ({
   repoStore: {
-    projectDefaultBranch: { availability: 'ready', effectiveBranch: 'main' },
+    projectDefaultBranch: { availability: 'ready', effectiveBranch: 'main' } as { availability: string; effectiveBranch: string } | null,
     ensureProjectDefaultBranch: vi.fn(),
   },
   layoutStore: {
@@ -57,7 +57,7 @@ function renderPanel({
   repoPath?: string;
   isFirstSave?: boolean;
 } = {}) {
-  const view = render(
+  const panel = () => (
     <SidebarCommitPanel
       changedFiles={[{ path: 'logic/valve.L5X', name: 'valve.L5X', status: 'modified' }]}
       onCommit={onCommit}
@@ -69,9 +69,10 @@ function renderPanel({
       isFirstSave={isFirstSave}
       isCommitting={false}
       isRewinding={false}
-    />,
+    />
   );
-  return { onCommit, onBranchAndCommit, unmount: view.unmount };
+  const view = render(panel());
+  return { onCommit, onBranchAndCommit, unmount: view.unmount, rerender: () => view.rerender(panel()) };
 }
 
 async function enterMessageAndSave(): Promise<void> {
@@ -160,7 +161,7 @@ describe('SidebarCommitPanel conflict check option', () => {
   });
 
   it('offers default Save choices with the exact custom branch name', async () => {
-    repoStore.projectDefaultBranch.effectiveBranch = 'Release/2026';
+    repoStore.projectDefaultBranch = { availability: 'ready', effectiveBranch: 'Release/2026' };
     repoStore.ensureProjectDefaultBranch.mockResolvedValue('Release/2026');
     const { onCommit, onBranchAndCommit } = renderPanel({ currentBranch: 'Release/2026' });
     await enterMessageAndSave();
@@ -182,7 +183,7 @@ describe('SidebarCommitPanel conflict check option', () => {
   });
 
   it.each(['main', 'master', 'release/2026'])('treats nondefault %s as ordinary work, preserving case', async (currentBranch) => {
-    repoStore.projectDefaultBranch.effectiveBranch = 'Release/2026';
+    repoStore.projectDefaultBranch = { availability: 'ready', effectiveBranch: 'Release/2026' };
     repoStore.ensureProjectDefaultBranch.mockResolvedValue('Release/2026');
     const { onCommit } = renderPanel({ currentBranch });
     expect(screen.getByRole('checkbox', { name: 'Check for conflicts' })).toBeInTheDocument();
@@ -270,11 +271,29 @@ describe('SidebarCommitPanel conflict check option', () => {
     expect(other.onCommit).not.toHaveBeenCalled();
     other.unmount();
 
-    repoStore.projectDefaultBranch.effectiveBranch = 'release/2026';
+    repoStore.projectDefaultBranch = { availability: 'ready', effectiveBranch: 'release/2026' };
     repoStore.ensureProjectDefaultBranch.mockResolvedValue('release/2026');
     const changed = renderPanel({ currentBranch: 'release/2026', repoPath: '/remember-first' });
     await enterMessageAndSave();
     expect(screen.getByRole('alertdialog')).toBeInTheDocument();
     expect(changed.onCommit).not.toHaveBeenCalled();
+  });
+
+  it('retains the remembered choice while a reopened project loads its default', async () => {
+    const first = renderPanel({ currentBranch: 'main', repoPath: '/remember-loading' });
+    await enterMessageAndSave();
+    fireEvent.click(screen.getByRole('radio', { name: /Save on main/ }));
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Remember my choice for this session' }));
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Confirm' })); });
+    first.unmount();
+
+    // The status response can populate Explorer before default discovery ends.
+    repoStore.projectDefaultBranch = null;
+    const reopened = renderPanel({ currentBranch: 'main', repoPath: '/remember-loading' });
+    repoStore.projectDefaultBranch = { availability: 'ready', effectiveBranch: 'main' };
+    reopened.rerender();
+    await enterMessageAndSave();
+    expect(reopened.onCommit).toHaveBeenCalledExactlyOnceWith('Update valve timing');
+    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
   });
 });
