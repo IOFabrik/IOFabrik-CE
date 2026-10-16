@@ -1,3 +1,4 @@
+import type { PreviewNotificationState } from '../hooks/usePreviewGeneration';
 import type { ProjectDefaultBranchPrompt } from '../hooks/useProjectDefaultBranch';
 import type {
   ProjectDefaultBranchResult,
@@ -481,7 +482,6 @@ export interface ProgressModalState {
   isOpen: boolean;
   operationId: string | null;
   title: string;
-  kind?: 'preview';
 }
 
 // ============================================================================
@@ -617,8 +617,8 @@ export interface RepoContextValue {
   progressModal: ProgressModalState;
   handleProgressComplete: (success: boolean, error?: string) => void;
   generatePreview: (filePath: string) => Promise<boolean>;
-  previewError: string | null;
-  dismissPreviewError: () => void;
+  previewNotification: PreviewNotificationState | null;
+  dismissPreviewNotification: () => void;
 
   // Feedback
   showMessage: (type: MessageType, text: string, duration?: number) => void;

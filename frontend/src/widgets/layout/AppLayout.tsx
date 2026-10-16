@@ -12,7 +12,7 @@ import AdditionalPackagesModal from './AdditionalPackagesModal';
 import GitIdentityPromptModal from './GitIdentityPromptModal';
 import ProjectDefaultBranchModal from './ProjectDefaultBranchModal';
 import DefaultBranchSyncConfirmModal from './DefaultBranchSyncConfirmModal';
-import PreviewGenerationErrorModal from './PreviewGenerationErrorModal';
+import PreviewGenerationNotification from './PreviewGenerationNotification';
 
 // Mounted only while open so the merge/conflict bundle (including the ladder
 // visualizer) is fetched on demand and unrelated repo updates cannot re-render it.
@@ -36,12 +36,11 @@ function AppLayoutInner(): JSX.Element {
         open={progressModal.isOpen}
         operationId={progressModal.operationId || ''}
         title={progressModal.title}
-        eventName={progressModal.kind === 'preview' ? 'preview-progress' : 'git-progress'}
-        onComplete={progressModal.kind === 'preview' ? undefined : handleProgressComplete}
+        onComplete={handleProgressComplete}
       />
 
       <NonGitFolderPromptModal />
-      <PreviewGenerationErrorModal />
+      <PreviewGenerationNotification />
       <AdditionalPackagesModal />
       <GitIdentityPromptModal />
       <DefaultBranchSyncConfirmModal />

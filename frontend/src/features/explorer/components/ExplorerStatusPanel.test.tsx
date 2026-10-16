@@ -12,6 +12,11 @@ const baseProps = {
 };
 
 describe('ExplorerStatusPanel update workflow', () => {
+  it('disables publishing a local project during a preview operation', () => {
+    render(<ExplorerStatusPanel status="push" hasRemote={false} operationInProgress />);
+    expect(screen.getByRole('button', { name: 'Publish to Cloud' })).toBeDisabled();
+  });
+
   it('does not expose an alternate update trigger without an active session', () => {
     render(<ExplorerStatusPanel {...baseProps} />);
 

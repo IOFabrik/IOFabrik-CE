@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import type { GitHubDeviceFlowResult } from './RepoContext.types';
 
 const {
+  GeneratePreview,
   DetectRepo,
   Status,
   CommitAll,
@@ -38,6 +39,7 @@ const {
   StopWatching,
   toastMocks,
 } = vi.hoisted(() => ({
+  GeneratePreview: vi.fn(),
   DetectRepo: vi.fn(),
   Status: vi.fn(),
   CommitAll: vi.fn(),
@@ -113,6 +115,7 @@ vi.mock('../services/repo-queries', () => ({
 }));
 
 vi.mock('../services/repo-commands', () => ({
+  GeneratePreview,
   CommitAll,
   CheckoutBranch: vi.fn(),
   CreateBranchAndCheckout: vi.fn(),
@@ -298,6 +301,44 @@ describe('RepoContext identity and GitHub authentication', () => {
     WriteRepoLocalConfig.mockResolvedValue({ success: true });
     WatchDirectory.mockResolvedValue({ success: true });
     StopWatching.mockResolvedValue({ success: true });
+  });
+
+  it('keeps the current project and rejects conflicting actions while a preview runs', async () => {
+    let finish!: (value: { success: boolean }) => void;
+    GeneratePreview.mockReturnValue(new Promise(resolve => { finish = resolve; }));
+    let api: ReturnType<typeof useRepo> | null = null;
+    renderHarness(value => { api = value; });
+    await waitFor(() => expect(api?.gitInstalled).toBe(true));
+    await act(async () => { await api!.openRepo('/tmp/repo'); });
+    const detectsBefore = DetectRepo.mock.calls.length;
+    let generation!: Promise<boolean>;
+    act(() => { generation = api!.generatePreview('/tmp/repo/Controller.ACD'); });
+    expect(api!.operationInProgress).toBe(true);
+    expect(api!.progressModal.isOpen).toBe(false);
+    const operationId = GeneratePreview.mock.calls[0][2];
+    Status.mockResolvedValueOnce({ branch: 'main', hasChanges: true, changedFiles: [
+      { path: `.iofabrik-preview-${operationId}/new`, status: 'untracked' },
+      { path: 'README.txt', status: 'modified' },
+    ] });
+    await act(async () => { await api!.refreshStatus(); });
+    expect(api!.repoStatus?.changedFiles.map(file => file.path)).toEqual(['README.txt']);
+    await act(async () => {
+      await api!.closeRepo();
+      expect(await api!.openRepo('/tmp/other')).toBe(false);
+      expect(await api!.openFolder('/tmp/other')).toBe(false);
+      expect(await api!.commitChanges('Save during preview')).toBe(false);
+      expect(await api!.revertCommit('snapshot')).toBe(false);
+      expect(await api!.generatePreview('/tmp/repo/Other.ACD')).toBe(false);
+    });
+    expect(api!.repoPath).toBe('/tmp/repo');
+    expect(DetectRepo).toHaveBeenCalledTimes(detectsBefore);
+    expect(CommitAll).not.toHaveBeenCalled();
+    expect(GeneratePreview).toHaveBeenCalledTimes(1);
+    await act(async () => { finish({ success: true }); expect(await generation).toBe(true); });
+    expect(api!.operationInProgress).toBe(false);
+    expect(api!.previewNotification?.status).toBe('success');
+    await act(async () => { await api!.closeRepo(); });
+    expect(api!.repoPath).toBeNull();
   });
 
   it.each([true, false])('does not prepare project settings just by opening a folder (isRepo=%s)', async (isRepo) => {

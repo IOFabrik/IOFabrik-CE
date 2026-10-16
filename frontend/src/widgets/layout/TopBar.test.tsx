@@ -150,6 +150,7 @@ describe('unified Windows top bar', () => {
     const { rerender } = render(<TopBar />);
     expect(screen.getByRole('button', { name: 'Sync Changes' })).toBeDisabled();
     expect(screen.getByRole('combobox', { name: 'Switch branch' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Switch project' })).toBeDisabled();
     expect(screen.getByRole('button', { name: 'Undo Last Save' })).toBeDisabled();
     mocks.repo.operationInProgress = false;
     mocks.repo.hasRemote = false;

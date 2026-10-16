@@ -16,6 +16,7 @@ function ExplorerCommitTabContent({ commitHash }: ExplorerCommitTabContentProps)
     repoStatus,
     repoInfo,
     revertCommit,
+    operationInProgress,
   } = useRepo();
   const [commit, setCommit] = useState<CommitDetail | null>(null);
   const [selectedFilePath, setSelectedFilePath] = useState<string | null>(null);
@@ -128,6 +129,7 @@ function ExplorerCommitTabContent({ commitHash }: ExplorerCommitTabContentProps)
       onSelectFile={handleSelectFile}
       onBackToCommit={handleBackToCommit}
       onRestoreCommit={revertCommit}
+      operationInProgress={operationInProgress}
     />
   );
 }

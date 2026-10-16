@@ -231,6 +231,11 @@ describe.each<Layout>(['grid', 'list'])('Generate preview in the %s layout', { t
     expect(item).toHaveAttribute('aria-disabled', 'true');
     fireEvent.click(item);
     expect(mocks.generatePreview).not.toHaveBeenCalled();
+    for (const name of ['Move to Trash', 'Lock File (LFS)', 'Unlock File (LFS)', 'Force Unlock (LFS)']) {
+      expect(screen.getByRole('menuitem', { name: new RegExp(name.replace(/[()]/g, '\\$&')) })).toHaveAttribute('aria-disabled', 'true');
+    }
+    expect(screen.getByRole('menuitem', { name: /^Open/ })).not.toHaveAttribute('aria-disabled', 'true');
+    expect(screen.getByRole('menuitem', { name: 'Copy Name' })).not.toHaveAttribute('aria-disabled', 'true');
   });
 
   it('does not offer generation for a directory named Controller.ACD', async () => {
