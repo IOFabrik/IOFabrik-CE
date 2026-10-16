@@ -98,8 +98,8 @@ export function buildRoutineDiffRenderModel(entity: L5XDiffRoutineEntity): L5XDi
 
   for (const rungNumber of [...rungNumbers].sort((left, right) => left - right)) {
     const rungDiff = rungDiffs.get(rungNumber);
-    const oldRung = rungDiff?.oldRung ?? oldRungs.get(rungNumber);
-    const newRung = rungDiff?.newRung ?? newRungs.get(rungNumber);
+    const oldRung = rungDiff ? rungDiff.oldRung : oldRungs.get(rungNumber);
+    const newRung = rungDiff ? rungDiff.newRung : newRungs.get(rungNumber);
 
     if (rungDiff) {
       const inlineDiffModel = rungDiff.kind === 'modified'

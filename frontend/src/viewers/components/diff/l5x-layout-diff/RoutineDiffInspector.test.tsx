@@ -134,6 +134,33 @@ describe('RoutineDiffInspector', () => {
     });
   });
 
+  it.each([0, 1, 2])('renders the deleted rung at %i after following rungs are renumbered', (deletedIndex) => {
+    const oldRungs = [0, 1, 2].map(number => makeRung(
+      number,
+      `XIC(Input${number})OTE(Output${number});`,
+      [instruction('XIC', 'input', [`Input${number}`]), instruction('OTE', 'output', [`Output${number}`])],
+    ));
+    const newRungs = oldRungs.filter((_, index) => index !== deletedIndex)
+      .map((rung, number) => ({ ...rung, number }));
+    const oldController = makeController({ programs: [makeProgram('Main', {
+      routines: [makeRoutine('Motor', oldRungs)],
+    })] });
+    const newController = makeController({ programs: [makeProgram('Main', {
+      routines: [makeRoutine('Motor', newRungs)],
+    })] });
+    const entity = getRoutineEntity(oldController, newController, 'Main', 'Motor');
+    // Content matching reports the original deleted rung, even when its number is reused.
+    entity.routineDiff.rungDiffs = [{
+      kind: 'removed', rungNumber: deletedIndex, oldRung: oldRungs[deletedIndex], propertyChanges: [],
+    }];
+
+    render(<RoutineDiffInspector entity={entity} isDarkMode={false} />);
+
+    expect(screen.getByText(`Rung #${deletedIndex}`)).toBeInTheDocument();
+    expect(screen.getByText(`Output${deletedIndex}`)).toBeInTheDocument();
+    if (deletedIndex < 2) expect(screen.queryByText(`Output${deletedIndex + 1}`)).not.toBeInTheDocument();
+  });
+
   it('renders modified rungs with the shared inline diff surface instead of split old and new cards', () => {
     const oldController = makeController({
       programs: [makeProgram('Main', {
