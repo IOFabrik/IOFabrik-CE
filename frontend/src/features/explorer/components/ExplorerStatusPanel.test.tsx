@@ -8,10 +8,25 @@ import ExplorerStatusPanel from './ExplorerStatusPanel';
 const baseProps = {
   status: 'featureBranch' as const,
   branchName: 'feature/valve',
+  effectiveDefaultBranch: 'main',
   updateWorkflowEnabled: true,
 };
 
 describe('ExplorerStatusPanel update workflow', () => {
+  it.each([
+    ['release/2026', 'release/2026', false],
+    ['main', 'release/2026', true],
+    ['master', 'trunk', true],
+    ['Trunk', 'trunk', true],
+    ['', 'trunk', false],
+    ['work', undefined, false],
+  ] as const)('classifies %s against the selected default %s', (branchName, effectiveDefaultBranch, visible) => {
+    render(<ExplorerStatusPanel status="push" hasRemote={false} branchName={branchName} effectiveDefaultBranch={effectiveDefaultBranch} />);
+    const action = screen.queryByRole('button', { name: 'I am ready to merge' });
+    if (visible) expect(action).toBeInTheDocument();
+    else expect(action).not.toBeInTheDocument();
+  });
+
   it('disables publishing a local project during a preview operation', () => {
     render(<ExplorerStatusPanel status="push" hasRemote={false} operationInProgress />);
     expect(screen.getByRole('button', { name: 'Publish to Cloud' })).toBeDisabled();

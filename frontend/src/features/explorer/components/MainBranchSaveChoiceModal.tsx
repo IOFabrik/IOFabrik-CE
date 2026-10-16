@@ -42,7 +42,7 @@ function MainBranchSaveChoiceModal({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Save on main branch?</AlertDialogTitle>
+          <AlertDialogTitle>Save on the default branch?</AlertDialogTitle>
           <AlertDialogDescription>
             You are currently on {currentBranch}. Choose how you want to save these changes.
           </AlertDialogDescription>
@@ -59,7 +59,7 @@ function MainBranchSaveChoiceModal({
             />
             <div>
               <div className="text-sm text-theme-primary">(recommended) Branch and save</div>
-              <div className="text-xs text-theme-muted">Keeps shared main work stable while your team reviews and tests changes before merging.</div>
+              <div className="text-xs text-theme-muted">Keeps shared work stable while your team reviews and tests changes before merging.</div>
             </div>
           </label>
 
@@ -72,8 +72,8 @@ function MainBranchSaveChoiceModal({
               className="mt-0.5"
             />
             <div>
-              <div className="text-sm text-theme-primary">Save on main</div>
-              <div className="text-xs text-theme-muted">Saves directly to {currentBranch}. Risk: mistakes go straight to your team’s main history and are harder to undo.</div>
+              <div className="text-sm text-theme-primary">Save on {currentBranch}</div>
+              <div className="text-xs text-theme-muted">Saves directly to {currentBranch}. Risk: mistakes go straight to your team’s shared history and are harder to undo.</div>
             </div>
           </label>
 

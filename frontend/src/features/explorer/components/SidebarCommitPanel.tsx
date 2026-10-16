@@ -3,8 +3,8 @@
  * Shows commit message input, action buttons, and changed files list.
  * Clicking on changed files opens a diff tab.
  */
-import { memo, useState, useCallback, useEffect } from 'react';
-import { MAIN_BRANCHES, type ExplorerTab } from '../../../shared/constants';
+import { memo, useState, useCallback, useEffect, useRef } from 'react';
+import { type ExplorerTab } from '../../../shared/constants';
 import { useLayout, useRepo } from '../../../context';
 import { Button } from '../../../shared/ui';
 import AutoGrowTextarea from '../../../shared/ui/AutoGrowTextarea';
@@ -17,7 +17,7 @@ import { useLfsAutoTrackBeforeSave } from '../hooks/useLfsAutoTrackBeforeSave';
 import MainBranchSaveChoiceModal, { type MainBranchSaveChoice } from './MainBranchSaveChoiceModal';
 import { useIntegrationSession } from '../../integration';
 
-let rememberedMainBranchSaveChoice: MainBranchSaveChoice | null = null;
+const rememberedSaveChoices = new Map<string, { branch: string; choice: MainBranchSaveChoice }>();
 
 // ============================================================================
 // Types
@@ -34,6 +34,7 @@ interface SidebarCommitPanelProps {
   isCommitting: boolean;
   isRewinding: boolean;
   operationInProgress?: boolean;
+  isFirstSave?: boolean;
 }
 
 function SidebarCommitPanel({
@@ -47,9 +48,15 @@ function SidebarCommitPanel({
   isCommitting,
   isRewinding,
   operationInProgress = false,
+  isFirstSave = false,
 }: SidebarCommitPanelProps): JSX.Element {
   const { openExplorerTab, openExplorerMergeModal } = useLayout();
-  const { ghAuthStatus } = useRepo();
+  const { ghAuthStatus, projectDefaultBranch, ensureProjectDefaultBranch } = useRepo();
+  const effectiveDefaultBranch = projectDefaultBranch?.availability === 'ready' ? projectDefaultBranch.effectiveBranch : '';
+  const [isPreparingSave, setIsPreparingSave] = useState(false);
+  const preparingSave = useRef(false);
+  const activeProject = useRef(repoPath);
+  activeProject.current = repoPath;
   const {
     enabled: updateWorkflowEnabled,
     isBusy: isUpdateBusy,
@@ -61,10 +68,22 @@ function SidebarCommitPanel({
   const [checkForConflicts, setCheckForConflicts] = useState(false);
   const [showRewindModal, setShowRewindModal] = useState(false);
   const [showMainBranchChoiceModal, setShowMainBranchChoiceModal] = useState(false);
+  const [choiceDefaultBranch, setChoiceDefaultBranch] = useState('');
   const [mainBranchChoice, setMainBranchChoice] = useState<MainBranchSaveChoice>('branch-and-save');
   const [rememberChoiceForSession, setRememberChoiceForSession] = useState(false);
   const [isDiscardingFile, setIsDiscardingFile] = useState(false);
   const [defaultBranchName, setDefaultBranchName] = useState('');
+
+  useEffect(() => {
+    // A reopened project's status may arrive before its default. Wait for a
+    // validated result before treating the saved preference as obsolete.
+    if (repoPath && projectDefaultBranch && rememberedSaveChoices.get(repoPath)?.branch !== effectiveDefaultBranch) {
+      rememberedSaveChoices.delete(repoPath);
+    }
+    if (showMainBranchChoiceModal && (choiceDefaultBranch !== effectiveDefaultBranch || currentBranch !== effectiveDefaultBranch)) {
+      setShowMainBranchChoiceModal(false);
+    }
+  }, [repoPath, projectDefaultBranch, effectiveDefaultBranch, currentBranch, choiceDefaultBranch, showMainBranchChoiceModal]);
 
   const {
     modalOpen: showAutoTrackModal,
@@ -134,46 +153,70 @@ function SidebarCommitPanel({
   }, [openExplorerMergeModal, refreshUpdate, startUpdate, updateWorkflowEnabled]);
 
   const handleSave = useCallback(async (): Promise<void> => {
-    if (!message.trim()) return;
+    if (!message.trim() || preparingSave.current) return;
+    preparingSave.current = true;
+    setIsPreparingSave(true);
+    try {
+      const selectedDefault = await ensureProjectDefaultBranch();
+      if (!selectedDefault || activeProject.current !== repoPath) return;
 
-    const isMainBranch = MAIN_BRANCHES.includes(currentBranch.toLowerCase());
+      const isMainBranch = currentBranch === selectedDefault;
 
-    if (!isMainBranch) {
-      const shouldCheckForConflicts = checkForConflicts;
-      setCheckForConflicts(false);
-      await runBeforeSave(
-        () => onCommit(message),
-        () => handleSuccessfulFeatureSave(shouldCheckForConflicts),
-      );
-      return;
+      if (!isMainBranch || isFirstSave) {
+        const shouldCheckForConflicts = checkForConflicts;
+        setCheckForConflicts(false);
+        await runBeforeSave(
+          () => onCommit(message),
+          () => {
+            if (isMainBranch) setMessage('');
+            else handleSuccessfulFeatureSave(shouldCheckForConflicts);
+          },
+        );
+        return;
+      }
+
+      const remembered = repoPath ? rememberedSaveChoices.get(repoPath) : undefined;
+      if (remembered?.branch === selectedDefault) {
+        const rememberedChoice = remembered.choice;
+        await runBeforeSave(
+          () => executeSaveChoice(rememberedChoice),
+          () => setMessage(''),
+        );
+        return;
+      }
+
+      setMainBranchChoice('branch-and-save');
+      setChoiceDefaultBranch(selectedDefault);
+      setRememberChoiceForSession(false);
+      setShowMainBranchChoiceModal(true);
+    } finally {
+      preparingSave.current = false;
+      setIsPreparingSave(false);
     }
-
-    if (rememberedMainBranchSaveChoice) {
-      const rememberedChoice = rememberedMainBranchSaveChoice;
-      await runBeforeSave(
-        () => executeSaveChoice(rememberedChoice),
-        () => setMessage(''),
-      );
-      return;
-    }
-
-    setMainBranchChoice('branch-and-save');
-    setRememberChoiceForSession(false);
-    setShowMainBranchChoiceModal(true);
-  }, [checkForConflicts, currentBranch, handleSuccessfulFeatureSave, message, onCommit, runBeforeSave]);
+  }, [checkForConflicts, currentBranch, ensureProjectDefaultBranch, executeSaveChoice, handleSuccessfulFeatureSave, isFirstSave, message, onCommit, repoPath, runBeforeSave]);
 
   const handleConfirmMainBranchSaveChoice = useCallback(async (): Promise<void> => {
-    await runBeforeSave(
-      () => executeSaveChoice(mainBranchChoice),
-      () => {
-        if (rememberChoiceForSession) {
-          rememberedMainBranchSaveChoice = mainBranchChoice;
-        }
-        setMessage('');
-        setShowMainBranchChoiceModal(false);
-      },
-    );
-  }, [executeSaveChoice, mainBranchChoice, rememberChoiceForSession, runBeforeSave]);
+    if (preparingSave.current) return;
+    preparingSave.current = true;
+    setIsPreparingSave(true);
+    try {
+      const selectedDefault = await ensureProjectDefaultBranch();
+      if (!selectedDefault || selectedDefault !== choiceDefaultBranch || activeProject.current !== repoPath) return;
+      await runBeforeSave(
+        () => executeSaveChoice(mainBranchChoice),
+        () => {
+          if (rememberChoiceForSession && repoPath) {
+            rememberedSaveChoices.set(repoPath, { branch: selectedDefault, choice: mainBranchChoice });
+          }
+          setMessage('');
+          setShowMainBranchChoiceModal(false);
+        },
+      );
+    } finally {
+      preparingSave.current = false;
+      setIsPreparingSave(false);
+    }
+  }, [choiceDefaultBranch, ensureProjectDefaultBranch, executeSaveChoice, mainBranchChoice, rememberChoiceForSession, repoPath, runBeforeSave]);
 
   const handleRewindConfirm = useCallback(async (): Promise<void> => {
     const success = await onRewind();
@@ -219,8 +262,8 @@ function SidebarCommitPanel({
     openExplorerTab(tab);
   }, [repoPath, openExplorerTab]);
 
-  const isFeatureBranch = !MAIN_BRANCHES.includes(currentBranch.toLowerCase());
-  const saveControlsDisabled = isCommitting || operationInProgress || isUpdateBusy || isSaveBlocked;
+  const isFeatureBranch = Boolean(currentBranch && effectiveDefaultBranch && currentBranch !== effectiveDefaultBranch);
+  const saveControlsDisabled = isPreparingSave || isCommitting || operationInProgress || isUpdateBusy || isSaveBlocked;
 
   return (
     <div className="flex min-h-0 flex-col h-full">
@@ -245,7 +288,7 @@ function SidebarCommitPanel({
           <Button
             onClick={handleSave}
             disabled={!message.trim() || isDiscardingFile || saveControlsDisabled}
-            loading={isCommitting}
+            loading={isPreparingSave || isCommitting}
             size="sm"
             variant="default"
             className="flex-1"
@@ -298,7 +341,7 @@ function SidebarCommitPanel({
         defaultBranchName={defaultBranchName}
         rememberChoiceForSession={rememberChoiceForSession}
         onToggleRememberChoice={() => setRememberChoiceForSession((prev) => !prev)}
-        isCommitting={isCommitting}
+        isCommitting={isPreparingSave || isCommitting}
         canConfirm={!!message.trim()}
         onConfirm={handleConfirmMainBranchSaveChoice}
       />

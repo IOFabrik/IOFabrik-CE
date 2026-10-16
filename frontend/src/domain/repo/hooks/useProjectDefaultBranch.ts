@@ -16,6 +16,7 @@ export interface ProjectDefaultBranchPrompt {
 interface RepositorySession { path: string | null }
 interface PendingSelection {
   session: RepositorySession;
+  repoPath: string;
   promise: Promise<string | null>;
   resolve: (branch: string | null) => void;
 }
@@ -54,7 +55,7 @@ export function useProjectDefaultBranch(repoPath: string | null, sessionRef: Mut
   const refreshProjectDefaultBranch = useCallback(async (discover = false, pathOverride?: string): Promise<ProjectDefaultBranchResult | null> => {
     const session = sessionRef.current;
     const path = pathOverride || repoPath;
-    if (!path || session.path !== path) return null;
+    if (!path || (!pathOverride && session.path !== path)) return null;
     const request = ++loadingRequest.current;
     setLoading(true);
     try {
@@ -62,11 +63,11 @@ export function useProjectDefaultBranch(repoPath: string | null, sessionRef: Mut
       if (session !== sessionRef.current) return null;
       // A newer refresh may own the displayed state, but this invocation still
       // returns its locally validated result to the waiting chooser/action.
-      if (request === loadingRequest.current) setProjectDefaultBranch(result);
+      if (request === loadingRequest.current && session.path === path) setProjectDefaultBranch(result);
       return result;
     } catch {
       if (session === sessionRef.current && request === loadingRequest.current) {
-        setProjectDefaultBranch(null);
+        if (session.path === path) setProjectDefaultBranch(null);
         setError('The default branch could not be checked. Try refreshing the project.');
       }
       return null;
@@ -75,40 +76,43 @@ export function useProjectDefaultBranch(repoPath: string | null, sessionRef: Mut
     }
   }, [repoPath, sessionRef]);
 
-  const chooseProjectDefaultBranch = useCallback(async (): Promise<string | null> => {
+  const chooseProjectDefaultBranch = useCallback(async (pathOverride?: string): Promise<string | null> => {
     const session = sessionRef.current;
-    if (!repoPath || session.path !== repoPath) return null;
-    if (pending.current?.session === session) return pending.current.promise;
-    const result = await refreshProjectDefaultBranch();
+    const path = pathOverride || repoPath;
+    if (!path || (!pathOverride && session.path !== path)) return null;
+    if (pending.current?.session === session && pending.current.repoPath === path) return pending.current.promise;
+    const result = await refreshProjectDefaultBranch(false, pathOverride);
     if (!result || session !== sessionRef.current) return null;
     // Two entry points may have awaited the same local validation.
-    if (pending.current?.session === session) return pending.current.promise;
+    if (pending.current?.session === session && pending.current.repoPath === path) return pending.current.promise;
     cancelProjectDefaultBranchSelection();
     let resolve!: (branch: string | null) => void;
     const promise = new Promise<string | null>(done => { resolve = done; });
-    pending.current = { session, promise, resolve };
-    setPrompt({ repoPath, choices: result.choices, effectiveBranch: result.effectiveBranch });
+    pending.current = { session, repoPath: path, promise, resolve };
+    setPrompt({ repoPath: path, choices: result.choices, effectiveBranch: result.effectiveBranch });
     return promise;
   }, [repoPath, sessionRef, refreshProjectDefaultBranch, cancelProjectDefaultBranchSelection]);
 
-  const ensureProjectDefaultBranch = useCallback(async (): Promise<string | null> => {
-    const result = await refreshProjectDefaultBranch();
-    return result?.availability === 'ready' ? result.effectiveBranch : chooseProjectDefaultBranch();
+  const ensureProjectDefaultBranch = useCallback(async (pathOverride?: string): Promise<string | null> => {
+    const session = sessionRef.current;
+    const result = await refreshProjectDefaultBranch(false, pathOverride);
+    if (!result || session !== sessionRef.current) return null;
+    return result.availability === 'ready' ? result.effectiveBranch : chooseProjectDefaultBranch(pathOverride);
   }, [refreshProjectDefaultBranch, chooseProjectDefaultBranch]);
 
   const submitProjectDefaultBranch = useCallback(async (branch: string): Promise<boolean> => {
     const selection = pending.current;
-    if (!selection || selection.session !== sessionRef.current || !selection.session.path) return false;
+    if (!selection || selection.session !== sessionRef.current) return false;
     setSaving(true);
     setError('');
     try {
-      const saved = await SetProjectDefaultBranch(selection.session.path, branch);
+      const saved = await SetProjectDefaultBranch(selection.repoPath, branch);
       if (selection !== pending.current || selection.session !== sessionRef.current) return false;
       if (!saved.success) {
         setError(saved.error || 'The default branch could not be saved. Try again.');
         return false;
       }
-      const result = await refreshProjectDefaultBranch();
+      const result = await refreshProjectDefaultBranch(false, selection.repoPath);
       if (selection !== pending.current || selection.session !== sessionRef.current) return false;
       if (result?.availability !== 'ready') {
         setError('The selected branch is unavailable. Refresh and choose another branch.');

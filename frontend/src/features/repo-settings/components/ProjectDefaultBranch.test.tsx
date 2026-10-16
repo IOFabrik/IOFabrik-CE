@@ -156,4 +156,22 @@ describe('Project default branch Settings and chooser', () => {
     await act(async () => { finish(result('trunk')); await oldLookup; });
     expect(screen.queryByText('trunk', { selector: 'strong' })).not.toBeInTheDocument();
   });
+
+  it('selects a default for a new project without replacing the open project’s displayed default', async () => {
+    render(<Harness />);
+    await load();
+    bindings.GetProjectDefaultBranch.mockImplementation(async (path: string) => result(path === '/new-project' ? '' : 'release/2026'));
+    let requested!: Promise<string | null>;
+    await act(async () => { requested = api.ensureProjectDefaultBranch('/new-project'); });
+    await screen.findByRole('dialog');
+    fireEvent.click(screen.getByRole('button', { name: 'Choose a branch' }));
+    fireEvent.click(screen.getByRole('button', { name: 'trunk' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
+    expect(bindings.SetProjectDefaultBranch).not.toHaveBeenCalled();
+    bindings.GetProjectDefaultBranch.mockImplementation(async (path: string) => result(path === '/new-project' ? 'trunk' : 'release/2026'));
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm change' }));
+    await waitFor(() => expect(bindings.SetProjectDefaultBranch).toHaveBeenCalledWith('/new-project', 'trunk'));
+    expect(await requested).toBe('trunk');
+    expect(api.projectDefaultBranch?.effectiveBranch).toBe('release/2026');
+  });
 });

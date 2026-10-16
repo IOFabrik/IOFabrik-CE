@@ -80,8 +80,8 @@ const {
 }));
 
 vi.mock('../../../../bindings/iofabrik/services/repositorysettingsservice', () => ({
-  GetProjectDefaultBranch: vi.fn().mockResolvedValue({ effectiveBranch: '', mode: 'automatic', availability: 'needs-selection', choices: [] }),
-  RefreshProjectDefaultBranch: vi.fn().mockResolvedValue({ effectiveBranch: '', mode: 'automatic', availability: 'needs-selection', choices: [] }),
+  GetProjectDefaultBranch: vi.fn().mockResolvedValue({ effectiveBranch: 'main', mode: 'automatic', availability: 'ready', choices: ['main'] }),
+  RefreshProjectDefaultBranch: vi.fn().mockResolvedValue({ effectiveBranch: 'main', mode: 'automatic', availability: 'ready', choices: ['main'] }),
   SetProjectDefaultBranch: vi.fn(),
   UseGitHubDefault: vi.fn(),
 }));
@@ -240,6 +240,16 @@ vi.mock('sonner', () => ({
 import { RepoProvider, useRepo } from './RepoContext';
 import IntegrationsSettings from '../../../features/settings/components/IntegrationsSettings';
 import GitHubStatusBanner from '../../../widgets/layout/GitHubStatusBanner';
+import { GetProjectDefaultBranch, RefreshProjectDefaultBranch, SetProjectDefaultBranch } from '../../../../bindings/iofabrik/services/repositorysettingsservice';
+import { StashAndSwitchBranch } from '../services/repo-commands';
+import { trackCommitBranchAndSave, trackCommitCreated } from '../../analytics/analytics';
+import { ProjectDefaultBranchAvailability, ProjectDefaultBranchMode } from '../../../../bindings/iofabrik/services/models';
+
+const defaultResult = (branch = 'main') => ({
+  effectiveBranch: branch, mode: ProjectDefaultBranchMode.ProjectDefaultManual,
+  availability: branch ? ProjectDefaultBranchAvailability.ProjectDefaultReady : ProjectDefaultBranchAvailability.ProjectDefaultNeedsSelection,
+  choices: ['main', 'trunk', 'release/2026'], originRepository: '', lookupStatus: 'cached', lookupMessage: '',
+});
 
 function CaptureRepoApi({ onReady }: { onReady: (api: ReturnType<typeof useRepo>) => void }): null {
   const api = useRepo();
@@ -260,6 +270,10 @@ function renderHarness(onReady: (api: ReturnType<typeof useRepo>) => void, child
 describe('RepoContext identity and GitHub authentication', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(GetProjectDefaultBranch).mockReset().mockResolvedValue(defaultResult());
+    vi.mocked(RefreshProjectDefaultBranch).mockReset().mockResolvedValue(defaultResult());
+    vi.mocked(SetProjectDefaultBranch).mockResolvedValue({ success: true, message: '', error: '' });
+    vi.mocked(StashAndSwitchBranch).mockResolvedValue({ success: true, message: '', error: '' });
 
     DetectRepo.mockResolvedValue({ path: '/tmp/repo', isRepo: true, branch: 'main', hasError: false });
     Status.mockResolvedValue({
@@ -402,6 +416,96 @@ describe('RepoContext identity and GitHub authentication', () => {
     expect(CommitAll).not.toHaveBeenCalled();
     expect(RepoCreateFromLocal).not.toHaveBeenCalled();
     expect(onStepChange.mock.calls).toEqual([[0]]);
+  });
+
+  it.each(['save', 'branch-save'])('cancels unresolved-default %s before any requested mutation', async (action) => {
+    vi.mocked(GetProjectDefaultBranch).mockResolvedValue(defaultResult(''));
+    let api!: ReturnType<typeof useRepo>;
+    renderHarness(value => { api = value; });
+    await act(async () => { await api.openRepo('/tmp/repo'); });
+    let saving!: Promise<boolean>;
+    act(() => { saving = action === 'save' ? api.commitChanges('Pending message') : api.branchAndCommit('work', 'Pending message'); });
+    await waitFor(() => expect(api.projectDefaultBranchPrompt?.repoPath).toBe('/tmp/repo'));
+    expect(api.gitIdentityPrompt).toBeNull();
+    await act(async () => { api.cancelProjectDefaultBranchSelection(); });
+    expect(await saving).toBe(false);
+    expect(CommitAll).not.toHaveBeenCalled();
+    expect(StashAndSwitchBranch).not.toHaveBeenCalled();
+  });
+
+  it('resumes one Save after confirmed default selection and rejects overlapping Saves', async () => {
+    EnsureIdentity.mockResolvedValue({ wasAutoSet: false, name: 'Engineer', email: 'engineer@example.com' });
+    vi.mocked(GetProjectDefaultBranch).mockResolvedValue(defaultResult(''));
+    let api!: ReturnType<typeof useRepo>;
+    renderHarness(value => { api = value; });
+    await act(async () => { await api.openRepo('/tmp/repo'); });
+    let saving!: Promise<boolean>;
+    act(() => { saving = api.commitChanges('Pending message'); });
+    await waitFor(() => expect(api.projectDefaultBranchPrompt).not.toBeNull());
+    await act(async () => { expect(await api.commitChanges('Duplicate')).toBe(false); });
+    vi.mocked(GetProjectDefaultBranch).mockResolvedValue(defaultResult('trunk'));
+    await act(async () => { expect(await api.submitProjectDefaultBranch('trunk')).toBe(true); });
+    await act(async () => { expect(await saving).toBe(true); });
+    expect(CommitAll).toHaveBeenCalledExactlyOnceWith('/tmp/repo', 'Pending message');
+    expect(SetProjectDefaultBranch).toHaveBeenCalledExactlyOnceWith('/tmp/repo', 'trunk');
+  });
+
+  it('cancels a waiting Save when the project changes', async () => {
+    vi.mocked(GetProjectDefaultBranch).mockResolvedValue(defaultResult(''));
+    let api!: ReturnType<typeof useRepo>;
+    renderHarness(value => { api = value; });
+    await act(async () => { await api.openRepo('/tmp/first'); });
+    let saving!: Promise<boolean>;
+    act(() => { saving = api.commitChanges('First project only'); });
+    await waitFor(() => expect(api.projectDefaultBranchPrompt?.repoPath).toBe('/tmp/first'));
+    await act(async () => { await api.openRepo('/tmp/second'); });
+    expect(await saving).toBe(false);
+    expect(api.projectDefaultBranchPrompt).toBeNull();
+    expect(CommitAll).not.toHaveBeenCalled();
+    expect(SetProjectDefaultBranch).not.toHaveBeenCalled();
+  });
+
+  it('keeps first-snapshot work intact before branch-and-save', async () => {
+    EnsureIdentity.mockResolvedValue({ wasAutoSet: false, name: 'Engineer', email: 'engineer@example.com' });
+    Status.mockResolvedValue({ branch: 'main', hasUpstream: false, totalLocalCommits: 0, changedFiles: [] });
+    let api!: ReturnType<typeof useRepo>;
+    renderHarness(value => { api = value; });
+    await act(async () => { await api.openRepo('/tmp/repo'); });
+    await act(async () => { expect(await api.branchAndCommit('work', 'First snapshot')).toBe(false); });
+    expect(StashAndSwitchBranch).not.toHaveBeenCalled();
+    expect(CommitAll).not.toHaveBeenCalled();
+    await act(async () => { expect(await api.commitChanges('First snapshot')).toBe(true); });
+    expect(CommitAll).toHaveBeenCalledExactlyOnceWith('/tmp/repo', 'First snapshot');
+  });
+
+  it.each(['save', 'branch-save'])('suppresses %s completion after switching projects during refresh', async (action) => {
+    EnsureIdentity.mockResolvedValue({ wasAutoSet: false, name: 'Engineer', email: 'engineer@example.com' });
+    let api!: ReturnType<typeof useRepo>;
+    renderHarness(value => { api = value; });
+    await act(async () => { await api.openRepo('/tmp/first'); });
+    let finishRefresh!: (result: { hasError: boolean; commits: never[] }) => void;
+    GetCommitGraph.mockImplementationOnce(() => new Promise(resolve => { finishRefresh = resolve; }));
+    let saving!: Promise<boolean>;
+    act(() => { saving = action === 'save' ? api.commitChanges('Saved work') : api.branchAndCommit('work', 'Saved work'); });
+    await waitFor(() => expect(finishRefresh).toBeDefined());
+    await act(async () => { await api.openRepo('/tmp/second'); });
+    await act(async () => { finishRefresh({ hasError: false, commits: [] }); });
+    expect(await saving).toBe(false);
+  });
+
+  it.each([
+    ['release/2026', true], ['main', false], ['master', false], ['Release/2026', false],
+  ])('classifies branch-and-save analytics from %s using the effective default', async (branch, expected) => {
+    EnsureIdentity.mockResolvedValue({ wasAutoSet: false, name: 'Engineer', email: 'engineer@example.com' });
+    DetectRepo.mockResolvedValue({ path: '/tmp/repo', isRepo: true, branch, hasError: false });
+    vi.mocked(GetProjectDefaultBranch).mockResolvedValue(defaultResult('release/2026'));
+    let api!: ReturnType<typeof useRepo>;
+    renderHarness(value => { api = value; });
+    await act(async () => { await api.openRepo('/tmp/repo'); });
+    await act(async () => { expect(await api.branchAndCommit('new-work', 'Save work')).toBe(true); });
+    expect(trackCommitBranchAndSave).toHaveBeenCalledWith(expect.objectContaining({ wasOnProtectedBranch: expected }));
+    await act(async () => { expect(await api.commitChanges('Save again')).toBe(true); });
+    expect(trackCommitCreated).toHaveBeenCalledWith(expect.objectContaining({ isProtectedBranch: expected }));
   });
 
   it('prompts before saving changes when git identity is missing', async () => {

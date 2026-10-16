@@ -36,7 +36,7 @@ function BranchNameModal({
   onConfirm, 
   defaultBranchName = '',
   isLoading = false,
-  currentBranch = 'main',
+  currentBranch = '',
 }: BranchNameModalProps): JSX.Element | null {
   const [branchName, setBranchName] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
@@ -95,7 +95,7 @@ function BranchNameModal({
             />
           </div>
           <p className="text-xs text-theme-muted">
-            Creates branch from <span className="text-theme-secondary">{currentBranch}</span>, moves changes there, and saves.
+            Creates a branch from <span className="text-theme-secondary">{currentBranch || 'the current snapshot'}</span>, moves changes there, and saves.
           </p>
         </div>
 

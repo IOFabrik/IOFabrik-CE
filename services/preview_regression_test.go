@@ -15,6 +15,10 @@ import (
 
 func TestPreviewLinkedCacheAllowsOrdinaryMutations(t *testing.T) {
 	s, root, _ := previewTestService(t)
+	branch := strings.TrimSpace(runGitOutput(t, root, "symbolic-ref", "--short", "HEAD"))
+	if result := NewRepositorySettingsService().SetProjectDefaultBranch(root, branch); !result.Success {
+		t.Fatal(result)
+	}
 	cache := t.TempDir()
 	link := filepath.Join(t.TempDir(), "cache")
 	if err := os.Symlink(cache, link); err != nil {
@@ -88,6 +92,7 @@ func TestPreviewReadQueriesDuringGeneration(t *testing.T) {
 			{"remote"}, {"remote", "-v"}, {"remote", "get-url", "origin"},
 			{"branch", "-vv"}, {"branch", "-r"}, {"branch", "-a", "--format=%(refname:short)|%(objectname)"},
 			{"show-ref", "--verify", "--quiet", "refs/heads/main"},
+			{"symbolic-ref", "--quiet", "HEAD"},
 			{"config", "--local", "--get", "remote.origin.url"}, {"config", "--local", "--list"}, {"config", "user.name"},
 			{"stash", "list", "--pretty=format:%gd|%gs"}, {"clean", "-fdn"},
 			{"reflog", "--format=%h|%gd|%gs|%ci", "-n", "20"},
@@ -103,6 +108,7 @@ func TestPreviewReadQueriesDuringGeneration(t *testing.T) {
 			{"remote", "remove", "origin"}, {"remote", "set-url", "origin", "other"},
 			{"config", "--local", "user.name", "other"}, {"config", "--local", "--unset", "user.name"},
 			{"symbolic-ref", "HEAD", "refs/heads/other"}, {"stash", "clear"},
+			{"symbolic-ref", "--quiet", "HEAD", "refs/heads/other"},
 			{"reflog", "expire", "--all"}, {"clean", "-fd"}, {"lfs", "prune"}, {"lfs", "track", "*.ACD"},
 		} {
 			release, err := NewCommandRunner().previewCommandLease(root, GitPath(), args)

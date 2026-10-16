@@ -44,8 +44,30 @@ This is a Phase 1 placeholder. Selecting an eligible file's action only shows �
 
 ### Modals
 - **LFSAutoTrackModal** — Intercepts commit flow when large files detected (see below)
-- **MainBranchSaveChoiceModal** — Prompt when saving on protected branch
+- **MainBranchSaveChoiceModal** — Save choices on the effective project default
 - **ProjectSetupBanner** — Banner for repos needing initial setup
+
+## Default branch and Save
+
+Save prompts, Explorer actions, and Save analytics compare the active branch's
+exact name with the shared project default from `RepoContext`. A selected
+`release/2026` receives the default-branch Save choices; an unrelated `main` or
+`master` follows the work-branch path. A remembered Save choice belongs to one
+project and its effective default, and is cleared when that default changes.
+
+Every Save entry validates the default locally before the Save flow proceeds.
+If it is unavailable, the shared default-branch chooser asks the user to select
+and confirm a branch. Confirmation resumes one requested Save; cancellation
+keeps the unsaved files and message. A usable stored automatic or manual
+selection supports offline Save without another GitHub lookup. The branch
+explicitly recorded by local initialization supports the first Save.
+The first Save stays on that initial branch so there is a saved snapshot before
+the user creates a work branch.
+
+The backend revalidates before staging and committing, including direct service
+calls. Save records changes on the active branch. An unknown or detached current
+branch never becomes `main` in the UI; saving while detached asks the user to
+switch to or create a branch first.
 
 ## LFS Auto-Track Flow
 

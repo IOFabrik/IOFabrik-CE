@@ -222,6 +222,10 @@ func TestPreviewRefusesUnrelatedOrCustomDestinations(t *testing.T) {
 func TestPreviewAttributesPreserveVendorBytesAndIgnoredSource(t *testing.T) {
 	s, root, source := previewTestService(t)
 	_ = os.WriteFile(filepath.Join(root, ".gitignore"), []byte("*.ACD\n"), 0600)
+	branch := strings.TrimSpace(runGitOutput(t, root, "symbolic-ref", "--short", "HEAD"))
+	if result := NewRepositorySettingsService().SetProjectDefaultBranch(root, branch); !result.Success {
+		t.Fatal(result)
+	}
 	_ = os.WriteFile(filepath.Join(root, ".gitattributes"), []byte("*.xml text eol=crlf filter=external working-tree-encoding=UTF-16 ident\n"), 0600)
 	runGitCmd(t, root, "config", "core.autocrlf", "true")
 	requirePreviewSuccess(t, generateTestPreview(t, s, root, source))

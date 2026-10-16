@@ -387,7 +387,8 @@ export function RepoProvider({ children }: RepoProviderProps) {
   const repoOpenTimeRef = useRef<number>(0);
   const repoRefreshSession = useRef<{ path: string | null }>({ path: null });
   const projectDefaultState = useProjectDefaultBranch(repoPath, repoRefreshSession);
-  const { clearProjectDefaultBranch, refreshProjectDefaultBranch } = projectDefaultState;
+  const { clearProjectDefaultBranch, refreshProjectDefaultBranch, ensureProjectDefaultBranch } = projectDefaultState;
+  const savePendingRef = useRef(false);
   const syncStartTimeRef = useRef<number | null>(null);
   const startupAutoPullDueRef = useRef(false);
   const startupAutoPullDoneRef = useRef(false);
@@ -1194,6 +1195,10 @@ export function RepoProvider({ children }: RepoProviderProps) {
       
       // Step 5: Make initial commit with all files
       let initialCommitMade = false;
+      if (!await ensureProjectDefaultBranch(repoPath)) {
+        setIsLoading(false);
+        return false;
+      }
       const canCreateInitialCommit = await promptForGitIdentityIfMissing(repoPath, 'initial-commit');
       if (canCreateInitialCommit) {
         try {
@@ -1245,89 +1250,102 @@ export function RepoProvider({ children }: RepoProviderProps) {
       setIsLoading(false);
       return false;
     }
-  }, [cacheGitIdentity, clearCachedGitIdentity, clearChangeRequestState, repoPath, repoInfo?.isRepo, repoStatus?.changedFiles?.length, userName, userEmail, showMessage, gitInstalled, lfsInstalled, installRequiredPackages, promptForGitIdentityIfMissing]);
+  }, [cacheGitIdentity, clearCachedGitIdentity, clearChangeRequestState, repoPath, repoInfo?.isRepo, repoStatus?.changedFiles?.length, userName, userEmail, showMessage, gitInstalled, lfsInstalled, installRequiredPackages, promptForGitIdentityIfMissing, ensureProjectDefaultBranch]);
 
   // ===== Commit & Sync Operations =====
 
-  // Commit all changes with message
-  // force: bypass protected branch check (used when user explicitly confirms)
+  // Save on the active branch after locally validating the project default.
   const commitChanges = useCallback(async (message: string, _force = false): Promise<boolean> => {
     if (previewRunningRef.current) return false;
     if (!repoPath) {
       showMessage('error', 'No repository open');
       return false;
     }
-    
+
     if (!message || !message.trim()) {
       showMessage('error', 'Commit message is required');
       return false;
     }
 
-    const hasIdentity = await promptForGitIdentityIfMissing(repoPath, 'save');
-    if (!hasIdentity) {
-      return false;
-    }
-    
-    const result = await withOperationLock('Saving changes', async () => {
-      const currentBranch = repoInfo?.branch || 'unknown';
-      
-      setIsCommitting(true);
-      const startTime = Date.now();
-      const filesChanged = repoStatus?.changedFiles?.length ?? 0;
-      
-      try {
-        const result = await CommitAll(repoPath, message);
-        
-        if (!result.success) {
+    if (savePendingRef.current) return false;
+    savePendingRef.current = true;
+    try {
+      const session = repoRefreshSession.current;
+      const effectiveDefault = await ensureProjectDefaultBranch();
+      if (!effectiveDefault || session !== repoRefreshSession.current) return false;
+      const hasIdentity = await promptForGitIdentityIfMissing(repoPath, 'save');
+      if (!hasIdentity || session !== repoRefreshSession.current) {
+        return false;
+      }
+
+      const result = await withOperationLock('Saving changes', async () => {
+        if (session !== repoRefreshSession.current) return false;
+        const info = await DetectRepo(repoPath);
+        if (session !== repoRefreshSession.current) return false;
+        const currentBranch = info.branch || 'unknown';
+
+        setIsCommitting(true);
+        const startTime = Date.now();
+        const filesChanged = repoStatus?.changedFiles?.length ?? 0;
+
+        try {
+          const result = await CommitAll(repoPath, message);
+          if (session !== repoRefreshSession.current) return false;
+
+          if (!result.success) {
+            trackCommitCreated({
+              success: false,
+              filesChanged,
+              branchName: currentBranch,
+              messageLength: message.length,
+              isProtectedBranch: currentBranch === effectiveDefault,
+              durationMs: Date.now() - startTime,
+              errorType: 'git_error',
+            });
+            showMessage('error', result.error || 'Failed to save changes');
+            return false;
+          }
+
+          trackCommitCreated({
+            success: true,
+            filesChanged,
+            branchName: currentBranch,
+            messageLength: message.length,
+            isProtectedBranch: currentBranch === effectiveDefault,
+            durationMs: Date.now() - startTime,
+          });
+
+          closeAllExplorerPreviews();
+
+          showMessage('success', 'Changes saved successfully');
+          await refreshAll();
+          return session === repoRefreshSession.current;
+        } catch (err) {
+          const error = err as Error;
           trackCommitCreated({
             success: false,
             filesChanged,
             branchName: currentBranch,
             messageLength: message.length,
-            isProtectedBranch: false,
+            isProtectedBranch: currentBranch === effectiveDefault,
             durationMs: Date.now() - startTime,
-            errorType: 'git_error',
+            errorType: 'exception',
           });
-          showMessage('error', result.error || 'Failed to save changes');
+          showMessage('error', `Failed to save: ${error.message || err}`);
           return false;
+        } finally {
+          setIsCommitting(false);
         }
-        
-        trackCommitCreated({
-          success: true,
-          filesChanged,
-          branchName: currentBranch,
-          messageLength: message.length,
-          isProtectedBranch: false,
-          durationMs: Date.now() - startTime,
-        });
-
-        closeAllExplorerPreviews();
-        
-        showMessage('success', 'Changes saved successfully');
-        await refreshAll();
-        return true;
-      } catch (err) {
-        const error = err as Error;
-        trackCommitCreated({
-          success: false,
-          filesChanged,
-          branchName: currentBranch,
-          messageLength: message.length,
-          isProtectedBranch: false,
-          durationMs: Date.now() - startTime,
-          errorType: 'exception',
-        });
-        showMessage('error', `Failed to save: ${error.message || err}`);
-        return false;
-      } finally {
-        setIsCommitting(false);
-      }
-    });
-    return result ?? false;
-  }, [repoPath, repoStatus, repoInfo, showMessage, refreshAll, closeAllExplorerPreviews, withOperationLock, promptForGitIdentityIfMissing]);
+      });
+      return result ?? false;
+    } finally {
+      savePendingRef.current = false;
+    }
+  }, [repoPath, repoStatus, ensureProjectDefaultBranch, showMessage, refreshAll, closeAllExplorerPreviews, withOperationLock, promptForGitIdentityIfMissing]);
 
   // Generate unique operation ID
-  const generateOperationId = useCallback((): string => {
+
+const generateOperationId = useCallback((): string => {
     operationIdCounter.current += 1;
     return `op-${Date.now()}-${operationIdCounter.current}`;
   }, []);
@@ -1709,65 +1727,91 @@ export function RepoProvider({ children }: RepoProviderProps) {
       showMessage('error', 'No repository open');
       return false;
     }
-    
+
     if (!branchName || !branchName.trim()) {
       showMessage('error', 'Branch name is required');
       return false;
     }
-    
+
     if (!message || !message.trim()) {
       showMessage('error', 'Commit message is required');
       return false;
     }
 
-    const hasIdentity = await promptForGitIdentityIfMissing(repoPath, 'branch-save');
-    if (!hasIdentity) {
-      return false;
-    }
-    
-    const result = await withOperationLock('Saving to new branch', async () => {
-      const fromBranch = repoInfo?.branch || 'unknown';
-      const wasOnProtectedBranch = fromBranch === 'main' || fromBranch === 'master';
-      const filesChanged = repoStatus?.changedFiles?.length ?? 0;
-      
-      try {
-        const switchResult = await StashAndSwitchBranch(repoPath, branchName.trim(), true);
-        
-        if (!switchResult.success) {
-          showMessage('error', switchResult.error || 'Failed to create branch and move changes');
-          return false;
-        }
-        
-        const commitResult = await CommitAll(repoPath, message.trim());
-        
-        if (!commitResult.success) {
-          showMessage('error', commitResult.error || 'Branch created but failed to save changes');
-          return false;
-        }
-        
-        trackCommitBranchAndSave({
-          newBranchName: branchName,
-          filesChanged,
-          wasOnProtectedBranch,
-        });
-
-        closeAllExplorerPreviews();
-        
-        showMessage('success', `Created branch "${branchName}" and saved changes`);
-        clearSelection();
-        await refreshAll();
-        await refreshBranches();
-        return true;
-      } catch (err) {
-        const error = err as Error;
-        showMessage('error', `Failed: ${error.message || err}`);
+    if (savePendingRef.current) return false;
+    savePendingRef.current = true;
+    try {
+      const session = repoRefreshSession.current;
+      const effectiveDefault = await ensureProjectDefaultBranch();
+      if (!effectiveDefault || session !== repoRefreshSession.current) return false;
+      const hasIdentity = await promptForGitIdentityIfMissing(repoPath, 'branch-save');
+      if (!hasIdentity || session !== repoRefreshSession.current) {
         return false;
       }
-    });
-    return result ?? false;
-  }, [repoPath, repoInfo, repoStatus, showMessage, clearSelection, refreshAll, refreshBranches, closeAllExplorerPreviews, withOperationLock, promptForGitIdentityIfMissing]);
 
-  // ===== Recovery Operations =====
+      const result = await withOperationLock('Saving to new branch', async () => {
+        if (session !== repoRefreshSession.current) return false;
+        const status = await Status(repoPath);
+        if (session !== repoRefreshSession.current) return false;
+        if (status.hasError) {
+          showMessage('error', 'The project could not be checked. Refresh the project and try again.');
+          return false;
+        }
+        if (status.hasUpstream === false && status.totalLocalCommits === 0) {
+          showMessage('error', 'Save the first snapshot on the current branch before branching and saving.');
+          return false;
+        }
+        const info = await DetectRepo(repoPath);
+        if (session !== repoRefreshSession.current) return false;
+        const fromBranch = info.branch || 'unknown';
+        const wasOnProtectedBranch = fromBranch === effectiveDefault;
+        const filesChanged = repoStatus?.changedFiles?.length ?? 0;
+
+        try {
+          const switchResult = await StashAndSwitchBranch(repoPath, branchName.trim(), true);
+          if (session !== repoRefreshSession.current) return false;
+
+          if (!switchResult.success) {
+            showMessage('error', switchResult.error || 'Failed to create branch and move changes');
+            return false;
+          }
+
+          const commitResult = await CommitAll(repoPath, message.trim());
+          if (session !== repoRefreshSession.current) return false;
+
+          if (!commitResult.success) {
+            showMessage('error', commitResult.error || 'Branch created but failed to save changes');
+            return false;
+          }
+
+          trackCommitBranchAndSave({
+            newBranchName: branchName,
+            filesChanged,
+            wasOnProtectedBranch,
+          });
+
+          closeAllExplorerPreviews();
+
+          showMessage('success', `Created branch "${branchName}" and saved changes`);
+          clearSelection();
+          await refreshAll();
+          if (session !== repoRefreshSession.current) return false;
+          await refreshBranches();
+          return session === repoRefreshSession.current;
+        } catch (err) {
+          const error = err as Error;
+          showMessage('error', `Failed: ${error.message || err}`);
+          return false;
+        }
+      });
+      return result ?? false;
+    } finally {
+      savePendingRef.current = false;
+    }
+  }, [repoPath, repoStatus, ensureProjectDefaultBranch, showMessage, clearSelection, refreshAll, refreshBranches, closeAllExplorerPreviews, withOperationLock, promptForGitIdentityIfMissing]);
+
+
+// ===== Recovery Operations =====
 
   // Undo last commit
   const undoLastCommit = useCallback(async (): Promise<boolean> => {
@@ -3439,6 +3483,10 @@ export function RepoProvider({ children }: RepoProviderProps) {
       // ── Step 1: Commit ──────────────────────────────────────────────
       onStepChange?.(1);
 
+      if (!await ensureProjectDefaultBranch(path)) {
+        return { success: false, error: 'Choose a default branch before saving the project.' };
+      }
+
       const hasIdentity = await promptForGitIdentityIfMissing(path, 'initial-commit');
       if (!hasIdentity) {
         return {
@@ -3532,7 +3580,7 @@ export function RepoProvider({ children }: RepoProviderProps) {
       showMessage('error', `Failed to create project: ${msg}`);
       return { success: false, error: msg };
     }
-  }, [cacheGitIdentity, clearCachedGitIdentity, userName, userEmail, openRepo, showMessage, gitInstalled, lfsInstalled, ghInstalled, installRequiredPackages, promptForGitIdentityIfMissing]);
+  }, [cacheGitIdentity, clearCachedGitIdentity, userName, userEmail, openRepo, showMessage, gitInstalled, lfsInstalled, ghInstalled, installRequiredPackages, promptForGitIdentityIfMissing, ensureProjectDefaultBranch]);
 
   // ===== Effects =====
 
