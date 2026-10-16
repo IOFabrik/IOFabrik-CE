@@ -72,9 +72,7 @@ Exit code `0` means success, `1` means a structured operation failure, and `2` m
 
 A per-user share-denying file handle permits only one helper at a time. Immediately before SDK entry, the helper flushes an interruption record outside repository content. It clears that record only after SDK project disposal returns. Open/disposal failures and forced termination retain the record and any potentially active private inputs. Process exit or a running SDK service does not establish cleanup.
 
-The helper provides no reset command. The app records the native Windows kernel startup event before invocation; uncertain SDK state refuses further work until a different startup is established. The environment GUID alone can survive a restart and is insufficient. Legacy records acquire the new evidence conservatively and require a subsequent restart. The app never kills Rockwell processes or infers cleanup from process exit. Normal exit waits for generation. The SDK operation has a five-minute timeout, preserving uncertain state without changing the runner's ordinary timeout.
-
-Coordination storage and the SDK child process use the Windows user's native app-data profile, matching the helper and its authentication adapter even when a launcher redirects UI settings through environment variables.
+The helper provides no reset command. The app records the Windows boot identifier before invocation; uncertain SDK state refuses further work until a different boot is established. It never kills Rockwell processes or infers cleanup from process exit. Normal exit waits for generation. The SDK operation has a five-minute timeout, preserving uncertain state without changing the runner's ordinary timeout.
 
 ## App publication and coordination
 
