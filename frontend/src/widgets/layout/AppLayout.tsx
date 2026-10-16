@@ -12,6 +12,7 @@ import AdditionalPackagesModal from './AdditionalPackagesModal';
 import GitIdentityPromptModal from './GitIdentityPromptModal';
 import ProjectDefaultBranchModal from './ProjectDefaultBranchModal';
 import DefaultBranchSyncConfirmModal from './DefaultBranchSyncConfirmModal';
+import PreviewGenerationNotification from './PreviewGenerationNotification';
 
 // Mounted only while open so the merge/conflict bundle (including the ladder
 // visualizer) is fetched on demand and unrelated repo updates cannot re-render it.
@@ -39,6 +40,7 @@ function AppLayoutInner(): JSX.Element {
       />
 
       <NonGitFolderPromptModal />
+      <PreviewGenerationNotification />
       <AdditionalPackagesModal />
       <GitIdentityPromptModal />
       <DefaultBranchSyncConfirmModal />

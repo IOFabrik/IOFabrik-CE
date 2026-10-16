@@ -1,3 +1,4 @@
+import type { PreviewNotificationState } from '../hooks/usePreviewGeneration';
 import type { ProjectDefaultBranchPrompt } from '../hooks/useProjectDefaultBranch';
 import type {
   ProjectDefaultBranchResult,
@@ -615,6 +616,9 @@ export interface RepoContextValue {
   // Progress modal state
   progressModal: ProgressModalState;
   handleProgressComplete: (success: boolean, error?: string) => void;
+  generatePreview: (filePath: string) => Promise<boolean>;
+  previewNotification: PreviewNotificationState | null;
+  dismissPreviewNotification: () => void;
 
   // Feedback
   showMessage: (type: MessageType, text: string, duration?: number) => void;

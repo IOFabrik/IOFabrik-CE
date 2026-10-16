@@ -2037,7 +2037,7 @@ const BranchManagementPanel = memo(function BranchManagementPanel({ repoPath }: 
 // ============================================================================
 function RepoSettingsPage(): JSX.Element {
   const { selectedRepoSettingsCategory } = useLayout();
-  const { repoPath, repoInfo, refreshRepoSettings } = useRepo();
+  const { repoPath, repoInfo, refreshRepoSettings, operationInProgress } = useRepo();
   const [settings, setSettings] = useState<RepoSettings | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -2121,32 +2121,35 @@ function RepoSettingsPage(): JSX.Element {
 
   return (
     <div className="flex-1 overflow-auto">
-      <div className={`${selectedRepoSettingsCategory === 'branch-management' ? 'max-w-5xl' : 'max-w-2xl'} mx-auto p-8`}>
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-3">
-              <Settings style={{ width: 24, height: 24 }} className="text-theme-muted" />
-              <h2 className="text-xl text-theme-primary font-medium">{categoryInfo.name}</h2>
+      {operationInProgress && <p role="status" className="px-8 pt-4 text-sm text-theme-secondary">Project settings are unavailable while an operation is in progress.</p>}
+      <fieldset disabled={operationInProgress} className="min-w-0">
+        <div className={`${selectedRepoSettingsCategory === 'branch-management' ? 'max-w-5xl' : 'max-w-2xl'} mx-auto p-8`}>
+          {/* Header */}
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-3">
+                <Settings style={{ width: 24, height: 24 }} className="text-theme-muted" />
+                <h2 className="text-xl text-theme-primary font-medium">{categoryInfo.name}</h2>
+              </div>
+              {repoPath && repoInfo?.isRepo && selectedRepoSettingsCategory !== 'troubleshooting' && (
+                <Button variant="ghost" size="sm" onClick={handleResetToDefaults}>
+                  Reset to Defaults
+                </Button>
+              )}
             </div>
-            {repoPath && repoInfo?.isRepo && selectedRepoSettingsCategory !== 'troubleshooting' && (
-              <Button variant="ghost" size="sm" onClick={handleResetToDefaults}>
-                Reset to Defaults
-              </Button>
+            <p className="text-theme-muted">{categoryInfo.description}</p>
+            {repoPath && (
+              <p className="text-theme-muted text-xs mt-1">
+                Repository: {getFolderNameFromPath(repoPath)}
+              </p>
             )}
           </div>
-          <p className="text-theme-muted">{categoryInfo.description}</p>
-          {repoPath && (
-            <p className="text-theme-muted text-xs mt-1">
-              Repository: {getFolderNameFromPath(repoPath)}
-            </p>
-          )}
+
+          {repoPath && repoInfo?.isRepo && <ProjectDefaultBranchCard />}
+          {/* Category content */}
+          {renderCategoryContent()}
         </div>
-        
-        {repoPath && repoInfo?.isRepo && <ProjectDefaultBranchCard />}
-        {/* Category content */}
-        {renderCategoryContent()}
-      </div>
+      </fieldset>
     </div>
   );
 }

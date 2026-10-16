@@ -81,3 +81,4 @@ export {
   RevealInFinder,
   OpenInTerminal,
 } from '../../../../bindings/iofabrik/services/filesystemservice';
+export { GeneratePreview } from '../../../../bindings/iofabrik/services/previewgenerationservice';

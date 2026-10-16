@@ -275,6 +275,12 @@ func (r *RepositorySettingsService) SaveSettings(settings RepositorySettings) Op
 
 // UpdateBackgroundTask updates the configuration for a specific background task
 func (r *RepositorySettingsService) UpdateBackgroundTask(repoPath string, taskType BackgroundTaskType, config BackgroundTaskConfig) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	settings, err := r.GetSettings(repoPath)
 	if err != nil {
 		return failedOp(err.Error())
@@ -302,6 +308,12 @@ func (r *RepositorySettingsService) UpdateBackgroundTask(repoPath string, taskTy
 
 // UpdateFetchSettings updates fetch-related settings
 func (r *RepositorySettingsService) UpdateFetchSettings(repoPath string, fetchSettings FetchSettings) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	settings, err := r.GetSettings(repoPath)
 	if err != nil {
 		return failedOp(err.Error())
@@ -313,6 +325,12 @@ func (r *RepositorySettingsService) UpdateFetchSettings(repoPath string, fetchSe
 
 // UpdateLFSSettings updates LFS-related settings
 func (r *RepositorySettingsService) UpdateLFSSettings(repoPath string, lfsSettings LFSSettings) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	settings, err := r.GetSettings(repoPath)
 	if err != nil {
 		return failedOp(err.Error())
@@ -324,6 +342,12 @@ func (r *RepositorySettingsService) UpdateLFSSettings(repoPath string, lfsSettin
 
 // UpdateMaintenanceSettings updates maintenance-related settings
 func (r *RepositorySettingsService) UpdateMaintenanceSettings(repoPath string, maintenanceSettings MaintenanceSettings) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	settings, err := r.GetSettings(repoPath)
 	if err != nil {
 		return failedOp(err.Error())
@@ -335,6 +359,12 @@ func (r *RepositorySettingsService) UpdateMaintenanceSettings(repoPath string, m
 
 // ResetToDefaults resets all settings for a repository to defaults
 func (r *RepositorySettingsService) ResetToDefaults(repoPath string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	defaults := r.GetDefaultSettings(repoPath)
 
 	// Preserve created timestamp if settings exist
@@ -348,6 +378,12 @@ func (r *RepositorySettingsService) ResetToDefaults(repoPath string) OperationRe
 
 // DeleteSettings removes settings for a repository
 func (r *RepositorySettingsService) DeleteSettings(repoPath string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	settingsPath := r.getSettingsPath(repoPath)
 
 	if err := os.Remove(settingsPath); err != nil && !os.IsNotExist(err) {
@@ -363,6 +399,12 @@ func (r *RepositorySettingsService) DeleteSettings(repoPath string) OperationRes
 
 // runFetchAll executes the fetch all command
 func (r *RepositorySettingsService) runFetchAll(repoPath string, settings FetchSettings) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	runner := r.runner.forGitOperation()
 	args := []string{"fetch"}
 
@@ -390,6 +432,12 @@ func (r *RepositorySettingsService) runFetchAll(repoPath string, settings FetchS
 
 // runLFSFetch executes the LFS fetch command
 func (r *RepositorySettingsService) runLFSFetch(repoPath string, settings LFSSettings) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	if !settings.AutoFetch {
 		return successOp("LFS auto-fetch is disabled")
 	}
@@ -414,6 +462,12 @@ func (r *RepositorySettingsService) runLFSFetch(repoPath string, settings LFSSet
 
 // runMaintenance executes git maintenance tasks
 func (r *RepositorySettingsService) runMaintenance(repoPath string, settings MaintenanceSettings) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	var errors []string
 	var successes []string
 
@@ -460,6 +514,12 @@ func (r *RepositorySettingsService) runMaintenance(repoPath string, settings Mai
 
 // RunTaskNow runs a background task immediately
 func (r *RepositorySettingsService) RunTaskNow(repoPath string, taskType BackgroundTaskType) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	settings, err := r.GetSettings(repoPath)
 	if err != nil {
 		return failedOp(err.Error())
@@ -949,6 +1009,12 @@ func (r *RepositorySettingsService) DiagnoseRepository(repoPath string) Recovery
 
 // AbortMerge aborts an in-progress merge
 func (r *RepositorySettingsService) AbortMerge(repoPath string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	runner := r.runner.forGitOperation()
 	result := runner.RunGit(repoPath, "merge", "--abort")
 	if !result.Success {
@@ -959,6 +1025,12 @@ func (r *RepositorySettingsService) AbortMerge(repoPath string) OperationResult 
 
 // AbortCherryPick aborts an in-progress cherry-pick
 func (r *RepositorySettingsService) AbortCherryPick(repoPath string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	result := r.runner.RunGit(repoPath, "cherry-pick", "--abort")
 	if !result.Success {
 		return failedOp("Failed to abort cherry-pick: " + result.Stderr)
@@ -968,6 +1040,12 @@ func (r *RepositorySettingsService) AbortCherryPick(repoPath string) OperationRe
 
 // RemoveStaleLocks removes stale lock files that may be blocking Git operations
 func (r *RepositorySettingsService) RemoveStaleLocks(repoPath string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	resolved, err := gitAdminPaths(r.runner, repoPath, "index.lock", "HEAD.lock", "config.lock", "refs/heads")
 	if err != nil {
 		return failedOp("Could not locate this project's internal files. Reopen the project and try again.")
@@ -1007,6 +1085,12 @@ func (r *RepositorySettingsService) RemoveStaleLocks(repoPath string) OperationR
 
 // RecoverFromDetachedHead creates a new branch from detached HEAD or switches to an existing branch
 func (r *RepositorySettingsService) RecoverFromDetachedHead(repoPath string, newBranchName string, switchToExisting string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	runner := r.runner.forGitOperation()
 	// If switchToExisting is provided, switch to that branch
 	if switchToExisting != "" {
@@ -1061,6 +1145,12 @@ func (r *RepositorySettingsService) GetReflog(repoPath string, limit int) ([]Ref
 
 // RecoverToReflogEntry recovers the repository to a specific reflog entry
 func (r *RepositorySettingsService) RecoverToReflogEntry(repoPath string, hash string, createBranch bool, branchName string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	if createBranch {
 		// Create a new branch at that point
 		if branchName == "" {
@@ -1083,6 +1173,12 @@ func (r *RepositorySettingsService) RecoverToReflogEntry(repoPath string, hash s
 
 // RepairRepository attempts to repair common repository issues
 func (r *RepositorySettingsService) RepairRepository(repoPath string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	var repairs []string
 	var errors []string
 
@@ -1132,6 +1228,12 @@ func (r *RepositorySettingsService) RepairRepository(repoPath string) OperationR
 
 // ResetHard performs a hard reset to a specific ref (use with caution)
 func (r *RepositorySettingsService) ResetHard(repoPath string, ref string, confirm bool) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	runner := r.runner.forGitOperation()
 	if !confirm {
 		return failedOp("Hard reset requires confirmation - this will discard all uncommitted changes")
@@ -1157,6 +1259,12 @@ func (r *RepositorySettingsService) ResetHard(repoPath string, ref string, confi
 
 // StashAndReset stashes current changes before resetting
 func (r *RepositorySettingsService) StashAndReset(repoPath string, ref string, stashMessage string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	runner := r.runner.forGitOperation()
 	// First stash any changes
 	if stashMessage == "" {
@@ -1189,6 +1297,12 @@ func (r *RepositorySettingsService) StashAndReset(repoPath string, ref string, s
 
 // ClearCredentialCache clears cached credentials
 func (r *RepositorySettingsService) ClearCredentialCache(repoPath string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	// Try to clear the credential cache
 	result := r.runner.RunGit(repoPath, "credential-cache", "exit")
 
@@ -1213,6 +1327,12 @@ func (r *RepositorySettingsService) ClearCredentialCache(repoPath string) Operat
 
 // FixRemoteURL updates the remote URL (useful when remote has moved or credentials changed)
 func (r *RepositorySettingsService) FixRemoteURL(repoPath string, remoteName string, newURL string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	if remoteName == "" {
 		remoteName = "origin"
 	}
@@ -1227,6 +1347,12 @@ func (r *RepositorySettingsService) FixRemoteURL(repoPath string, remoteName str
 
 // RecreateRemote removes and re-adds a remote
 func (r *RepositorySettingsService) RecreateRemote(repoPath string, remoteName string, url string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	runner := r.runner.forGitOperation()
 	if remoteName == "" {
 		remoteName = "origin"
@@ -1252,6 +1378,12 @@ func (r *RepositorySettingsService) RecreateRemote(repoPath string, remoteName s
 
 // SetUpstreamBranch sets the upstream tracking branch
 func (r *RepositorySettingsService) SetUpstreamBranch(repoPath string, remoteBranch string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	if remoteBranch == "" {
 		// Auto-detect from current branch
 		branchResult := r.runner.RunGit(repoPath, "branch", "--show-current")
@@ -1394,6 +1526,12 @@ func (r *RepositorySettingsService) GetGitignoreTemplates() []GitignoreTemplateO
 // ApplyGitignoreTemplate appends missing lines from a preset template into the
 // repository's .gitignore file.
 func (r *RepositorySettingsService) ApplyGitignoreTemplate(repoPath string, templateID string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	if strings.TrimSpace(repoPath) == "" {
 		return failedOp("Repository path is required")
 	}
@@ -1543,6 +1681,12 @@ func (r *RepositorySettingsService) ReadRepoLocalConfig(repoPath string) RepoLoc
 // WriteRepoLocalConfig writes the shared config (.iofabrik/config.json) to
 // the repository. Creates the .iofabrik/ directory if it does not exist.
 func (r *RepositorySettingsService) WriteRepoLocalConfig(repoPath string, config RepoLocalConfig) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	dirPath := iofabrikDirPath(repoPath)
 	if err := prepareIOFabrikDirectory(dirPath); err != nil {
 		return iofabrikDirectoryFailure(err)
@@ -1594,12 +1738,24 @@ func (r *RepositorySettingsService) readRepoPersonalConfig(repoPath string) (Rep
 // directory if it does not exist. Protects both local.json and atomic-write
 // temporary files with repository ignore rules before creating personal files.
 func (r *RepositorySettingsService) WriteRepoPersonalConfig(repoPath string, config RepoPersonalConfig) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	projectDefaultBranchMu.Lock()
 	defer projectDefaultBranchMu.Unlock()
 	return r.writeRepoPersonalConfig(repoPath, config)
 }
 
 func (r *RepositorySettingsService) writeRepoPersonalConfig(repoPath string, config RepoPersonalConfig) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	dirPath := iofabrikDirPath(repoPath)
 	if err := prepareIOFabrikDirectory(dirPath); err != nil {
 		return iofabrikDirectoryFailure(err)
@@ -1624,6 +1780,12 @@ func (r *RepositorySettingsService) writeRepoPersonalConfig(repoPath string, con
 // EnsureIOFabrikDir creates the .iofabrik/ directory and ensures the
 // personal config and temporary files are gitignored. Call this during project initialisation.
 func (r *RepositorySettingsService) EnsureIOFabrikDir(repoPath string) OperationResult {
+	previewRelease, previewErr := previewMutationLease(repoPath)
+	if previewErr != nil {
+		return failedOp(previewErr.Error())
+	}
+	defer previewRelease()
+
 	dirPath := iofabrikDirPath(repoPath)
 	if err := prepareIOFabrikDirectory(dirPath); err != nil {
 		return iofabrikDirectoryFailure(err)

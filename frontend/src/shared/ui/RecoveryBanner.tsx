@@ -128,6 +128,7 @@ const COLOR_CLASSES: Record<string, ColorClasses> = {
 function RecoveryBanner() {
   const { 
     mergeState, 
+    operationInProgress,
     isResolvingConflict,
     abortCurrentOperation,
     removeAllStaleLocks,
@@ -208,6 +209,7 @@ function RecoveryBanner() {
           {config.showResolve && (
             <Button
               onClick={handleResolve}
+              disabled={operationInProgress}
               variant="outline"
               size="sm"
             >
@@ -220,6 +222,7 @@ function RecoveryBanner() {
           {config.showCreateBranch && (
             <Button
               onClick={() => setBranchModalOpen(true)}
+              disabled={operationInProgress}
               variant="outline"
               size="sm"
             >
@@ -234,7 +237,7 @@ function RecoveryBanner() {
               onClick={handleAbort}
               variant="destructive"
               size="sm"
-              disabled={isProcessing || isResolvingConflict}
+              disabled={isProcessing || isResolvingConflict || operationInProgress}
             >
               {isProcessing ? (
                 <Loader2 style={iconSm} className="animate-spin mr-1" />

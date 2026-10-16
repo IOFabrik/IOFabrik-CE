@@ -46,6 +46,7 @@ IOFabrik is a simplified desktop Git client for **non-technical users** in indus
 ### ⚙️ Technical — Infrastructure
 - [CommandRunner](technical/infrastructure/CommandRunner.md) — CLI execution engine
 - [CLI Resolver](technical/infrastructure/CLI%20Resolver.md) — Binary path resolution strategy
+- [LDSDK Helper Protocol](technical/infrastructure/LDSDK%20Helper%20Protocol.md) — Versioned manual-conversion helper contract and artifact validation
 - [Data Paths](technical/infrastructure/Data%20Paths.md) — XDG-compliant storage layout
 - [Debug Logger](technical/infrastructure/Debug%20Logger.md) — Ring-buffer logging system
 - [Auto-Updater](technical/infrastructure/Auto-Updater.md) — Wails updater for production Windows x64

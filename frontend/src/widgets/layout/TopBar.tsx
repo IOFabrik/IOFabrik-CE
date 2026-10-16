@@ -65,10 +65,11 @@ function TopBar(): JSX.Element {
       : `Sync pulls shared updates and pushes saved work as needed. ${incoming === null ? 'Incoming count is unavailable until this branch tracks a remote branch.' : `${incoming} incoming saved changes, based on the last check.`} ${outgoing} outgoing saved changes. Counts describe saved snapshots, not uncommitted files.`;
 
   const handleSwitchProject = useCallback(async () => {
+    if (busy) return;
     await closeRepo();
     setActiveView(VIEWS.EXPLORER);
     setSidebarCollapsed(false);
-  }, [closeRepo, setActiveView, setSidebarCollapsed]);
+  }, [busy, closeRepo, setActiveView, setSidebarCollapsed]);
   const handleUndo = useCallback(async () => {
     await undoLastCommit();
   }, [undoLastCommit]);

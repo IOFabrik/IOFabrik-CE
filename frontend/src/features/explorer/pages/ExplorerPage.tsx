@@ -32,6 +32,7 @@ import { getFolderNameFromPath } from '../../../shared/utils/path';
 function ExplorerPage(): JSX.Element {
   const {
     repoPath,
+    operationInProgress,
     repoInfo,
     repoStatus,
     openFolder,
@@ -263,6 +264,7 @@ function ExplorerPage(): JSX.Element {
             onConnectGitHub={handleConnectGitHub}
             onLoadOrganizations={loadUserOrganizations}
             isLoading={isLoading}
+            operationInProgress={operationInProgress}
             gitInstalled={gitInstalled}
             lfsInstalled={lfsInstalled}
             isInstallingPackages={isInstallingPackages}

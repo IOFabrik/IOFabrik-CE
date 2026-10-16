@@ -14,6 +14,7 @@ import * as ImageDiffService from "./imagediffservice.js";
 import * as IntegrationSessionService from "./integrationsessionservice.js";
 import * as LFSService from "./lfsservice.js";
 import * as LocalBinService from "./localbinservice.js";
+import * as PreviewGenerationService from "./previewgenerationservice.js";
 import * as ProgressService from "./progressservice.js";
 import * as RepositorySettingsService from "./repositorysettingsservice.js";
 import * as SettingsService from "./settingsservice.js";
@@ -31,6 +32,7 @@ export {
     IntegrationSessionService,
     LFSService,
     LocalBinService,
+    PreviewGenerationService,
     ProgressService,
     RepositorySettingsService,
     SettingsService
